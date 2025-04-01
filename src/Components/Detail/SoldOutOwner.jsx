@@ -27,7 +27,7 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
 
  <div style={{ position: "relative", width: "100%", height:'150px'}}>
             <img
-                                        src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic }
+                                        src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic }
                                         alt="Property"
                                         className="img-fluid"
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}

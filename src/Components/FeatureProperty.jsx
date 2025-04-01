@@ -1,92 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-
-// const FeaturedProperty = () => {
-//   const [properties, setProperties] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState("");
-
-//   useEffect(() => {
-//     const fetchProperties = async () => {
-//       try {
-//         const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch-featured-properties`); // Update with your API URL
-//         setProperties(response.data.properties);
-//       } catch (err) {
-//         setError("Failed to fetch featured properties.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchProperties();
-//   }, []);
-
-//   if (loading) return <p className="text-center fs-4">Loading featured properties...</p>;
-//   if (error) return <p className="text-danger text-center">{error}</p>;
-//   if (properties.length === 0) return <p className="text-center">No featured properties available.</p>;
-
-//   return (
-//     <div className="container mt-4">
-//       <h2 className="text-center mb-4">Featured Properties</h2>
-//       <div className="row">
-//         {properties.map((property) => (
-//           <div key={property._id} className="col-md-6 mb-3">
-//             <div className="card shadow-sm">
-//               <div className="card-body">
-//                 <h5 className="card-title">PPC ID: {property.ppcId}</h5>
-//                 <p className="card-text"><strong>Phone Number:</strong> {property.phoneNumber}</p>
-//                 <p className="card-text"><strong>Views:</strong> {property.views}</p>
-//                 <p className={`card-text ${property.status === 'active' ? 'text-success' : 'text-warning'}`}>
-//                   <strong>Status:</strong> {property.status}
-//                 </p>
-
-//                 {property.contactRequests.length > 0 && (
-//                   <div className="mt-3 p-2 bg-light border rounded">
-//                     <h6>Contact Requests:</h6>
-//                     <ul className="list-unstyled mb-0">
-//                       {property.contactRequests.map((contact) => (
-//                         <li key={contact._id} className="small">
-//                           {contact.phoneNumber} - {new Date(contact.date).toLocaleString()}
-//                         </li>
-//                       ))}
-//                     </ul>
-//                   </div>
-//                 )}
-//               </div>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FeaturedProperty;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 import React, { useEffect, useState } from "react";
@@ -127,31 +38,6 @@ const FeaturedProperty = () => {
       <h2 className="text-center mb-4">Featured Properties</h2>
       <div className="row p-1">
         {properties.map((property) => (
-          // <div key={property._id} className="col-md-6 mb-3">
-          //   <div className="card shadow-sm">
-          //     <div className="card-body">
-          //       <h5 className="card-title">PPC ID: {property.ppcId}</h5>
-          //       <p className="card-text"><strong>Phone Number:</strong> {property.phoneNumber}</p>
-          //       <p className="card-text"><strong>Views:</strong> {property.views}</p>
-          //       <p className={`card-text ${property.status === 'active' ? 'text-success' : 'text-warning'}`}>
-          //         <strong>Status:</strong> {property.status}
-          //       </p>
-
-          //       {property.contactRequests.length > 0 && (
-          //         <div className="mt-3 p-2 bg-light border rounded">
-          //           <h6>Contact Requests:</h6>
-          //           <ul className="list-unstyled mb-0">
-          //             {property.contactRequests.map((contact) => (
-          //               <li key={contact._id} className="small">
-          //                 {contact.phoneNumber} - {new Date(contact.date).toLocaleString()}
-          //               </li>
-          //             ))}
-          //           </ul>
-          //         </div>
-          //       )}
-          //     </div>
-          //   </div>
-          // </div>
           <div 
           key={property._id}
           className="card mb-3 shadow rounded-4 p-0"
@@ -165,7 +51,7 @@ const FeaturedProperty = () => {
 <img
 src={
 property.photos && property.photos.length > 0
-? `http://localhost:5000/${property.photos[0].replace(/\\/g, "/")}`
+? `http://localhost:5006/${property.photos[0].replace(/\\/g, "/")}`
 : pic // Use the imported local image if no photos are available
 }      
 style={{

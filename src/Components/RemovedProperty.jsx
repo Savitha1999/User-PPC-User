@@ -85,7 +85,7 @@ const RemovedProperty = () => {
                   <img
                     src={
                       user.photos && user.photos.length > 0
-                        ? `http://localhost:5000/${user.photos[0]}`
+                        ? `http://localhost:5006/${user.photos[0]}`
                         : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"
                     }
                     alt="Property"

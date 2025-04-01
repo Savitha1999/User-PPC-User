@@ -24,7 +24,7 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
 
  <div style={{ position: "relative", width: "100%", height:'150px'}}>
             <img
-                                        src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic}
+                                        src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic}
                                         alt="Property"
                                         className="img-fluid"
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -72,12 +72,7 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
                        <div className="col-6 d-flex align-items-center mt-1 mb-1">
                          <FaCalendarAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.bestTimeToCall || 'N/A'}</span>
                        </div>
-                       {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                         <FaRupeeSign className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#2E7480' }}>{property.price || 'N/A'}</span>
-                       </div>
-                       <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                         <p className="m-0" style={{ color:'#2F747F', fontSize:'13px',fontWeight:"bold"}}> Negotiation: <span style={{ color:'#5E5E5E' }}>{property.negotiation || 'N/A'}</span></p>
-                       </div> */}
+               
                         <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
                                    <h6 className="m-0">
                                    <span style={{ fontSize:'17px', color:'#2F747F', fontWeight:'bold', letterSpacing:"1px" }}> <FaRupeeSign className="me-2" color="#2F747F"/>{property.price ? property.price.toLocaleString('en-IN') : 'N/A'}

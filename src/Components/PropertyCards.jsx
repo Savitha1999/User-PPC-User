@@ -339,7 +339,7 @@ const PropertyCards = ({phoneNumber}) => {
     <img
  src={
   property.photos && property.photos.length > 0
-  ? `http://localhost:5000/${property.photos[0].replace(/\\/g, "/")}`
+  ? `http://localhost:5006/${property.photos[0].replace(/\\/g, "/")}`
   : pic // Use the imported local image if no photos are available
   }      
       style={{

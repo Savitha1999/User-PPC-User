@@ -23,7 +23,7 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
 
  <div style={{ position: "relative", width: "100%", height:'150px'}}>
             <img
-                                        src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic}
+                                        src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic}
                                         alt="Property"
                                         className="img-fluid"
                                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -71,12 +71,7 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
                        <div className="col-6 d-flex align-items-center mt-1 mb-1">
                          <FaCalendarAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.bestTimeToCall || 'N/A'}</span>
                        </div>
-                       {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                         <FaRupeeSign className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#2E7480' }}>{property.price || 'N/A'}</span>
-                       </div>
-                       <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                         <p className="m-0" style={{ color:'#2F747F', fontSize:'13px',fontWeight:"bold"}}> Negotiation: <span style={{ color:'#5E5E5E' }}>{property.negotiation || 'N/A'}</span></p>
-                       </div> */}
+                   
                         <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
                                    <h6 className="m-0">
                                    <span style={{ fontSize:'17px', color:'#2F747F', fontWeight:'bold', letterSpacing:"1px" }}> <FaRupeeSign className="me-2" color="#2F747F"/>{property.price ? property.price.toLocaleString('en-IN') : 'N/A'}
@@ -255,89 +250,3 @@ export default MatchedProperties;
 
 
 
-
-
-
-
-
-
-// import React, { useState, useEffect, useCallback } from "react";
-// import axios from "axios";
-// import { useParams } from "react-router-dom";
-
-// const MatchedProperties = () => {
-//   const [properties, setProperties] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [message, setMessage] = useState(null);
-//   const { phoneNumber } = useParams(); // Getting phoneNumber from URL params
-
-//   // Fetch matched properties from API
-//   const fetchInterestedProperties = useCallback(async () => {
-//     if (!phoneNumber) return;
-
-//     try {
-//       setLoading(true);
-//       const apiUrl = `${process.env.REACT_APP_API_URL}/fetch-owner-matched-properties`;
-
-//       const { data } = await axios.get(apiUrl, { params: { phoneNumber } });
-
-//       console.log("API Response:", data); // Debugging
-//       setProperties(data.ownerMatchedProperties || []);
-//       localStorage.setItem("matchedProperties", JSON.stringify(data.ownerMatchedProperties || []));
-//     } catch (error) {
-//       console.error("Error fetching properties:", error);
-//       setMessage({ text: "Failed to fetch matched properties.", type: "error" });
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [phoneNumber]);
-
-//   useEffect(() => {
-//     console.log("Phone Number from URL:", phoneNumber); // Debugging
-//     fetchInterestedProperties();
-//   }, [fetchInterestedProperties, phoneNumber]);
-
-//   useEffect(() => {
-//     console.log("Fetched Properties:", properties); // Debugging
-//   }, [properties]);
-
-//   // Remove property handler
-//   const handleRemoveProperty = (propertyId) => {
-//     const updatedProperties = properties.filter((property) => property._id !== propertyId);
-//     setProperties(updatedProperties);
-//     localStorage.setItem("matchedProperties", JSON.stringify(updatedProperties));
-//   };
-
-//   // Undo remove property handler
-//   const handleUndoRemove = () => {
-//     const storedProperties = JSON.parse(localStorage.getItem("matchedProperties")) || [];
-//     setProperties(storedProperties);
-//   };
-
-//   return (
-//     <div className="container mt-4">
-//       <h2>Matched Properties</h2>
-//       {message && <div className={`alert alert-${message.type}`}>{message.text}</div>}
-//       {loading ? (
-//         <p>Loading properties...</p>
-//       ) : properties.length > 0 ? (
-//         <ul>
-//           {properties.map((property) => (
-//             <li key={property._id}>
-//               <h3>{property.city}</h3>
-//               <p><strong>Bedrooms:</strong> {property.bedrooms}</p>
-//               <p><strong>Area:</strong> {property.area} {property.areaUalh}</p>
-//               <p><strong>Bank Loan:</strong> {property.bankLoan}</p>
-//               <button onClick={() => handleRemoveProperty(property._id)}>Remove</button>
-//             </li>
-//           ))}
-//         </ul>
-//       ) : (
-//         <p>No matched properties found.</p>
-//       )}
-//       <button onClick={handleUndoRemove}>Undo Last Remove</button>
-//     </div>
-//   );
-// };
-
-// export default MatchedProperties;

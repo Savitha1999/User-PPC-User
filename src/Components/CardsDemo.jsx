@@ -89,7 +89,7 @@ const CardsDemo = () => {
     <img
  src={
   property.photos && property.photos.length > 0
-    ? `http://localhost:5000/${property.photos[0]}`
+    ? `http://localhost:5006/${property.photos[0]}`
     : pic 
   }      alt="Property"
       style={{
@@ -164,9 +164,6 @@ const CardsDemo = () => {
                 Negotiable                </span> 
                   </h6>
                </div>
-               {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                 <h4 className="m-0" style={{ color:'#2F747F', fontSize:'13px'}}> Negotiable: <span style={{ color:'#555555' }}>{property.negotiation || 'N/A'}</span></h4>
-               </div> */}
               </div>
             </div>
           </div>

@@ -181,7 +181,7 @@ const ViewedOwner = ({ properties, onRemove, setProperties, setRemovedProperties
               </div>
               <div style={{ position: "relative", width: "100%", height:'160px'}}>
 <img
-                      src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic }
+                      src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic }
                       alt="Property"
                       className="img-fluid"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -272,7 +272,7 @@ const RemovedProperties = ({ removedProperties, onUndo }) => {
     </div>
     <div style={{ position: "relative", width: "100%", height: '160px' }}>
       <img
-        src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic}
+        src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic}
         alt="Property"
         className="img-fluid"
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}

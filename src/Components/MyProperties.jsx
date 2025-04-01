@@ -202,7 +202,7 @@ const MyProperties = () => {
                               PUC- {user.ppcId}
                             </div>
                             <img
-                              src={user.photos?.length ? `http://localhost:5000/${user.photos[0]}` : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
+                              src={user.photos?.length ? `http://localhost:5006/${user.photos[0]}` : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
                               alt="Property"
                               className="img-fluid"
                               style={{ width: '100%', height: '160px', objectFit: 'cover' }}
@@ -273,7 +273,7 @@ const MyProperties = () => {
                           </div>
                           <div className="img-container" style={{ width: '100%', height: '150px', overflow: 'hidden' }}>
                             <img
-                              src={user.photos && user.photos.length > 0 ? `http://localhost:5000/${user.photos[0]}` : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
+                              src={user.photos && user.photos.length > 0 ? `http://localhost:5006/${user.photos[0]}` : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
                               alt={`Property`}
                               className="img-fluid"
                               style={{ width: '100%', height: '150px', objectFit: 'cover' }}

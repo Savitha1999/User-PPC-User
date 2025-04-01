@@ -123,7 +123,7 @@ const MyLastViewProperty = () => {
                             <div className="img-container" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                               <img
                                 src={property.photos && property.photos.length > 0
-                                  ? `http://localhost:5000/${property.photos[0]}`
+                                  ? `http://localhost:5006/${property.photos[0]}`
                                   : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
                                 className="img-fluid"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -206,7 +206,7 @@ const MyLastViewProperty = () => {
                             <div className="img-container" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                               <img
                                 src={property.photos && property.photos.length > 0
-                                  ? `http://localhost:5000/${property.photos[0]}`
+                                  ? `http://localhost:5006/${property.photos[0]}`
                                   : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
                                 className="img-fluid"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}

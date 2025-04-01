@@ -1,14 +1,5 @@
 
 
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -318,9 +309,9 @@ useEffect(() => {
   useEffect(() => {
     // Ensure propertyDetails is not null or undefined before accessing `video`
     if (propertyDetails?.video) {
-      setVideoUrl(`http://localhost:5000/${propertyDetails.video}`);
+      setVideoUrl(`http://localhost:5006/${propertyDetails.video}`);
     } else {
-      setVideoUrl("http://localhost:5000/default-video-url.mp4"); // Fallback to a default video
+      setVideoUrl("http://localhost:5006/default-video-url.mp4"); // Fallback to a default video
     }
     console.log('Video URL:', videoUrl); // For debugging
   }, [propertyDetails?.video]); // Runs when `propertyDetails.video` changes
@@ -361,7 +352,7 @@ useEffect(() => {
 
 
   const images = propertyDetails.photos && propertyDetails.photos.length > 0
-  ? propertyDetails.photos.map((photo) => `http://localhost:5000/${photo}`)
+  ? propertyDetails.photos.map((photo) => `http://localhost:5006/${photo}`)
   : []; // Leave empty, handle default in the component
 
     
@@ -595,41 +586,6 @@ const confirmActionHandler = (actionType, actionMessage) => {
   });
 };
 
-// Define card data dynamically
-// const cards = [
-//   {
-//     img: icon1,
-//     text: interestClicked ? "Interest Sent" : "Send Your Interest",
-//   //   onClick: () =>
-//   //     !interestClicked && confirmActionHandler(handleInterestClick, "Are you sure you want to send interest?"),
-//   // },
-//   onClick: () => {
-//     if (interestClicked) {
-//       setMessage("Your interest is already sent."); // Show message instead of opening popup
-//       return;
-//     }
-//     confirmActionHandler(handleInterestClick, "Are you sure you want to send interest?");
-//   },
-// },
-//   {
-//     img: icon2,
-//     text: soldOutClicked ? "Sold Out Reported" : "Report Sold Out",
-//     onClick: () =>
-//       !soldOutClicked && confirmActionHandler(handleReportSoldOut, "Are you sure you want to report this property as sold out?"),
-//   },
-//   {
-//     img: icon2,
-//     text: propertyClicked ? "Property Reported" : "Report Property",
-//     onClick: () =>
-//       !propertyClicked && confirmActionHandler(handleReportProperty, "Are you sure you want to report this property?"),
-//   },
-//   {
-//     img: icon3,
-//     text: helpClicked ? "Help Requested" : "Need Help",
-//     onClick: () =>
-//       !helpClicked && confirmActionHandler(handleNeedHelp, "Are you sure you need help?"),
-//   },
-// ];
 
 const cards = [
   {
@@ -679,38 +635,6 @@ const cards = [
 ];
 
 
-
-// const handleHeartClick = async () => {
-//   if (!phoneNumber || !ppcId) return;
-
-//   const apiEndpoint = isHeartClicked
-//       ? `${process.env.REACT_APP_API_URL}/remove-favorite`
-//       : `${process.env.REACT_APP_API_URL}/favorite-request`;
-
-//   try {
-//       const response = await axios.post(apiEndpoint, { phoneNumber, ppcId });
-//       const { status, message, postedUserPhoneNumber } = response.data;
-
-//       if (status === "favorite") {
-//           setIsHeartClicked(true);
-//           setMessage("Favorite request sent.");
-//           setPostedUserPhoneNumber(postedUserPhoneNumber);
-//           localStorage.setItem(`isHeartClicked-${ppcId}`, "true");
-//       } else if (status === "favoriteRemoved") {
-//           setIsHeartClicked(false);
-//           setMessage("Your favorite was removed.");
-//           setPostedUserPhoneNumber("");
-//           localStorage.setItem(`isHeartClicked-${ppcId}`, "false");
-//       }
-//   } catch (error) {
-//       const errorMessage = error.response?.data?.message || "Something went wrong. Please try again.";
-//       setMessage(errorMessage);
-//       setIsHeartClicked(false);
-//       localStorage.setItem(`isHeartClicked-${ppcId}`, "false");
-//   }
-// };
-
-
 const handleHeartClick = async () => {
   if (!phoneNumber || !ppcId) return;
 
@@ -748,37 +672,6 @@ const handleHeartClick = async () => {
       setIsHeartClicked(isHeartClicked); // Maintain previous state
   }
 };
-
-
-// const handleHeartClick = async () => {
-//   if (!phoneNumber || !ppcId) return;
-
-//   const apiEndpoint = isHeartClicked
-//       ? `${process.env.REACT_APP_API_URL}/remove-favorite`
-//       : `${process.env.REACT_APP_API_URL}/add-favorite`;
-
-//   try {
-//       const response = await axios.post(apiEndpoint, { phoneNumber, ppcId });
-//       const { status, message, postedUserPhoneNumber } = response.data;
-
-//       if (status === "favorite") {
-//           setIsHeartClicked(true);
-//           setMessage("Favorite request sent.");
-//           setPostedUserPhoneNumber(postedUserPhoneNumber);
-//           localStorage.setItem(`isHeartClicked-${ppcId}`, "true");
-//       } else if (status === "favoriteRemoved") {
-//           setIsHeartClicked(false);
-//           setMessage("Your favorite was removed.");
-//           setPostedUserPhoneNumber("");
-//           localStorage.setItem(`isHeartClicked-${ppcId}`, "false");
-//       }
-//   } catch (error) {
-//       const errorMessage = error.response?.data?.message || "Something went wrong. Please try again.";
-//       setMessage(errorMessage);
-//       setIsHeartClicked(false);
-//       localStorage.setItem(`isHeartClicked-${ppcId}`, "false");
-//   }
-// };
 
 
 
@@ -1283,16 +1176,6 @@ return (
     </div>
   </div>
 )}
-{/* 
-     {showPopup && (
-  <div className="popup">
-    <div className="popup-content">
-      <p>{popupMessage}</p>
-      <button onClick={() => { confirmAction(); setShowPopup(false); }}>Yes</button>
-      <button onClick={() => setShowPopup(false)}>No</button>
-    </div>
-  </div>
-)} */}
 
 
 {message && (

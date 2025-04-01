@@ -57,7 +57,7 @@ const ZeroView = () => {
     <img
  src={
   property.photos && property.photos.length > 0
-    ? `http://localhost:5000/${property.photos[0]}`
+    ? `http://localhost:5006/${property.photos[0]}`
     : pic // Use the imported local image if no photos are available
   }      alt="Property"
       style={{
