@@ -477,6 +477,33 @@ const handleUndoRemove = async (ppcId, phoneNumber, uniqueId) => {
     </div>
 
 
+    {message && (
+  <div className="modal-overlay"
+    style={{
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#fff',
+    width: '100%',
+    maxWidth: '400px',
+    padding: '10px',
+    zIndex: 10,
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    borderRadius: '8px',
+    animation: 'popupOpen 0.3s ease-in-out',
+  }}>
+    <div className="modal-box">
+      <h5 style={{ color: "#2B3C4D", fontWeight: "bold" }}>{message.title}</h5>
+      <div className="modal-buttons">
+        <button className="me-1 ps-3 pe-3 pt-1 pb-1" style={{background:"#05B99E", color:"#fff"}} onClick={message.onConfirm}>Yes</button>
+        <button className="m-0 ps-3 pe-3  pt-1 pb-1" style={{background:"#E86D56", color:"#fff"}} onClick={message.onCancel}>No</button>
+      </div>
+    </div>
+  </div>
+)}
+    
+
 {/* Property List */}
 <div className="col-12">
   <div className="w-100 d-flex align-items-center justify-content-center" style={{ maxWidth: '500px' }}>
