@@ -11,40 +11,35 @@ import myImage from '../../Assets/Rectangle 766.png'; // Correct path
 import myImage1 from '../../Assets/Rectangle 145.png'; 
 import {FaCamera, FaEye , FaRulerCombined, FaBed, FaUserAlt, FaCalendarAlt, FaRupeeSign } from 'react-icons/fa';
 import { MdCall } from 'react-icons/md';
-
-
 const PropertyCard = ({ property , onRemove , onUndo }) => {
   const [properties, setProperties] = useState([]);
 
-  const navigate=useNavigate();
  
-  const handleCardClick = () => {
-    if (property?.ppcId) {
-      navigate(`/detail/${property.ppcId}`);
-    }
+  const [confirmAction, setConfirmAction] = useState(null); // 'remove' or 'undo'
+
+  const handleClick = (action) => {
+    setConfirmAction(action); // 'remove' or 'undo'
   };
 
- 
-  
-  // return (
-  //   <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background: "#EFEFEF" }}>
-    
+  const handleConfirmYes = () => {
+    if (confirmAction === 'remove') {
+      onRemove(property.ppcId);
+    } else if (confirmAction === 'undo') {
+      onUndo(property.ppcId);
+    }
+    setConfirmAction(null);
+  };
+
+  const handleConfirmNo = () => {
+    setConfirmAction(null);
+  };
   return (
-    <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background: "#EFEFEF" }}
-      onClick={handleCardClick}
-    >
+    <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background: "#EFEFEF" }}>
     <div className="col-md-4 col-4 d-flex flex-column justify-content-between align-items-center">
       <div className="text-white py-1 px-2 text-center" style={{ width: '100%', background: "#2F747F" }}>
         PUC- {property.ppcId}
       </div>
-      {/* <div style={{ position: "relative", width: "100%", height: '160px' }}>
-        <img
-          src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : "default.jpg"}
-          alt="Property"
-          className="img-fluid"
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
-      </div> */}
+   
 
 <div style={{ position: "relative", width: "100%", height:'160px'}}>
             <img
@@ -72,7 +67,7 @@ const PropertyCard = ({ property , onRemove , onUndo }) => {
         <p className="m-0" style={{ color: '#5E5E5E', fontWeight: 'normal' }}>
           {property.propertyMode || 'N/A'}
         </p>
-        {onRemove ? (
+        {/* {onRemove ? (
           <p className="mb-0 ps-3 pe-3 text-center pt-1" 
              style={{ background: "#FF0000", color: "white", cursor: "pointer", borderRadius: '0px 0px 0px 15px', fontSize: "12px" }}
              onClick={() => onRemove(property.ppcId)}>
@@ -84,7 +79,63 @@ const PropertyCard = ({ property , onRemove , onUndo }) => {
              onClick={() => onUndo(property.ppcId)}>
             UNDO
           </p>
-        )}
+        )} */}
+
+{onRemove ? (
+        <p
+          className="mb-0 ps-3 pe-3 text-center pt-1"
+          style={{
+            background: "#FF0000",
+            color: "white",
+            cursor: "pointer",
+            borderRadius: "0px 0px 0px 15px",
+            fontSize: "12px",
+          }}
+          onClick={() => handleClick('remove')}
+        >
+          REMOVE
+        </p>
+      ) : (
+        <p
+          className="mb-0 ps-3 pe-3 text-center pt-1"
+          style={{
+            background: "green",
+            color: "white",
+            cursor: "pointer",
+            borderRadius: "0px 0px 0px 15px",
+            fontSize: "12px",
+          }}
+          onClick={() => handleClick('undo')}
+        >
+          UNDO
+        </p>
+      )}
+      {confirmAction && (
+        <div
+          style={{
+            position: "fixed",
+            background: "white",
+            border: "1px solid #ccc",
+            padding: "10px",
+            borderRadius: "5px",
+            boxShadow: "0 0 10px rgba(0,0,0,0.2)",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 1000,
+            width: "250px",
+            textAlign: "center"
+          }}
+        >
+          <p style={{
+            color:"#007C7C", fontSize:"12px"
+          }}>Are you sure you want to {confirmAction} this Property?</p>
+          <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+            <button className='p-1' style={{ background:  "#2F747F", width: "80px", fontSize: "13px", border:"none" }} onClick={handleConfirmYes}>Yes</button>
+            <button className="ms-3 p-1" style={{ background:  "#FF0000", width: "80px", fontSize: "13px" , border:"none"}} onClick={handleConfirmNo}>No</button>
+          </div>
+        </div>
+      )}
       </div>
       <p className="fw-bold m-0" style={{ color: '#000000' }}>{property.propertyType || 'N/A'}</p>
       <p className='m-0' style={{ color: '#5E5E5E' }}>{property.city || 'N/A'}</p>

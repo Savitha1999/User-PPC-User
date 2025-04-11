@@ -1,7 +1,5 @@
 
 
-
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -175,7 +173,6 @@ const App = () => {
   useEffect(() => {
     setProperties((prev) => [...prev]); // This ensures React detects a change
   }, [localProperties]);
-  
  
   // Filter active and removed properties
   const activeProperties = offers.filter((property) => property.status !== "delete");
@@ -207,7 +204,7 @@ const App = () => {
             </div>
           )}
 
-        
+         
         </div>
       </div>
     </div>
@@ -237,12 +234,30 @@ const PropertyList = ({ properties, onRemove, onUndo, onAccept, onReject }) => {
 
 const PropertyCard = ({ property, onRemove, onUndo, onAccept, onReject }) => {
   const [activeButton, setActiveButton] = useState(property.status || null);
-  
+  const [confirmAction, setConfirmAction] = useState(null); // 'remove' or 'undo'
+
+  const handleClick = (action) => {
+    setConfirmAction(action); // Store the action
+  };
+
+  const handleConfirmYes = () => {
+    if (confirmAction === 'remove') {
+      onRemove(property.ppcId, property.buyerPhoneNumber);
+    } else if (confirmAction === 'undo') {
+      onUndo(property.ppcId, property.buyerPhoneNumber);
+    }
+    setConfirmAction(null);
+  };
+
+  const handleConfirmNo = () => {
+    setConfirmAction(null);
+  };
+
   const navigate = useNavigate();
         
           const handleCardClick = () => {
             if (property?.ppcId) {
-              navigate(`/detail/${property.ppcId}`);
+              navigate(`/details/${property.ppcId}`);
             }
           };
 
@@ -285,12 +300,68 @@ const PropertyCard = ({ property, onRemove, onUndo, onAccept, onReject }) => {
       <div className="d-flex justify-content-between">
           <p className="m-0 fw-bold" style={{ color: "#5E5E5E" }}>{property.propertyMode || "N/A"}</p>
 
-          {onRemove && (
+          {/* {onRemove && (
             <p className="m-0 ps-3 pe-3" style={{background:"#FF0000", color:"white", cursor:"pointer", borderRadius: '0px 0px 0px 15px'}} onClick={() => onRemove(property.ppcId, property.buyerPhoneNumber)}>Remove</p>
           )}
           {onUndo && (
             <p className="m-0 ps-3 pe-3" style={{background:"green", color:"white", cursor:"pointer", borderRadius: '0px 0px 0px 15px'}} onClick={() => onUndo(property.ppcId, property.buyerPhoneNumber)}>Undo</p>
-          )}
+          )} */}
+            {onRemove && (
+        <p
+          className="m-0 ps-3 pe-3"
+          style={{
+            background: "#FF0000",
+            color: "white",
+            cursor: "pointer",
+            borderRadius: "0px 0px 0px 15px",
+          }}
+          onClick={() => handleClick("remove")}
+        >
+          Remove
+        </p>
+      )}
+
+      {onUndo && (
+        <p
+          className="m-0 ps-3 pe-3"
+          style={{
+            background: "green",
+            color: "white",
+            cursor: "pointer",
+            borderRadius: "0px 0px 0px 15px",
+          }}
+          onClick={() => handleClick("undo")}
+        >
+          Undo
+        </p>
+      )}
+
+      {confirmAction && (
+        <div
+          style={{
+            position: "fixed",
+            background: "white",
+            border: "1px solid #ccc",
+            padding: "10px",
+            borderRadius: "5px",
+            boxShadow: "0 0 10px rgba(0,0,0,0.2)",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            zIndex: 1000,
+            width: "260px",
+            textAlign: "center",
+          }}
+        >
+   <p style={{
+            color:"#007C7C", fontSize:"12px"
+          }}>Are you sure you want to {confirmAction} this Property?</p>
+          <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+          <button className='p-1' style={{ background:  "#2F747F", width: "80px", fontSize: "13px", border:"none" }} onClick={handleConfirmYes}>Yes</button>
+          <button className="ms-3 p-1" style={{ background:  "#FF0000", width: "80px", fontSize: "13px" , border:"none"}} onClick={handleConfirmNo}>No</button>
+          </div>
+        </div>
+      )}
         </div>
 
         <p className="fw-bold m-0" style={{ color: "#000000" }}>{property.propertyType || "N/A"}</p>

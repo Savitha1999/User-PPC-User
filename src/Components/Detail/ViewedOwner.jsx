@@ -116,11 +116,24 @@ const App = () => {
   );
 };
 
-const ViewedOwner = ({ properties, onRemove, setProperties, setRemovedProperties }) => {
+const ViewedOwner = ({ property ,properties, onRemove, setProperties, setRemovedProperties }) => {
   const { phoneNumber } = useParams();
   const [loading, setLoading] = useState(true);
   const [removedProperties, setRemovedPropertiesLocal] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [actionType, setActionType] = useState(""); // "remove" or "undo"
 
+  const handleConfirm = () => {
+    if (actionType === "remove") {
+      handleRemove(property.ppcId, property.postedUserPhoneNumber);
+    } 
+    setShowPopup(false);
+  };
+
+  const openPopup = (type) => {
+    setActionType(type);
+    setShowPopup(true);
+  };
   useEffect(() => {
     // Load removed properties from localStorage
     const storedRemovedProperties = localStorage.getItem('removedProperties');
@@ -181,7 +194,7 @@ const ViewedOwner = ({ properties, onRemove, setProperties, setRemovedProperties
               </div>
               <div style={{ position: "relative", width: "100%", height:'160px'}}>
 <img
-                      src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic }
+                      src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic }
                       alt="Property"
                       className="img-fluid"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -205,13 +218,53 @@ bottom: "0px"}}>
                 <p className="m-0" style={{ color: '#5E5E5E', fontWeight: 'normal' }}>
                   {property.propertyMode || 'N/A'}
                 </p>
-                <p
+                {/* <p
                   className="mb-0 ps-3 pe-3 text-center pt-1"
                   style={{ background: "#FF0000", color: "white", cursor: "pointer", borderRadius: '0px 0px 0px 15px', fontSize: "12px" }}
                   onClick={() => handleRemove(property.ppcId, property.postedUserPhoneNumber)}
                 >
                   REMOVED
-                </p>
+                </p> */}
+                  <p
+          className="mb-0 ps-3 pe-3 text-center pt-1"
+          style={{
+            background: "#FF0000",
+            color: "white",
+            cursor: "pointer",
+            borderRadius: '0px 0px 0px 15px',
+            fontSize: "12px"
+          }}
+          onClick={() => openPopup("remove")}
+        >
+          REMOVED
+        </p>
+        {showPopup && (
+        <div
+        style={{
+          position: "fixed",
+          background: "white",
+          border: "1px solid #ccc",
+          padding: "10px",
+          borderRadius: "5px",
+          boxShadow: "0 0 10px rgba(0,0,0,0.2)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 1000,
+          width: "260px",
+          textAlign: "center",
+        }}         >
+            <p className="mb-1" style={{
+            color:"#007C7C", fontSize:"12px"
+          }}>
+              Are you sure you want to <strong>{actionType === "remove" ? "remove this property" : "remove this property"}</strong>?
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+            <button className='p-1' style={{ background:  "#2F747F", width: "80px", fontSize: "13px", border:"none" }}  onClick={handleConfirm}>Yes</button>
+              <button className="ms-3 p-1" style={{ background:  "#FF0000", width: "80px", fontSize: "13px" , border:"none"}}onClick={() => setShowPopup(false)}>No</button>
+            </div>
+        </div>
+      )}
               </div>
               <p className="fw-bold m-0" style={{ color: '#000000' }}>{property.propertyType || 'N/A'}</p>
               <p className='m-0' style={{ color: '#5E5E5E' }}>{property.city || 'N/A'}</p>
@@ -269,7 +322,21 @@ bottom: "0px"}}>
 };
 
 
-const RemovedProperties = ({ removedProperties, onUndo }) => {
+const RemovedProperties = ({ property, removedProperties, onUndo }) => {
+  const [showPopup, setShowPopup] = useState(false);
+  const [actionType, setActionType] = useState(""); // "remove" or "undo"
+
+  const handleConfirm = () => {
+    if (actionType === "undo") {
+      onUndo(property.ppcId, property.postedUserPhoneNumber);
+    } 
+    setShowPopup(false);
+  };
+
+  const openPopup = (type) => {
+    setActionType(type);
+    setShowPopup(true);
+  };
   return (
 
 <div className="container mt-5">
@@ -284,7 +351,7 @@ const RemovedProperties = ({ removedProperties, onUndo }) => {
     </div>
     <div style={{ position: "relative", width: "100%", height: '160px' }}>
       <img
-        src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic}
+        src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic}
         alt="Property"
         className="img-fluid"
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -325,7 +392,7 @@ const RemovedProperties = ({ removedProperties, onUndo }) => {
       <p className="m-0" style={{ color: '#5E5E5E', fontWeight: 'normal' }}>
         {property.propertyMode || 'N/A'}
       </p>
-      <p
+      {/* <p
         className="m-0 ps-3 pe-3"
         style={{
           background: "green",
@@ -336,7 +403,46 @@ const RemovedProperties = ({ removedProperties, onUndo }) => {
         onClick={() => onUndo(property.ppcId, property.postedUserPhoneNumber)}
       >
         UNDO
-      </p>
+      </p> */}
+         <p
+          className="m-0 ps-3 pe-3"
+          style={{
+            background: "green",
+            color: "white",
+            cursor: "pointer",
+            borderRadius: '0px 0px 0px 15px'
+          }}
+          onClick={() => openPopup("undo")}
+        >
+          UNDO
+        </p>
+          {showPopup && (
+        <div
+        style={{
+          position: "fixed",
+          background: "white",
+          border: "1px solid #ccc",
+          padding: "10px",
+          borderRadius: "5px",
+          boxShadow: "0 0 10px rgba(0,0,0,0.2)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          zIndex: 1000,
+          width: "260px",
+          textAlign: "center",
+        }}         >
+            <p className="mb-1" style={{
+            color:"#007C7C", fontSize:"12px"
+          }}>
+              Are you sure you want to <strong>{actionType === "undo" ? "Recovery this property" : "Recovery this property"}</strong>?
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+            <button className='p-1' style={{ background:  "#2F747F", width: "80px", fontSize: "13px", border:"none" }}  onClick={handleConfirm}>Yes</button>
+              <button className="ms-3 p-1" style={{ background:  "#FF0000", width: "80px", fontSize: "13px" , border:"none"}}onClick={() => setShowPopup(false)}>No</button>
+            </div>
+        </div>
+      )}
     </div>
     <p className="fw-bold m-0" style={{ color: '#000000' }}>{property.propertyType || 'N/A'}</p>
     <p className='m-0' style={{ color: '#5E5E5E' }}>{property.city || 'N/A'}</p>

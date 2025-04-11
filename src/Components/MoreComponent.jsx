@@ -863,13 +863,13 @@ fetchContactBuyerCount();
     count={favoriteOwnerCount}
     badgeClass="bg-success" 
 />
-
+{/* 
 <MenuLink  
     to={`/favorite-remove-owner/${phoneNumber}`} 
     label="My Shortlist Removed Property"
     count={favoriteRemovedOwnerCount}
     badgeClass="bg-danger" 
-/>
+/> */}
 
 
 
