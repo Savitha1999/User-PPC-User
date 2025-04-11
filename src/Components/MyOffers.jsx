@@ -124,7 +124,7 @@ const MyOffers = () => {
                             <div className="img-container" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                               <img
                                 src={property.photos && property.photos.length > 0
-                                  ? `http://localhost:5006/${property.photos[0]}`
+                                  ? `http://localhost:5000/${property.photos[0]}`
                                   : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
                                 className="img-fluid"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -167,7 +167,11 @@ const MyOffers = () => {
                                 <div className="col-6 d-flex align-items-center mt-1 mb-1">
                                   <FaRupeeSign className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{property.price}</span>
                                 </div>
-                              
+                                {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                                  <p className="m-0" style={{ color: '#2F747F', fontSize: '14px' }}>
+                                    Negotiation: <span style={{ color: '#555555' }}>{property.negotiation}</span>
+                                  </p>
+                                </div> */}
                               </div>
                             </div>
                           </div>
@@ -206,7 +210,7 @@ const MyOffers = () => {
                             <div className="img-container" style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
                               <img
                                 src={property.photos && property.photos.length > 0
-                                  ? `http://localhost:5006/${property.photos[0]}`
+                                  ? `http://localhost:5000/${property.photos[0]}`
                                   : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"}
                                 className="img-fluid"
                                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}

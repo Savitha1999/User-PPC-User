@@ -1,5 +1,8 @@
 
 
+
+
+
 import { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 
@@ -35,7 +38,9 @@ const PyProperty = () => {
   }, []);
 
   const handleCardClick = (ppcId, phoneNumber) => {
-    navigate("/detail", { state: { ppcId, phoneNumber } });
+    // navigate("/detail", { state: { ppcId, phoneNumber } });
+    navigate(`/detail/${ppcId}`, { state: {phoneNumber } });
+
   };
 
   return (
@@ -50,6 +55,19 @@ const PyProperty = () => {
    
       <div style={{ overflowY: 'auto', fontFamily:"Inter, sans-serif" }}>
       {properties.map((property) => (
+          // <div 
+          //   key={property._id} 
+          //   onClick={() => handleCardClick(property.ppcId, property.phoneNumber)}
+          //   style={{ cursor: "pointer", border: "1px solid #ddd", borderRadius: "10px", padding: "15px", boxShadow: "2px 2px 10px rgba(0,0,0,0.1)" }}
+          // >
+          //   <h3>{property.title}</h3>
+          //   <p><strong>State:</strong> {property.state}</p>
+          //   <p><strong>City:</strong> {property.city}</p>
+          //   <p><strong>Price:</strong> ₹{property.price}</p>
+          //   <p><strong>Owner:</strong> {property.ownerName}</p>
+          //   <p><strong>Contact:</strong> {property.phoneNumber}</p>
+          //   <p>{property.ppcId}</p>
+          // </div>
           <div 
           key={property._id}
           className="card mb-3 shadow rounded-4"
@@ -122,17 +140,30 @@ height: "20px",
  <div className="card-body ps-2 m-0 pt-0 pe-2 pb-0 d-flex flex-column justify-content-center">
    <div className="row">
      <div className="col-6 d-flex align-items-center mt-1 mb-1">
-       <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize:'13px', color:'#5E5E5E' , fontWeight:500 }}>{property.totalArea || 'N/A'}</span>
-     </div>
-     <div className="col-6 d-flex align-items-center mt-1 mb-1">
-       <FaBed className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{property.bedrooms || 'N/A'}</span>
-     </div>
-     <div className="col-6 d-flex align-items-center mt-1 mb-1">
-       <FaUserAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{property.ownership || 'N/A'}</span>
-     </div>
-     <div className="col-6 d-flex align-items-center mt-1 mb-1">
-       <FaCalendarAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{property.bestTimeToCall || 'N/A'}</span>
-     </div>
+                         <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E', fontWeight: 'medium' }}>{property.totalArea || 'N/A'}{property.areaUnit || 'N/A'}</span>
+                       </div>
+                     <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                               <FaBed className="me-2" color="#2F747F" />
+                               <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
+                                 {property.bedrooms || 'N/A'}BHK
+                               </span>
+                             </div>
+                             <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                               <FaUserAlt className="me-2" color="#2F747F" />
+                               <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
+                                 {property.postedBy || 'N/A'}
+                               </span>
+                             </div>
+                           <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                                                                                          <FaCalendarAlt className="me-2" color="#2F747F"/> 
+                                                 <span style={{ fontSize:'13px', color:'#5E5E5E', fontWeight: 500 }}>
+                                                   {property.createdAt ? new Date(property.createdAt).toLocaleDateString('en-IN', {
+                                                     year: 'numeric',
+                                                     month: 'short',
+                                                     day: 'numeric'
+                                                   }) : 'N/A'}
+                                                 </span>     
+                                                 </div> 
      <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
       <h6 className="m-0">
       <span style={{ fontSize:'17px', color:'#2F747F', fontWeight:'bold', letterSpacing:"1px" }}> <FaRupeeSign className="me-2" color="#2F747F"/>{property.price ? property.price.toLocaleString('en-IN') : 'N/A'}

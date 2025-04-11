@@ -1,9 +1,5 @@
 
 
-
-
-
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { FaRulerCombined, FaBed, FaUserAlt, FaCalendarAlt, FaRupeeSign } from "react-icons/fa";
@@ -16,7 +12,7 @@ const NewProperty = () => {
 
 
   const handleClick = () => {
-    navigate("/Construction"); // Navigate to the "About" page
+    navigate("/login"); // Navigate to the "About" page
   };
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -82,7 +78,7 @@ const NewProperty = () => {
       height: "auto", // Example height
       width: "100%", // Example width
     }}>
-      <h3 className="m-2" style={{color:'#ffffff '}}>Recent Added PROPERTY</h3>
+      <h3 className="m-2" style={{color:'#ffffff '}}>RECENT PROPERTY</h3>
       <div style={{ overflow: "hidden", width: "100%", position: "relative", fontFamily: "Inter, sans-serif" }}>
                         <Link to={'/login'} style={{textDecoration:"none"}} >
         
@@ -133,8 +129,8 @@ const NewProperty = () => {
                   }}
                 >
                   {/* Display default placeholders when data is missing */}
-                  <p className="card-title">{property.propertyMode || "N/A"}</p>
-                  <p className="card-text text-muted">
+                  <p className="card-title m-0">{property.propertyMode || "N/A"}</p>
+                  <p className="card-text text-muted m-0">
                     <MdLocationOn color="#2F747F" /> {property.city || "N/A"}
                   </p>
                   <p className="card-text">
@@ -145,25 +141,25 @@ const NewProperty = () => {
                   <div className="container p-0">
                     <div className="row">
                       <div className="col-md-6 col-6">
-                        <p>
+                        <p className="m-0">
                           <FaRulerCombined className="icon" />{" "}
                           {property.totalArea ? `${property.totalArea}${property.areaUnit}` : "N/A"}
                         </p>
                       </div>
                       <div className="col-md-6 col-6">
-                        <p>
+                        <p className="m-0">
                           <FaBed className="icon ms-3" /> {property.bedrooms || "N/A"} Bhk
                         </p>
                       </div>
                     </div>
                     <div className="row">
                       <div className="col-md-6 col-6">
-                        <p>
+                        <p className="m-0">
                           <FaUserAlt className="icon" /> {property.ownership || "N/A"}
                         </p>
                       </div>
                       <div className="col-md-6 col-6">
-                        <p>
+                        <p className="m-0">
                           <FaCalendarAlt className="icon ms-3" /> {property.bestTimeToCall || "N/A"}
                         </p>
                       </div>
@@ -188,7 +184,7 @@ const NewProperty = () => {
             
             ))
           ) : (
-            <p>No properties found.</p>
+            <p className="m-0">No properties found.</p>
           )}
         </div>
         </Link>
@@ -237,8 +233,18 @@ const NewProperty = () => {
             }
           `}
         </style>
-        <p onClick={handleClick} style={{float:'right', fontSize: '16px', color:'red', cursor:'pointer'}}> view more</p>
-
+        <button onClick={handleClick} style={{float:'right',    marginRight: "10px",marginBottom:"10px",
+            backgroundColor: "#2294B1", // Light blue-gray button
+            color: "#fff",
+            fontSize: "16px",
+            fontWeight:"500",
+            border: "none",
+            borderRadius: "30px",
+            boxShadow: `
+            8px 8px 20px rgba(194, 122, 139, 0.3),
+            -8px -8px 20px rgba(255, 255, 255, 0.6)
+          `,
+            cursor: "pointer",}}> view more</button>
       </div>
       </div>
     </>

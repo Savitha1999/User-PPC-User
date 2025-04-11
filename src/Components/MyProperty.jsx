@@ -1,5 +1,14 @@
 
 
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect } from "react";
 import { FaRulerCombined, FaBed, FaCalendarAlt, FaUserAlt, FaRupeeSign } from "react-icons/fa";
 import { Button, Nav, Tab, Row, Col, Container } from "react-bootstrap";
@@ -10,7 +19,7 @@ import { toast } from "react-toastify";
 import './MyProperty.css';
 import EditForm from "./EditForm"; 
 import AddProps from "./AddProps"; 
-
+import ConfirmationModal from "./ConfirmationModal";
 
 
 const MyProperty = () => {
@@ -29,6 +38,7 @@ const MyProperty = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [ppcId, setPpcId] = useState(null);
   const [message, setMessage] = useState("");
+  const [modalData, setModalData] = useState({ show: false, action: null, payload: null, message: "" });
 
 
 
@@ -38,6 +48,47 @@ const MyProperty = () => {
       return () => clearTimeout(timer); // Cleanup timer
     }
   }, [message]);
+
+  const handleModalConfirm = () => {
+    const { action, payload } = modalData;
+  
+    if (action === "delete") handleDelete(payload);
+    else if (action === "undo") handleUndo(payload);
+    else if (action === "edit") handleEdit(payload);
+  
+    setModalData({ show: false, action: null, payload: null, message: "" });
+  };
+  
+  const handleModalCancel = () => {
+    setModalData({ show: false, action: null, payload: null, message: "" });
+  };
+  
+  const confirmDelete = (ppcId) => {
+    setModalData({
+      show: true,
+      action: "delete",
+      payload: ppcId,
+      message: "Are you sure you want to delete this property?"
+    });
+  };
+  
+  const confirmUndo = (ppcId) => {
+    setModalData({
+      show: true,
+      action: "undo",
+      payload: ppcId,
+      message: "Are you sure you want to undo the deletion?"
+    });
+  };
+  
+  const confirmEdit = (user) => {
+    setModalData({
+      show: true,
+      action: "edit",
+      payload: user,
+      message: "Do you want to edit this property?"
+    });
+  };
   
 
   useEffect(() => {
@@ -57,23 +108,39 @@ const MyProperty = () => {
         setRemovedUsers(response.data.users);
       }
     } catch (error) {
-      setMessage("Error fetching deleted properties.");
+      // setMessage("Error fetching deleted properties.");
     }
   };
+
+  // const fetchPropertyData = async (phoneNumber) => {
+  //   try {
+  //     const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch-status`, {
+  //       params: { phoneNumber },
+  //     });
+
+  //     if (response.status === 200) {
+  //       setPropertyUsers(response.data.users);
+  //     }
+  //   } catch (error) {
+  //     // setMessage("Error fetching property data.");
+  //   }
+  // };
 
   const fetchPropertyData = async (phoneNumber) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch-status`, {
         params: { phoneNumber },
       });
-
+  
       if (response.status === 200) {
-        setPropertyUsers(response.data.users);
+        const sortedUsers = response.data.users.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setPropertyUsers(sortedUsers);
       }
     } catch (error) {
-      setMessage("Error fetching property data.");
+      // setMessage("Error fetching property data.");
     }
   };
+  
 
   const handleDelete = async (ppcId) => {
     try {
@@ -121,14 +188,14 @@ const MyProperty = () => {
   };
 
   const handleAddProperty = async () => {
-    if (!phoneNumber || !countryCode) {
+    if (!phoneNumber ) {
       setMessage('Missing phone number or country code.');
       return;
     }
   
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/store-data`, {
-        phoneNumber: `${countryCode}${phoneNumber}`,
+        phoneNumber: `${phoneNumber}`,
       });
   
       if (response.status === 201) {
@@ -184,6 +251,16 @@ const MyProperty = () => {
       {/* Your existing component structure goes here */}
     </div>
 
+
+    <ConfirmationModal
+  show={modalData.show}
+  message={modalData.message}
+  onConfirm={handleModalConfirm}
+  onCancel={handleModalCancel}
+/>
+
+
+
               <Tab.Content className="pt-3">
                 <Tab.Pane eventKey="property">
                   {propertyUsers.length > 0 ? (
@@ -209,21 +286,30 @@ const MyProperty = () => {
                                     <div className="d-flex justify-content-start"><p className="mb-1" style={{ color:'#5E5E5E' , fontWeight:500 }}>{user.propertyMode || 'N/A'}</p>
                                     </div>
                                      <p className="fw-bold m-0" style={{ color:'#000000' }}>{user.propertyType || 'N/A'}</p>
-                                     <p className="m-0" style={{ color:'#5E5E5E' , fontWeight:500}}>{user.city || 'N/A'} , {user.district || 'N/A'}</p>
+                                     <p className="m-0" style={{ color:'#5E5E5E' , fontWeight:500}}>{user.area || 'N/A'} , {user.city || 'N/A'}</p>
                                      <div className="card-body ps-2 m-0 pt-0 pe-2 pb-0 d-flex flex-column justify-content-center">
                                        <div className="row">
                                          <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                           <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize:'13px', color:'#5E5E5E' , fontWeight:500 }}>{user.totalArea || 'N/A'}</span>
+                                           <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize:'13px', color:'#5E5E5E' , fontWeight:500 }}>{user.totalArea || 'N/A'} {user.areaUnit || 'N/A'}</span>
                                          </div>
                                          <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                           <FaBed className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.length || 'N/A'}</span>
+                                           <FaBed className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.bedrooms || 'N/A'} BHK </span>
                                          </div>
                                          <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                           <FaUserAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.ownership || 'N/A'}</span>
+                                           <FaUserAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.postedBy || 'N/A'}</span>
                                          </div>
                                          <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                           <FaCalendarAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.bestTimeToCall || 'N/A'}</span>
-                                         </div>
+                                         <FaCalendarAlt className="me-2" color="#2F747F"/> 
+<span style={{ fontSize:'13px', color:'#5E5E5E', fontWeight: 500 }}>
+  {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }) : 'N/A'}
+</span>     
+</div>             
+                                           {/* <FaCalendarAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.CreatedAt || 'N/A'}</span> */}
+                                         {/* </div> */}
                                          <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
                                           <h6 className="m-0">
                                           <span style={{ fontSize:'17px', color:'#2F747F', fontWeight:'bold', letterSpacing:"1px" }}> <FaRupeeSign className="me-2" color="#2F747F"/>
@@ -232,10 +318,10 @@ const MyProperty = () => {
                                          </div>
                                          <span style={{color:"grey", fontSize:"11px"}}>Edit and Submit Ad to complete</span>
                                          <div className="d-flex justify-content-around mt-2">
-                                         <button className="btn btn-sm" style={{ background: '#FF4500', color: '#fff', width: '40%' }} onClick={() => handleDelete(user.ppcId)}>                                
+                                         <button className="btn btn-sm" style={{ background: '#FF4500', color: '#fff', width: '40%' }} onClick={() => confirmDelete(user.ppcId)}>                                
                                            Remove
                               </button>
-                                <button className="btn" style={{ width: '40%', background:"#2F747F", color:"#fff" }} onClick={() => handleEdit(user)}>
+                                <button className="btn" style={{ width: '40%', background:"#2F747F", color:"#fff" }} onClick={() => confirmEdit(user)}>
                                   Edit
                                 </button>
                               </div>
@@ -254,7 +340,6 @@ const MyProperty = () => {
 
 
             
-
 <Tab.Pane eventKey="removed">
                 {removedUsers.length > 0 ? (
                   removedUsers.map((user) => (
@@ -280,21 +365,31 @@ const MyProperty = () => {
                         <div className="d-flex justify-content-start"><p className="mb-1" style={{ color:'#5E5E5E' , fontWeight:500 }}>{user.propertyMode || 'N/A'}</p>
                         </div>
                         <p className="fw-bold m-0" style={{ color:'#000000' }}>{user.propertyType || 'N/A'}</p>
-                        <p className="m-0" style={{ color:'#5E5E5E' , fontWeight:500}}>{user.city || 'N/A'} , {user.district || 'N/A'}</p>
+                        <p className="m-0" style={{ color:'#5E5E5E' , fontWeight:500}}>{user.area || 'N/A'} , {user.city || 'N/A'}</p>
                           <div className="card-body p-2 d-flex flex-column justify-content-center">
                             <div className="row">
                               <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{user.areaUnit || 'N/A'}</span>
-                              </div>
-                              <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                <FaBed className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{user.bedrooms || 'N/A'}</span>
-                              </div>
-                              <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                <FaUserAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{user.ownership || 'N/A'}</span>
-                              </div>
-                              <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                                <FaCalendarAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{user.bestTimeToCall || 'N/A'}</span>
-                              </div>
+                                                                        <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize:'13px', color:'#5E5E5E' , fontWeight:500 }}>{user.totalArea || 'N/A'}{user.areaUnit || 'N/A'}</span>
+                                                                      </div>
+                                                                      <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                                                                        <FaBed className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.bedrooms || 'N/A'}BHK</span>
+                                                                      </div>
+                                                                      <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                                                                        <FaUserAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.postedBy || 'N/A'}</span>
+                                                                      </div>
+                                                                      {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                                                                        <FaCalendarAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{user.bestTimeToCall || 'N/A'}</span>
+                                                                      </div> */}
+                                                                       <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                                                                                                               <FaCalendarAlt className="me-2" color="#2F747F"/> 
+                                                                      <span style={{ fontSize:'13px', color:'#5E5E5E', fontWeight: 500 }}>
+                                                                        {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN', {
+                                                                          year: 'numeric',
+                                                                          month: 'short',
+                                                                          day: 'numeric'
+                                                                        }) : 'N/A'}
+                                                                      </span>     
+                                                                      </div>             
                               <div className="col-6 d-flex align-items-center mt-1 mb-1">
                                 <FaRupeeSign className="me-2" color="#2F747F" /> <span style={{ fontSize: '14px', color: '#555555' }}>{user.price || 'N/A'}</span>
                               </div>
@@ -303,7 +398,7 @@ const MyProperty = () => {
                               <button
                                 className="btn btn-sm"
                                 style={{ background: '#2F747F', color: '#fff', width: '50%' }}
-                                onClick={() => handleUndo(user.ppcId)}
+                                onClick={() => confirmUndo(user.ppcId)}
                               >
                                 Undo
                               </button>

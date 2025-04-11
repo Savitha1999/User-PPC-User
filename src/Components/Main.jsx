@@ -46,6 +46,7 @@ import Navbar from "./Navbar";
 import FeaturedProperty from './FeatureProperty';
 import BuyerLists from './BuyerLists';
 import PyProperty from './PyProperty';
+import AllProperty from './AllProperty';
 
 const Main = () => {
   const [ppcId, setPpcId] = useState(null); // Add state for ppcId
@@ -59,7 +60,15 @@ const Main = () => {
   const phoneNumber = statePhoneNumber || storedPhoneNumber;
   const countryCode = stateCountryCode || storedCountryCode;
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden"; // Apply globally
 
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, []);
   useEffect(() => {
     if (phoneNumber && countryCode) {
       localStorage.setItem('phoneNumber', phoneNumber);
@@ -100,59 +109,88 @@ const Main = () => {
 
   const renderContent = () => {
     switch (activeContent) {
-      case 'topPyProperty': return <PyProperty />;;
-      case 'topAllProperty': return <Building />;;
-      case 'topMBuyerList': return <BuyerLists phoneNumber={`${phoneNumber}`} />;;
+      case 'topPyProperty': return <PyProperty />;
+      case 'topAllProperty': return <AllProperty phoneNumber={`${phoneNumber}`}  />;
+      case 'topMBuyerList': return <BuyerLists phoneNumber={`${phoneNumber}`} />;
       case 'topRentProperty': return <Building />;
       case 'topUsedCars': return <Building />;
       case 'topPmGroom': return <Building />;
       case 'topPmBride': return <Building />;
       case 'topFeatureProperty': return <FeaturedProperty />;
       case 'topNotViewedProperty': return <ZeroView />;
-      case 'topMyProperty': return <MyProperty phoneNumber={`${countryCode}${phoneNumber}`} />;
-      case 'topOwnerMenu': return <OwnerMenu phoneNumber={`${countryCode}${phoneNumber}`}  />;
-      case 'topBuyerMenu': return <BuyerMenu phoneNumber={`${countryCode}${phoneNumber}`} />;
-      case 'bottomHome': return <PropertyCards  phoneNumber={`${countryCode}${phoneNumber}`} />;
+      case 'topMyProperty': return <MyProperty phoneNumber={`${phoneNumber}`} />;
+      case 'topOwnerMenu': return <OwnerMenu phoneNumber={`${phoneNumber}`}  />;
+      case 'topBuyerMenu': return <BuyerMenu phoneNumber={`${phoneNumber}`} />;
+      case 'bottomHome': return <PropertyCards  phoneNumber={`${phoneNumber}`} />;
       case 'bottomProperty': 
       // return <MyProperty />
-         return <MyProperty phoneNumber={`${countryCode}${phoneNumber}` } />;
+         return <MyProperty phoneNumber={`${phoneNumber}` } />;
       case 'bottomAdd': 
       // return <AddProps />
-        return <AddProps  phoneNumber={`${countryCode}${phoneNumber}`} />;
-      case 'bottomBuyer': return <PropertyForm  phoneNumber={`${countryCode}${phoneNumber}`} />;
-      case 'bottomMore': return <MoreComponent  phoneNumber={`${countryCode}${phoneNumber}`} />;
+        return <AddProps  phoneNumber={`${phoneNumber}`} />;
+      case 'bottomBuyer': return <PropertyForm  phoneNumber={`${phoneNumber}`} />;
+      case 'bottomMore': return <MoreComponent  phoneNumber={`${phoneNumber}`} />;
       default: return <Nopage />;
     }
   };
 
   return (
    
-    <div className="d-flex flex-column position-relative" style={{ height: "100%", width: "100%" }}>
-  
-  <div style={{  width: "100%" }}>
-    <Navbar />
-  </div>
+<div className="d-flex justify-content-center align-items-center" 
+     style={{ minHeight: "100vh", background: '#E5E5E5' }}> 
 
-  <div style={{  width: "100%", overflowX:"auto", scrollbarWidth:"none" }}>
-    <TopBar items={topBarItems} setActive={setActiveContent} activeItem={activeContent} />
-  </div>
+  {/* Main Container - Expands for larger screens */}
+  <div style={{ 
+       maxWidth: '100%',  // Use full width on large screens
+       width: "100vw",     // Adjust for all screen sizes
+       maxWidth: '470px',  // Limit width to 470px on small screens
+       background: 'white', 
+       display: "flex", 
+       flexDirection: "column", 
+       height: "100vh", 
+       overflow: "hidden",
+       boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)" // Light shadow for aesthetics
+     }}>
 
-  {/* <div className="content" style={{ height: "70%", width: "100%", overflowY: "auto", scrollbarWidth:"none"  }}>
-    {renderContent()} 
-  </div> */}
-<div className="content pb-5" style={{ height: "calc(85% - 70px)", width: "100%", overflowY: "auto", scrollbarWidth: "none" }}>
-  {renderContent()}
+    {/* Navbar - Fixed on Top */}
+    <div className="position-fixed top-0 start-50 translate-middle-x" 
+         style={{ width: "100%", maxWidth: "470px", zIndex: 1050 }}>
+      <Navbar />
+    </div>
+
+    {/* TopBar - Below Navbar */}
+    <div className="position-fixed start-50 translate-middle-x" 
+         style={{ top: "60px", width: "100%", maxWidth: "470px", zIndex: 1040 }}>
+      <TopBar items={topBarItems} setActive={setActiveContent} activeItem={activeContent} />
+    </div>
+
+    {/* Content Section - Scrollable */}
+    <div className="flex-grow-1 mx-auto" 
+         style={{ 
+           width: "100%", 
+           maxWidth: "470px", 
+           overflowY: "auto", 
+           paddingTop: "144px", 
+           paddingBottom: "90px",
+           scrollbarWidth:"none", 
+           position:"relative"
+           }}>
+      {renderContent()}
+    </div>
+
+    {/* Bottom Navigation - Fixed at Bottom */}
+    <div className="position-fixed bottom-0 start-50 translate-middle-x" 
+         style={{ width: "100%", maxWidth: "470px", zIndex: 1050 }}>
+      <BottomNavigation 
+        items={bottomNavItems}
+        setActive={setActiveContent}
+        activeItem={activeContent}
+      />
+    </div>
+
+  </div>
 </div>
 
-  <div className='position-absolute bottom-0' style={{ width: "100%" }}>
-    <BottomNavigation 
-      items={bottomNavItems}
-      setActive={setActiveContent}
-      activeItem={activeContent}
-    />
-  </div>
-
-</div>
   );
 };
 

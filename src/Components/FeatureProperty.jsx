@@ -1,5 +1,8 @@
 
 
+
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import myImage from '../Assets/Rectangle 146.png'; // Correct path
@@ -38,6 +41,7 @@ const FeaturedProperty = () => {
       <h2 className="text-center mb-4">Featured Properties</h2>
       <div className="row p-1">
         {properties.map((property) => (
+         
           <div 
           key={property._id}
           className="card mb-3 shadow rounded-4 p-0"

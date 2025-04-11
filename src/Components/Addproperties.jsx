@@ -2529,7 +2529,7 @@
 
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import {  useLocation, useNavigate } from "react-router-dom";
@@ -2564,7 +2564,11 @@ import moment from "moment";
 function AddProperties() {
     const [currentStep, setCurrentStep] = useState(1);
     const [showPlans, setshowPlans] = useState(false);
+  const [priceInWords, setPriceInWords] = useState("");
 
+      const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    
+      const previewRef = useRef(null);
     
   const location = useLocation();
   const { ppcId, phoneNumber } = location.state || {};
@@ -2626,7 +2630,6 @@ function AddProperties() {
   const [video, setVideo] = useState(null);
   const [isPreview, setIsPreview] = useState(true);
   const [step, setStep] = useState("form"); // "form" -> "preview" -> "submitted"
-  const [priceInWords, setPriceInWords] = useState("");
 
   const navigate = useNavigate();
 
@@ -2654,8 +2657,20 @@ function AddProperties() {
       alert(`Please fill in the following fields before previewing: ${missingFields.join(", ")}`);
       return;
     }
-  
     setStep("preview");
+    const isValid = requiredFields.every(field => formData[field]);
+  
+    if (!isValid) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+  
+    setIsPreviewOpen(true); // Open the preview
+  
+    // Scroll to the preview section
+    setTimeout(() => {
+      previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
 
   const propertyDetailsList = [
@@ -2703,7 +2718,7 @@ function AddProperties() {
     // { icon: <AiOutlineEye />, label: "No.Of.Views", value: "1200" },
     { icon: <BiCalendar />, label: "Posted On", value:formattedCreatedAt },
     { heading: true, label: "Description" }, // Heading 3
-    { icon: <FaFileAlt />, value: formData.description },
+    { icon: <FaFileAlt />, label: "Description", value: formData.description },
   
     { heading: true, label: "Property Location Info" }, // Heading 4
   
@@ -2857,10 +2872,68 @@ function AddProperties() {
       ...prev,
       [name]: value, // This dynamically updates the correct field (phoneNumberCountryCode or alternatePhoneCountryCode)
     }));
-    
+    if (name === "price" && value !== "" && !isNaN(value)) {
+      setPriceInWords(convertToIndianRupees(value));
+    } else if (name === "price" && value === "") {
+      setPriceInWords("");
+    }
+
   };
 
-
+  const convertToIndianRupees = (num) => {
+    if (!num) return "";
+  
+    const units = [
+      "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+      "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+      "Seventeen", "Eighteen", "Nineteen",
+    ];
+    const tens = [
+      "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy",
+      "Eighty", "Ninety",
+    ];
+    
+    const scales = ["", "Thousand", "Lakh", "Crore"];
+    
+    let number = parseInt(num, 10);
+    let words = "";
+  
+    if (number === 0) return "Zero";
+  
+    // Handle Crores
+    if (number >= 10000000) {
+      words += convertToIndianRupees(Math.floor(number / 10000000)) + " Crore ";
+      number %= 10000000;
+    }
+    // Handle Lakhs
+    if (number >= 100000) {
+      words += convertToIndianRupees(Math.floor(number / 100000)) + " Lakh ";
+      number %= 100000;
+    }
+    // Handle Thousands
+    if (number >= 1000) {
+      words += convertToIndianRupees(Math.floor(number / 1000)) + " Thousand ";
+      number %= 1000;
+    }
+    // Handle Hundreds
+    if (number >= 100) {
+      words += units[Math.floor(number / 100)] + " Hundred ";
+      number %= 100;
+    }
+    // Handle last part (0-99)
+    if (number > 0) {
+      if (words !== "") words += "and ";
+      if (number < 20) {
+        words += units[number];
+      } else {
+        words += tens[Math.floor(number / 10)];
+        if (number % 10 !== 0) words += " " + units[number % 10];
+      }
+    }
+  
+    return words.trim();
+  };
+  
   
   const handleShowMore =async (e) => {
     e.preventDefault();
@@ -3237,13 +3310,9 @@ const handleEdit = () => {
      <div      style={{
               width: '100%',
               maxWidth: '450px',
-              minWidth: '300px',
-              padding: '5px',
-              height:"65vh",
               borderRadius: '8px',
               margin: '0 5px',
               fontFamily: "Inter, sans-serif",
-
             }}>
   <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
             <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
@@ -3257,7 +3326,7 @@ const handleEdit = () => {
       
       
     ) : step === "form" ?  (
-<form onSubmit={handleSubmit} className="w-100">
+<form onSubmit={handleSubmit} className="w-100 pb-5">
         <p className="p-3" style={{ color: "white", backgroundColor: "rgb(47,116,127)" }}>PPC-ID: {ppcId}</p>
 
 
@@ -3486,7 +3555,11 @@ const handleEdit = () => {
     />
   </div>
   </div>
-
+  {priceInWords && (
+        <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+          {priceInWords}
+        </p>
+      )}
   <div className="form-group">
     <label style={{ width: '100%'}}>
     <label>Negotiation  </label>
@@ -3550,7 +3623,7 @@ const handleEdit = () => {
   <div className="form-group">
   <label>Length</label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <AiOutlineColumnHeight className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
       type="number"
       name="length"
@@ -3575,7 +3648,7 @@ const handleEdit = () => {
   <div className="form-group">
   <label>Breadth:</label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <AiOutlineColumnWidth className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
       type="number"
       name="breadth"
@@ -3591,9 +3664,9 @@ const handleEdit = () => {
   <div className="form-group">
   <label>Total Area: <span style={{ color: 'red' }}>* </span> </label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <RiLayoutLine className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
-      type="text"
+      type="number"
       name="totalArea"
       value={formData.totalArea}
       onChange={handleFieldChange}
@@ -4991,7 +5064,7 @@ const handleEdit = () => {
       </form>
       ) :  (
 
-<div className="preview-section">
+<div ref={previewRef} className="preview-section pb-5">
        
        <div className="preview-section row">
        {photos.length > 0 || video ? (
@@ -5078,11 +5151,11 @@ if (detail.heading) {
   );
 }
 
+const isDescription = detail.label === "Description";
 
-// If it's one of the specific fields (Location, Total Area, Posted On) or any field except description, use col-6
-const columnClass = detail.value === "Description"
-  ? "col-12"  // Description will always be col-12
-  : "col-6";  // All other fields including Location, Total Area, and Posted On will use col-6
+// const isDescription = typeof detail.value === "string" && detail.value.trim() === formData.description.trim();
+// const columnClass = isDescription ? "col-12" : "col-6";
+const columnClass = isDescription ? "col-12" : "col-6";
 
 return (
   <div key={index} className={columnClass}>
@@ -5091,14 +5164,18 @@ return (
       style={{
         backgroundColor: "#F9F9F9", // Background for the item
         width: "100%",
-        height: detail.label === "Description" || detail.value === formData.description ? "auto" : "100px", // Full height for description
+        height: isDescription ? "auto" : "100px",
+        wordBreak: "break-word",
+        // height: detail.label === "Description" || detail.value === formData.description ? "auto" : "100px", // Full height for description
       }}
     >
       <span className="me-3 fs-3" style={{ color: "#30747F" }}>
         {detail.icon} 
       </span>
       <div>
-        <h6 className="mb-1">{detail.label}</h6>
+      {!isDescription && <h6 className="mb-1">{detail.label || "N/A"}</h6>}  {/* ✅ Hide label for description */}
+
+      {/* <h6 className="mb-1">{isDescription ? "Description" : detail.label || "N/A"}</h6> */}
         <p
           className="mb-0 p-0"
           style={{
@@ -5132,18 +5209,17 @@ return (
       >
         Submit Property
       </button>  */}
-      <Button
+      <button className="mx-2"
         type="submit"
         style={{
           border:"none",
-          marginTop: '15px',
-          backgroundColor: 'rgb(47,116,127)',
+          backgroundColor: 'rgb(17, 76, 165)',
           transition: 'transform 0.2s ease-in-out, background-color 0.2s ease-in-out',
         }}
         onClick={(e) => {
           e.preventDefault(); // Prevent default form submission behavior
           // e.target.style.transform = 'scale(0.9)';
-          e.target.style.backgroundColor = 'rgb(68,155,168)'; // Lighter shade
+          e.target.style.backgroundColor = 'rgb(68, 103, 168)'; // Lighter shade
           setTimeout(() => {
             // e.target.style.transform = 'scale(1)';
             e.target.style.backgroundColor = '#57C8BD'; // Original background
@@ -5152,7 +5228,7 @@ return (
         }}
       >
         Submit Property
-      </Button>
+      </button>
       
       </div>
      

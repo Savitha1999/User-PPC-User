@@ -1,10 +1,11 @@
 
 
 
+
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { RiLayoutLine } from 'react-icons/ri';
 import { TbArrowLeftRight } from 'react-icons/tb';
 import {FaBuilding, FaMoneyBillWave,  FaBath, FaChartArea, FaPhone ,FaEdit,FaRoad,FaDoorClosed,FaMapPin, FaHome, FaUserAlt, FaEnvelope,  FaRupeeSign , FaFileVideo , FaToilet,FaCar,FaBed,  FaCity , FaTimes, FaClock, FaMapMarkedAlt, FaExchangeAlt, FaCompass, FaHandshake, FaTag, FaPhoneAlt, FaSpinner} from 'react-icons/fa';
@@ -29,6 +30,9 @@ import { Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import { IoCloseCircle } from "react-icons/io5";
 import { GrSteps } from "react-icons/gr";
+import moment from "moment";
+
+
 
 function EditForm({ ppcId, phoneNumber }) {
     const previewRef = useRef(null);
@@ -39,6 +43,8 @@ function EditForm({ ppcId, phoneNumber }) {
   const location = useLocation();
     const [currentStep, setCurrentStep] = useState(1);
     const swiperRef = useRef(null);
+
+    const navigate = useNavigate();
 
   // const ppcId = location.state?.ppcId || "";
     // const { ppcId, phoneNumber } = location.state || {};
@@ -86,7 +92,9 @@ function EditForm({ ppcId, phoneNumber }) {
     nagar: '',
     ownerName: '',
     email: '',
+    description:'',
     // phoneNumber: "",
+    countryCode:"+91",
     phoneNumber: phoneNumber || "", 
   phoneNumberCountryCode: "",
   alternatePhone: "",
@@ -114,6 +122,15 @@ function EditForm({ ppcId, phoneNumber }) {
   };
   
 
+  
+const formattedCreatedAt = Date.now
+? moment(formData.createdAt).format("DD-MM-YYYY") 
+: "N/A";
+
+
+const formattedUpdatedAt = formData.updatedAt
+  ? moment(formData.updatedAt).format("DD-MM-YYYY")
+  : "N/A";
 
 
   
@@ -171,6 +188,7 @@ function EditForm({ ppcId, phoneNumber }) {
           doorNumber: data.doorNumber || '',
           nagar: data.nagar || '',
           ownerName: data.ownerName || '',
+          alternatePhone: data.alternatePhone || '',
           email: data.email || '',
           bestTimeToCall: data.bestTimeToCall || ''
         });
@@ -204,6 +222,7 @@ function EditForm({ ppcId, phoneNumber }) {
       label: "Total Area",
       value: `${formData.totalArea} ${formData.areaUnit}`, // Combined value
     },
+    
     // { icon: <BiRuler />, label: "Area Unit", value: formData.areaUnit },
     { icon: <FaUserAlt />, label: "Ownership", value: formData.ownership },
     { icon: <MdApproval />, label: "Property Approved", value: formData.propertyApproved },
@@ -233,13 +252,14 @@ function EditForm({ ppcId, phoneNumber }) {
     { icon: <BsBarChart />, label: "Sales Type", value: formData.salesType },
     { icon: <BiUser />, label: "Posted By", value: formData.postedBy },
     // { icon: <AiOutlineEye />, label: "No.Of.Views", value: "1200" },
-    { icon: <BiCalendar />, label: "Posted On", value: formData.createdAt },
+    { icon: <BiCalendar />, label: "Posted On",value:formattedCreatedAt},
+    { icon: <BiCalendar />, label: "Update On",value:formattedUpdatedAt},
+
     { heading: true, label: "Description" }, // Heading 3
     { icon: <FaFileAlt />, label: "Description" ,value: formData.description },
   
     { heading: true, label: "Property Location Info" }, // Heading 4
   
-    { icon: <BiMap />, label: "Location", value: "New York, USA" },
     { icon: <FaGlobeAmericas />, label: "Country", value: formData.country },
     { icon: <BiBuilding />, label: "State", value: formData.state },
     { icon: <MdLocationCity />, label: "City", value: formData.city },
@@ -538,11 +558,75 @@ const convertToIndianRupees = (num) => {
       );
   
       alert(response.data.message);
-    } catch (error) {
+      setTimeout(() => {
+        navigate('/my-property');
+      }, 2000); // 2000ms = 2 seconds delay
+      
+       } catch (error) {
       console.error("Error saving property data:", error);
     }
   };
 
+  
+// const fieldIcons = {
+//   // Contact Details
+//   phoneNumber: <FaPhone color="#2F747F" />,
+//   alternatePhone: <FaPhone color="#2F747F" />,
+//   email: <FaEnvelope color="#2F747F" />,
+//   bestTimeToCall: <MdSchedule color="#2F747F" />,
+  
+//   // Property Location
+//   rentalPropertyAddress: <MdLocationCity color="#2F747F" />,
+//   country: <BiWorld color="#2F747F" />,
+//   state: <MdLocationCity color="#2F747F" />,
+//   city: <FaCity color="#2F747F" />,
+//   district: <FaRegAddressCard color="#2F747F" />,
+//   area: <MdLocationOn color="#2F747F" />,
+//   streetName: <RiLayoutLine color="#2F747F" />,
+//   doorNumber: <BiBuildingHouse color="#2F747F" />,
+//   nagar: <FaRegAddressCard color="#2F747F" />,
+
+//   // Ownership & Posting Info
+//   ownerName: <FaUserAlt color="#2F747F" />,
+//   postedBy: <FaUserAlt color="#2F747F" />,
+//   ownership: <HiUserGroup color="#2F747F" />,
+
+//   // Property Details
+//   propertyMode: <MdApproval color="#2F747F" />,
+//   propertyType: <MdOutlineOtherHouses color="#2F747F" />,
+//   propertyApproved: <BsFillHouseCheckFill color="#2F747F" />,
+//   propertyAge: <MdSchedule color="#2F747F" />,
+//   description: <BsTextareaT color="#2F747F" />,
+
+//   // Pricing & Financials
+//   price: <FaRupeeSign color="#2F747F" />,
+//   bankLoan: <BsBank color="#2F747F" />,
+//   negotiation: <GiMoneyStack color="#2F747F" />,
+
+//   // Measurements
+//   length: <MdStraighten color="#2F747F" />,
+//   breadth: <MdStraighten color="#2F747F" />,
+//   totalArea: <GiResize color="#2F747F" />,
+//   areaUnit: <FaChartArea color="#2F747F" />,
+
+//   // Room & Floor Details
+//   bedrooms: <FaBed color="#2F747F" />,
+//   kitchen: <GiKitchenScale color="#2F747F" />,
+//   kitchenType: <GiKitchenScale color="#2F747F" />,
+//   balconies: <MdOutlineMeetingRoom color="#2F747F" />,
+//   floorNo: <BsBuildingsFill color="#2F747F" />,
+//   numberOfFloors: <BsBuildingsFill color="#2F747F" />,
+//   attachedBathrooms: <FaBath color="#2F747F" />,
+//   western: <FaToilet  color="#2F747F" />,
+
+//   // Features & Amenities
+//   facing: <TbArrowLeftRight color="#2F747F" />,
+//   salesMode: <GiGears color="#2F747F" />,
+//   salesType: <MdOutlineOtherHouses color="#2F747F" />,
+//   furnished: <FaHome color="#2F747F" />,
+//   lift: <BsBuildingsFill color="#2F747F" />,
+//   carParking: <FaCar color="#2F747F" />,
+// };
 
     const fieldIcons = {
       // Contact Details
@@ -605,6 +689,95 @@ const convertToIndianRupees = (num) => {
     };
 
 
+    // const renderDropdown = (field) => {
+    //   const options = dataList[field] || [];
+    //   const filteredOptions = options.filter((option) =>
+    //     option.toLowerCase().includes(dropdownState.filterText.toLowerCase())
+    //   );
+  
+    //   return (
+    //     dropdownState.activeDropdown === field && (
+    //       <div
+    //         className="dropdown-popup"
+    //         style={{
+    //           position: 'fixed',
+    //           top: '50%',
+    //           left: '50%',
+    //           transform: 'translate(-50%, -50%)',
+    //           backgroundColor: '#fff',
+    //           width: '100%',
+    //           maxWidth: '400px',
+    //           padding: '10px',
+    //           zIndex: 10,
+    //           boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    //           borderRadius: '8px',
+    //           overflowY: 'auto',
+    //           maxHeight: '50vh',
+    //           animation: 'popupOpen 0.3s ease-in-out',
+    //         }}
+    //       >
+    //         <div
+    //           style={{
+    //             display: 'flex',
+    //             justifyContent: 'space-between',
+    //             alignItems: 'center',
+    //           }}
+    //         >
+    //           <input
+    //             type="text"
+    //             placeholder="Filters options..."
+    //             value={dropdownState.filterText}
+    //             onChange={handleFilterChange}
+    //             style={{
+    //               width: '80%',
+    //               padding: '5px',
+    //               marginBottom: '10px',
+    //             }}
+    //           />
+    //           <button
+    //             type="button"
+    //             onClick={() => toggleDropdown(field)}
+    //             style={{
+    //               cursor: 'pointer',
+    //               border: 'none',
+    //               background: 'none',
+    //             }}
+    //           >
+    //             <FaTimes size={18} color="red" />
+    //           </button>
+    //         </div>
+    //         <ul
+    //           style={{
+    //             listStyleType: 'none',
+    //             padding: 0,
+    //             margin: 0,
+    //           }}
+    //         >
+    //           {filteredOptions.map((option, index) => (
+    //             <li
+    //               key={index}
+    //               onClick={() => {
+    //                 setFormData((prevState) => ({
+    //                   ...prevState,
+    //                   [field]: option,
+    //                 }));
+    //                 toggleDropdown(field);
+    //               }}
+    //               style={{
+    //                 padding: '5px',
+    //                 cursor: 'pointer',
+    //                 backgroundColor: '#f9f9f9',
+    //                 marginBottom: '5px',
+    //               }}
+    //             >
+    //               {option}
+    //             </li>
+    //           ))}
+    //         </ul>
+    //       </div>
+    //     )
+    //   );
+    // };
 
 
 const fieldLabels = {
@@ -636,7 +809,7 @@ const fieldLabels = {
   western: "Western Toilet",
   numberOfFloors: "Number of Floors",
   carParking: "Car Parking",
-  rentalPropertyAddress: "Rental Property Address",
+  rentalPropertyAddress: "Property Address",
   country: "Country",
   state: "State",
   city: "City",
@@ -818,7 +991,7 @@ const handleEdit = () => {
           photoUrl = URL.createObjectURL(photo);
         } else if (typeof photo === "string") {
           // photoUrl = photo; // Direct URL from the backend
-          photoUrl = `http://localhost:5006/${photo}`;
+          photoUrl = `http://localhost:5000/${photo}`;
 
         } else {
           console.error("Invalid photo format:", photo);
@@ -1092,7 +1265,7 @@ onClick={() => removePhoto(index)}>
   <div className="form-group">
   <label>length:</label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <AiOutlineColumnHeight className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
       type="number"
       name="length"
@@ -1117,7 +1290,7 @@ onClick={() => removePhoto(index)}>
   <div className="form-group">
   <label>Breadth:</label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <AiOutlineColumnWidth className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
       type="number"
       name="breadth"
@@ -1133,7 +1306,7 @@ onClick={() => removePhoto(index)}>
   <div className="form-group">
   <label>Total Area: <span style={{ color: 'red' }}>* </span> </label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <RiLayoutLine className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
       type="number"
       name="totalArea"
@@ -2157,7 +2330,7 @@ onClick={() => removePhoto(index)}>
       value={formData.rentalPropertyAddress}
       onChange={handleFieldChange}
       className="form-input m-0"
-      placeholder="Rental Property Address"
+      placeholder="Property Address"
       style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
     />
   </div>
@@ -2347,6 +2520,7 @@ onClick={() => removePhoto(index)}>
         <select
           name="countryCode"
           value={formData.countryCode || ""}
+          disabled
           onChange={handleFieldChange}
           className="form-control m-0"
           style={{ width: '100%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
@@ -2364,7 +2538,7 @@ onClick={() => removePhoto(index)}>
     <input
       type="number"
       name="phoneNumber"
-      value={formData.phoneNumber}
+      value={phoneNumber}
       readOnly
       className="form-input m-0"
       placeholder="Phone Number"
@@ -2476,111 +2650,129 @@ onClick={() => removePhoto(index)}>
     ) : (
       
         <div ref={previewRef} className="preview-section w-100 d-flex flex-column align-items-center justify-content-center">
-           <div className="mb-4">
-            <div style={{width:"400px"}}>
-
-            
-           {(photos.length > 0 || video) ? (
-  <Swiper navigation={{
-    prevEl: ".swiper-button-prev-custom",
-    nextEl: ".swiper-button-next-custom",
-  }} 
-  ref={swiperRef}
-  modules={[Navigation]} className="swiper-container">
-    {photos.map((photo, index) => {
-      let photoUrl = "";
-
-      // Check if the photo is a valid File or Blob
-      if (photo instanceof File || photo instanceof Blob) {
-        photoUrl = URL.createObjectURL(photo);
-      } else if (typeof photo === "string") {
-        // photoUrl = photo; // Direct URL from the backend
-        photoUrl = `http://localhost:5006/${photo}`;
-
-      } else {
-        console.error("Invalid photo format:", photo);
-        return null; // Skip rendering if the format is invalid
-      }
-
-      return (
-        <SwiperSlide key={index} className="d-flex justify-content-center align-items-center"
-          style={{
-            height: "200px",
-            width: "100%",
-            overflow: "hidden",
-            borderRadius: "8px",
-            margin: "auto",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            cursor: "pointer",
-          }}
-        >
-          <img
-            src={photoUrl}
-            alt={`Preview ${index + 1}`}
-            className="preview-image"
-            style={{
-              height: "100%",
-              width: "100%",
-              objectFit: "cover",
-            }}
-          />
-        </SwiperSlide>
-      );
-    })}
-
-    {video && (
-      <SwiperSlide>
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{
-            height: "200px",
-            width: "100%",
-            overflow: "hidden",
-            borderRadius: "8px",
-            margin: "auto",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            cursor: "pointer",
-          }}
-        >
-          {/* Check if video is a valid File or Blob before creating an object URL */}
-          {video instanceof File || video instanceof Blob ? (
-            <video controls className="preview-video" style={{ width: "100%", height: "200px", objectFit: "cover" }}>
-              <source src={URL.createObjectURL(video)} type={video.type} />
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <p>Invalid video format.</p>
-          )}
-        </div>
-      </SwiperSlide>
-    )}
-  </Swiper>
-) : (
-  <p>No media uploaded.</p>
-)}
-
-  <style>
-    {`
-      .swiper-button-next, .swiper-button-prev {
-        color: white !important;
-        font-size: 24px !important;
-      }
-        
-    `}
-  </style>
-  <div className="row d-flex align-items-center">
-  <div className="d-flex col-12 justify-content-start">  
-    <button className="swiper-button-prev-custom m-1 w-30" style={{background:"#019988"}}>❮</button>
-    <button className="swiper-button-next-custom m-1 w-30"style={{background:"#019988"}}>❯</button>
-  </div>
-</div>
-
-
-
+         <div className="mb-4">
+              <div style={{width:"400px"}}>
   
-</div>
-</div>
+              
+             {(photos.length > 0 || video) ? (
+    <Swiper navigation={{
+      prevEl: ".swiper-button-prev-custom",
+      nextEl: ".swiper-button-next-custom",
+    }} 
+    ref={swiperRef}
+    modules={[Navigation]} className="swiper-container">
+      {photos.map((photo, index) => {
+        let photoUrl = "";
+  
+        // Check if the photo is a valid File or Blob
+        if (photo instanceof File || photo instanceof Blob) {
+          photoUrl = URL.createObjectURL(photo);
+        } else if (typeof photo === "string") {
+          // photoUrl = photo; // Direct URL from the backend
+          photoUrl = `http://localhost:5000/${photo}`;
+  
+        } else {
+          console.error("Invalid photo format:", photo);
+          return null; // Skip rendering if the format is invalid
+        }
+  
+        return (
+          <SwiperSlide key={index} className="d-flex justify-content-center align-items-center"
+            style={{
+              height: "200px",
+              width: "100%",
+              overflow: "hidden",
+              borderRadius: "8px",
+              margin: "auto",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              cursor: "pointer",
+            }}
+          >
+            <img
+              src={photoUrl}
+              alt={`Preview ${index + 1}`}
+              className="preview-image"
+              style={{
+                height: "100%",
+                width: "100%",
+                objectFit: "cover",
+              }}
+            />
+          </SwiperSlide>
+        );
+      })}
+  
+      {video && (
+        <SwiperSlide>
+          <div
+            className="d-flex justify-content-center align-items-center"
+            style={{
+              height: "200px",
+              width: "100%",
+              overflow: "hidden",
+              borderRadius: "8px",
+              margin: "auto",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              cursor: "pointer",
+            }}
+          >
+            {/* Check if video is a valid File or Blob before creating an object URL */}
+            {video instanceof File || video instanceof Blob ? (
+              <video controls className="preview-video" style={{ width: "100%", height: "200px", objectFit: "cover" }}>
+                <source src={URL.createObjectURL(video)} type={video.type} />
+                Your browser does not support the video tag.
+              </video>
+            ) : (
+              <p>Invalid video format.</p>
+            )}
+          </div>
+        </SwiperSlide>
+      )}
+    </Swiper>
+  ) : (
+    <p>No media uploaded.</p>
+  )}
+  
+    <style>
+      {`
+        .swiper-button-next, .swiper-button-prev {
+          color: white !important;
+          font-size: 24px !important;
+        }
+          
+      `}
+    </style>
+    <div className="row d-flex align-items-center w-100">
+    <div className="d-flex col-12 justify-content-end">  
+      <button className="swiper-button-prev-custom m-1 w-30" style={{background:"#019988"}}>❮</button>
+      <button className="swiper-button-next-custom m-1 w-30"style={{background:"#019988"}}>❯</button>
+    </div>
+  </div>
+  
+  
+  
+    
+  </div>
+  </div>
 <div className="row w-100">
+
+<p className="m-0" style={{
+        color: "#4F4B7E",
+        fontWeight: 'bold',
+        fontSize: "26px"
+      }}>
+        <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
+    
+        <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
+           Negotiation: {formData.negotiation || "N/A"}
+        </span>
+      </p>
+      {priceInWords && (
+            <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+              {priceInWords}
+            </p>
+)}
+  
 {propertyDetailsList.map((detail, index) => {
 // Check if it's a heading, which should always be full-width (col-12)
 if (detail.heading) {

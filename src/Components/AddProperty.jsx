@@ -9,7 +9,7 @@
 
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "react-bootstrap";
 import {  useLocation, useNavigate, useParams } from "react-router-dom";
@@ -29,7 +29,6 @@ import { BiBuilding, BiStreetView } from "react-icons/bi";
 import { GiStairs, GiForkKnifeSpoon, GiWindow } from "react-icons/gi";
 import { AiOutlineEye, AiOutlineColumnWidth, AiOutlineColumnHeight } from "react-icons/ai";
 import { BiBed, BiBath, BiCar, BiCalendar, BiUser, BiCube } from "react-icons/bi";
-import { toast } from "react-toastify";
 import Plans from './PricingPlans';
 import PricingPlans from "./PricingPlans";
 import "swiper/css";
@@ -37,13 +36,19 @@ import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { IoCloseCircle } from "react-icons/io5";
+import moment from "moment";
+
 
 function AddProperty() {
   const location = useLocation();
     const [currentStep, setCurrentStep] = useState(1);
     const [showPlans, setshowPlans] = useState(false);
     const [ppcId, setPpcId] = useState("");
+  const previewRef = useRef(null);
+  const [priceInWords, setPriceInWords] = useState("");
+  const fileInputRef = useRef(null); // Ref for input field
 
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     const handleCloseAddForm = () => {
       setshowPlans(false); // Close add property form
@@ -100,6 +105,7 @@ function AddProperty() {
     nagar: '',
     ownerName: '',
     email: '',
+    countryCode:"+91",
     phoneNumber: "",
   phoneNumberCountryCode: "",
   alternatePhone: "",
@@ -111,6 +117,9 @@ function AddProperty() {
   const [video, setVideo] = useState(null);
   const [isPreview, setIsPreview] = useState(true);
   const [step, setStep] = useState("form"); // "form" -> "preview" -> "submitted"
+
+    const [message, setMessage] = useState({ text: "", type: "" });
+
 
   const navigate = useNavigate();
   const handlePageNavigation = () => {
@@ -124,29 +133,54 @@ function AddProperty() {
     setPpcId(id); // Store PPC-ID in state
 }, [location.search]); // Runs every time the URL changes
 
+  const formRefs = {
+    propertyMode: useRef(null),
+    propertyType: useRef(null),
+    price: useRef(null),
+    totalArea: useRef(null),
+    areaUnit: useRef(null),
+    salesType: useRef(null),
+    postedBy: useRef(null),
+  };
+  
+   
+const formattedCreatedAt = Date.now
+? moment(formData.createdAt).format("DD-MM-YYYY") 
+: "N/A";
 
-  const handlePreview = () => { 
-    const requiredFields = [
-      
-      "propertyMode",
-      "propertyType",
-      "price",
-      "totalArea",
-      "areaUnit",
-      "salesType",
-      "postedBy"
-    ];
+
+  const handlePreview = () => {
+    const requiredFields = Object.keys(formRefs);
   
     const missingFields = requiredFields.filter(field => !formData[field]);
   
     if (missingFields.length > 0) {
       alert(`Please fill in the following fields before previewing: ${missingFields.join(", ")}`);
+  
+      // Focus and scroll to the first missing field
+      const firstMissingField = missingFields[0];
+      const fieldRef = formRefs[firstMissingField];
+  
+      if (fieldRef?.current) {
+        fieldRef.current.focus(); // Set focus first
+        
+        setTimeout(() => {
+          fieldRef.current.scrollIntoView({ behavior: "smooth", block: "center" }); // Scroll smoothly
+        }, 100); // Delay slightly to ensure focus happens first
+      }
+  
       return;
     }
   
     setStep("preview");
+    setIsPreviewOpen(true);
+  
+    // Scroll to the preview section
+    setTimeout(() => {
+      previewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
-
+ 
   const propertyDetailsList = [
     { heading: true, label: "Basic Property Info" }, // Heading 1
     { icon: <MdHomeWork />, label: "Property Mode", value:  formData.propertyMode},
@@ -188,9 +222,9 @@ function AddProperty() {
 
     { icon: <BsGraphUp />, label: "Sale Mode", value: formData.salesMode },
     { icon: <BsBarChart />, label: "Sales Type", value: formData.salesType },
-    { icon: <BiUser />, label: "Posted By", value: formData.postedBy },
+    { icon: <BiUser />, label: "Posted By", value:formData.postedBy},
     // { icon: <AiOutlineEye />, label: "No.Of.Views", value: "1200" },
-    { icon: <BiCalendar />, label: "Posted On", value: "Dec 20, 2024" },
+    { icon: <BiCalendar />, label: "Posted On", value:formattedCreatedAt },
     { heading: true, label: "Description" }, // Heading 3
     { icon: <FaFileAlt />,label: "Description" ,  value: formData.description },
   
@@ -346,10 +380,68 @@ function AddProperty() {
       ...prev,
       [name]: value, // This dynamically updates the correct field (phoneNumberCountryCode or alternatePhoneCountryCode)
     }));
-    
+    if (name === "price") {
+      if (value !== "" && !isNaN(value)) {
+        setPriceInWords(convertToIndianRupees(value));
+      } else {
+        setPriceInWords("");
+      }
+    }
   };
 
-
+  const convertToIndianRupees = (num) => {
+    if (!num) return "";
+  
+    const units = [
+      "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+      "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+      "Seventeen", "Eighteen", "Nineteen",
+    ];
+    const tens = [
+      "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy",
+      "Eighty", "Ninety",
+    ];
+    
+    const scales = ["", "Thousand", "Lakh", "Crore"];
+    
+    let number = parseInt(num, 10);
+    let words = "";
+  
+    if (number === 0) return "Zero";
+  
+    // Handle Crores
+    if (number >= 10000000) {
+      words += convertToIndianRupees(Math.floor(number / 10000000)) + " Crore ";
+      number %= 10000000;
+    }
+    // Handle Lakhs
+    if (number >= 100000) {
+      words += convertToIndianRupees(Math.floor(number / 100000)) + " Lakh ";
+      number %= 100000;
+    }
+    // Handle Thousands
+    if (number >= 1000) {
+      words += convertToIndianRupees(Math.floor(number / 1000)) + " Thousand ";
+      number %= 1000;
+    }
+    // Handle Hundreds
+    if (number >= 100) {
+      words += units[Math.floor(number / 100)] + " Hundred ";
+      number %= 100;
+    }
+    // Handle last part (0-99)
+    if (number > 0) {
+      if (words !== "") words += "and ";
+      if (number < 20) {
+        words += units[number];
+      } else {
+        words += tens[Math.floor(number / 10)];
+        if (number % 10 !== 0) words += " " + units[number % 10];
+      }
+    }
+  
+    return words.trim();
+  };
   
   const handleShowMore =async (e) => {
     e.preventDefault();
@@ -401,33 +493,78 @@ function AddProperty() {
 
 
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setStep("submitted"); // Show PricingPlans
+
+  //   // Ensure `ppcId` is available
+  //   if (!ppcId) {
+  //     alert("PPC-ID is required. Please refresh or try again.");
+  //     return;
+  //   }
+  
+  //   // Create FormData instance to send photos and video
+  //   const formDataToSend = new FormData();
+  
+  //   // Append PPC-ID first
+  //   formDataToSend.append("ppcId", ppcId);
+  
+  //   // Append form fields
+  //   Object.keys(formData).forEach((key) => {
+  //     formDataToSend.append(key, formData[key]);
+  //   });
+  
+  //   // Append photos
+  //   photos.forEach((photo) => {
+  //     formDataToSend.append("photos", photo);
+  //   });
+  
+  //   // Append video if available
+  //   if (video) {
+  //     formDataToSend.append("video", video);
+  //   }
+  
+  //   try {
+  //     const response = await axios.post(
+  //       `${process.env.REACT_APP_API_URL}/update-property`,
+  //       formDataToSend,
+  //       { headers: { "Content-Type": "multipart/form-data" } }
+  //     );
+  //     setTimeout(() => {
+  //     }, 5000);
+    
+  //   } catch (error) {
+  //     console.error("Error saving property data:", error);
+  //   }
+  // };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStep("submitted"); // Show PricingPlans
-
-    // Ensure `ppcId` is available
+    setStep("submitted");
+  
+    const finalFormData = {
+      ...formData,
+      ownerName: formData.ownerName.trim() === "" ? "Owner" : formData.ownerName,
+    };
+  
     if (!ppcId) {
-      alert("PPC-ID is required. Please refresh or try again.");
+      setMessage({ text: "PPC-ID is required. Please refresh or try again.", type: "error" });
       return;
     }
   
-    // Create FormData instance to send photos and video
     const formDataToSend = new FormData();
-  
-    // Append PPC-ID first
     formDataToSend.append("ppcId", ppcId);
   
-    // Append form fields
-    Object.keys(formData).forEach((key) => {
-      formDataToSend.append(key, formData[key]);
+    // ✅ Use finalFormData instead of formData here:
+    Object.keys(finalFormData).forEach((key) => {
+      formDataToSend.append(key, finalFormData[key]);
     });
   
-    // Append photos
     photos.forEach((photo) => {
       formDataToSend.append("photos", photo);
     });
   
-    // Append video if available
     if (video) {
       formDataToSend.append("video", video);
     }
@@ -438,15 +575,19 @@ function AddProperty() {
         formDataToSend,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
+  
+      setMessage({ text: "Property Added successfully!", type: "success" });
+  
       setTimeout(() => {
+        setMessage({ text: "", type: "" });
       }, 5000);
-    
     } catch (error) {
-      console.error("Error saving property data:", error);
+      setMessage({ 
+        text: error.response?.data?.message || "Error saving property data.", 
+        type: "error" 
+      });
     }
   };
-
-
 
 const fieldIcons = {
   // Contact Details
@@ -507,7 +648,52 @@ const fieldIcons = {
   lift: <BsBuildingsFill color="#2F747F" />,
   carParking: <FaCar color="#2F747F" />,
 };
-
+const fieldLabels = {
+  propertyMode: "Property Mode",
+  propertyType: "Property Type",
+  price: "Price",
+  propertyAge: "Property Age",
+  bankLoan: "Bank Loan",
+  negotiation: "Negotiation",
+  length: "Length",
+  breadth: "Breadth",
+  totalArea: "Total Area",
+  ownership: "Ownership",
+  bedrooms: "Bedrooms",
+  kitchen: "Kitchen",
+  kitchenType: "Kitchen Type",
+  balconies: "Balconies",
+  floorNo: "Floor No.",
+  areaUnit: "Area Unit",
+  propertyApproved: "Property Approved",
+  postedBy: "Posted By",
+  facing: "Facing",
+  salesMode: "Sales Mode",
+  salesType: "Sales Type",
+  description: "Description",
+  furnished: "Furnished",
+  lift: "Lift",
+  attachedBathrooms: "Attached Bathrooms",
+  western: "Western Toilet",
+  numberOfFloors: "Number of Floors",
+  carParking: "Car Parking",
+  rentalPropertyAddress: "Property Address",
+  country: "Country",
+  state: "State",
+  city: "City",
+  district: "District",
+  area: "Area",
+  streetName: "Street Name",
+  doorNumber: "Door Number",
+  nagar: "Nagar",
+  ownerName: "Owner Name",
+  email: "Email",
+  phoneNumber: "Phone Number",
+  phoneNumberCountryCode: "Phone Country Code",
+  alternatePhone: "Alternate Phone",
+  alternatePhoneCountryCode: "Alternate Phone Country Code",
+  bestTimeToCall: "Best Time to Call",
+};
     
     const renderDropdown = (field) => {
       const options = dataList[field] || [];
@@ -536,6 +722,17 @@ const fieldIcons = {
               animation: 'popupOpen 0.3s ease-in-out',
             }}
           >
+           <div
+          style={{
+            fontWeight: "bold",
+            fontSize: "16px",
+            marginBottom: "10px",
+            textAlign: "start",
+            color: "#019988",
+          }}
+        >
+           {fieldLabels[field] || "Property Field"}
+        </div>
             <div
               style={{
                 display: 'flex',
@@ -653,24 +850,27 @@ const handleEdit = () => {
 };
 
   return (
-    <div className="d-flex align-items-center justify-content-center">
+    <div className="d-flex align-items-center justify-content-center pb-5">
     <div      style={{
               width: '100%',
               maxWidth: '450px',
               minWidth: '300px',
-              padding: '5px',
+              // padding: '5px',
               borderRadius: '8px',
-              margin: '0 5px',
             }}>
               <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
   <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
 </button> <h3 className="m-0 ms-3" style={{fontSize:"18px"}}>ADD PROPERTY</h3> </div>
-<h4 style={{ color: "rgb(10, 10, 10)", fontWeight: "bold", marginBottom: "10px" }}> Property Management</h4>      {step === "submitted" ?  (
+<div className="p-1">
+<h4 style={{ color: "rgb(10, 10, 10)", fontWeight: "bold", marginBottom: "10px" }}> Property Management</h4> 
+
+
+     {step === "submitted" ?  (
             <PricingPlans phoneNumber={phoneNumber} onClose={handleCloseAddForm}/>
       
       
     ) : step === "form" ?  (
-<form onSubmit={handleSubmit} className="w-100">
+<form onSubmit={handleSubmit} className="w-100 p-2">
         <p className="p-3" style={{ color: "white", backgroundColor: "rgb(47,116,127)" }}>PPC-ID: {ppcId}</p>
 
 
@@ -812,6 +1012,7 @@ const handleEdit = () => {
           <button
             className="m-0"
             type="button"
+            ref={formRefs.propertyMode}
             onClick={() => toggleDropdown("propertyMode")}
             style={{
               cursor: "pointer",
@@ -860,6 +1061,8 @@ const handleEdit = () => {
           <button
             className="m-0"
             type="button"
+            ref={formRefs.propertyType}
+
             onClick={() => toggleDropdown("propertyType")}
             style={{
               cursor: "pointer",
@@ -890,7 +1093,7 @@ const handleEdit = () => {
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
     <FaRupeeSign className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
-      type="text"
+      type="number"
       name="price"
       value={formData.price}
       onChange={handleFieldChange}
@@ -901,7 +1104,11 @@ const handleEdit = () => {
     />
   </div>
   </div>
-
+  {priceInWords && (
+        <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+          {priceInWords}
+        </p>
+      )}
   </div>
  )}
 
@@ -963,9 +1170,9 @@ const handleEdit = () => {
   <div className="form-group">
   <label>length</label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <AiOutlineColumnHeight className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
-      type="text"
+      type="number"
       name="length"
       value={formData.length}
       onChange={handleFieldChange}
@@ -979,9 +1186,9 @@ const handleEdit = () => {
   <div className="form-group">
   <label>breadth:</label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <AiOutlineColumnWidth className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
-      type="text"
+      type="number"
       name="breadth"
       value={formData.breadth}
       onChange={handleFieldChange}
@@ -995,7 +1202,7 @@ const handleEdit = () => {
   <div className="form-group">
   <label>Total Area: <span style={{ color: 'red' }}>* </span> </label>
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
-    <FaRegAddressCard className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
+    <RiLayoutLine className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
       type="text"
       name="totalArea"
@@ -1035,6 +1242,8 @@ const handleEdit = () => {
           <button
             className="m-0"
             type="button"
+            ref={formRefs.areaUnit}
+
             onClick={() => toggleDropdown("areaUnit")}
             style={{
               cursor: "pointer",
@@ -1639,6 +1848,7 @@ const handleEdit = () => {
           <button
             className="m-0"
             type="button"
+            ref={formRefs.salesType}
             onClick={() => toggleDropdown("salesType")}
             style={{
               cursor: "pointer",
@@ -1689,6 +1899,7 @@ const handleEdit = () => {
           <button
             className="m-0"
             type="button"
+            ref={formRefs.postedBy}
             onClick={() => toggleDropdown("postedBy")}
             style={{
               cursor: "pointer",
@@ -1723,10 +1934,23 @@ const handleEdit = () => {
 <h4 style={{ color: "rgb(47,116,127)", fontWeight: "bold", marginBottom: "10px" }}>  Property Description   </h4>             
 
   {/* Description */}
-  <div className="form-group">
+  {/* <div className="form-group">
     <label>Description:</label>
     <textarea name="description" onChange={handleFieldChange} className="form-control" placeholder="Enter Description"></textarea>
-  </div>
+  </div> */}
+
+<div className="form-group">
+  <label>Description:</label>
+  <textarea
+    name="description"
+    onChange={handleFieldChange}
+    className="form-control"
+    placeholder="Enter Description"
+    maxLength={250} // Limits input to 250 characters
+  ></textarea>
+  <small className="text-muted">Maximum 250 characters allowed.</small>
+</div>
+
 
   {/* furnished */}
   <div className="form-group">
@@ -2033,7 +2257,7 @@ const handleEdit = () => {
 
 
   <div className="form-group">
-<label>rental Property Address:</label>
+<label>Property Address:</label>
 
 <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', border: '1px solid #2F747F', background:"#fff"}}>
     <FaHome className="input-icon" 
@@ -2044,7 +2268,7 @@ const handleEdit = () => {
       value={formData.rentalPropertyAddress}
       onChange={handleFieldChange}
       className="form-input m-0"
-      placeholder="Rental Property Address"
+      placeholder="Property Address"
       style={{ flex: '1 0 80%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
     />
   </div>
@@ -2158,7 +2382,7 @@ const handleEdit = () => {
   <div className="input-card p-0 rounded-1" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%',  border: '1px solid #2F747F', background:"#fff" }}>
     <FaDoorClosed className="input-icon" style={{color: '#2F747F', marginLeft:"10px"}} />
     <input
-      type="text"
+      type="number"
       name="doorNumber"
       value={formData.doorNumber}
       onChange={handleFieldChange}
@@ -2234,6 +2458,7 @@ const handleEdit = () => {
         <select
           name="countryCode"
           value={formData.countryCode || ""}
+          disabled
           onChange={handleFieldChange}
           className="form-control m-0"
           style={{ width: '100%', padding: '8px', fontSize: '14px', border: 'none', outline: 'none' }}
@@ -2287,7 +2512,7 @@ const handleEdit = () => {
     </div>
 
     <input
-      type="tel"
+      type="number"
       name="alternatePhone"
       value={formData.alternatePhone}
       onChange={handleFieldChange}
@@ -2406,7 +2631,7 @@ const handleEdit = () => {
       </form>
       ) :  (
 
-<div className="preview-section">
+<div  ref={previewRef} className="preview-section">
        
        <div className="preview-section row">
        {photos.length > 0 || video ? (
@@ -2461,6 +2686,25 @@ const handleEdit = () => {
          <p>No media uploaded.</p>
        )}
 <div className="row">
+
+
+<p className="m-0" style={{
+        color: "#4F4B7E",
+        fontWeight: 'bold',
+        fontSize: "26px"
+      }}>
+        <FaRupeeSign size={26} /> {formData.price ? Number(formData.price).toLocaleString('en-IN') : 'N/A'}
+    
+        <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
+           Negotiation: {formData.negotiation || "N/A"}
+        </span>
+      </p>
+      {priceInWords && (
+            <p style={{ fontSize: "14px", color: "#2F747F", marginTop: "5px" }}>
+              {priceInWords}
+            </p>
+)}
+
 {propertyDetailsList.map((detail, index) => {
 // Check if it's a heading, which should always be full-width (col-12)
 if (detail.heading) {
@@ -2538,7 +2782,7 @@ return (
      
       )
     }
-
+</div>
     </div>
     </div>
 

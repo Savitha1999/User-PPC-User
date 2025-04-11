@@ -1,11 +1,4 @@
 
-
-
-
-
-
-
-
 import React, { useState, useEffect, useRef } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Form, Button, InputGroup } from 'react-bootstrap';
@@ -20,6 +13,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Login.css';
 import { RiEdit2Fill } from "react-icons/ri";
+import PrivacyPolicyWeb from './PrivacyPolicyWeb';
+import AboutMobile from './AboutMobile';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const Login = ({ onLogin }) => {
   const [phoneNumber, setPhoneNumberState] = useState('');
@@ -32,7 +28,15 @@ const Login = ({ onLogin }) => {
   const [isPhoneNumberEntered, setIsPhoneNumberEntered] = useState(false);
   const [mockOtp, setMockOtp] = useState('');
   const phoneInputRef = useRef(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(false);
 
+  const handleCheckboxChange = (e) => {
+    const checked = e.target.checked;
+    setIsChecked(checked);
+    setIsDisabled(!checked); // Disable number input when checkbox is unchecked
+  };
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -110,9 +114,26 @@ const Login = ({ onLogin }) => {
         mode: 'web'
       });
   
-      if (response.status === 200 || response.status === 201) {
-        const generatedOtp = response.data.data.otp;
-        toast.success(`OTP sent successfully! Your OTP is: ${generatedOtp}`, {
+      const message = response.data.message;
+      const generatedOtp = response.data.data?.otp;
+  
+      // ✅ Case 1: Already Verified → Directly Navigate
+      if (message.includes('already verified')) {
+        toast.success('Welcome back! Logged in successfully.', {
+          position: "top-center",
+          autoClose: 5000,
+        });
+  
+        setTimeout(() => {
+          navigate('/mobileviews', { state: { phoneNumber } });
+        }, 5000);
+  
+        return;
+      }
+  
+      // ✅ Case 2: OTP Sent → Show OTP Input
+      if (generatedOtp) {
+        toast.success(`OTP sent! Your OTP is: ${generatedOtp}`, {
           position: "top-center",
           autoClose: 20000,
         });
@@ -121,33 +142,25 @@ const Login = ({ onLogin }) => {
         setOtpTimer(30);
         setCanResendOtp(false);
       }
+  
     } catch (error) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message &&
-        error.response.data.message.includes('OTP')
-      ) {
-        const generatedOtp = error.response.data.data.otp;
-        toast.success(`OTP sent successfully! Your OTP is: ${generatedOtp}`, {
+      const errorMessage = error.response?.data?.message || 'Something went wrong!';
+  
+      // ✅ Special handling for permanently logged-out users
+      if (errorMessage.includes('permanently logged out')) {
+        toast.error('Access Denied: You are permanently logged out. Please cannot log in again.', {
           position: "top-center",
-          autoClose: 5000,
+          autoClose: 10000,
         });
-        setMockOtp(generatedOtp);
-        setIsOtpSent(true);
-        setOtpTimer(30);
-        setCanResendOtp(false);
-      } else {
-        const errorMessage = error.response?.data?.message || error.message;
-        toast.error('Error: ' + errorMessage, {
-          position: "top-center",
-          autoClose: 5000,
-        });
+        return;
       }
+  
+      toast.error(errorMessage, {
+        position: "top-center",
+        autoClose: 5000,
+      });
     }
   };
-  
-
   
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
@@ -222,7 +235,7 @@ const Login = ({ onLogin }) => {
                 </div>
 <div className='d-flex flex-column justify-content-between align-items-center'>
 <img src={logo} alt="Logo" className="login-logo rounded-3" height={40} />
-
+<p className='m-0'>Pondy Property</p>
 <p className="description text-center mt-2 mb-5">Buy and Sell your Property in Pondicherry</p>
 
 {!isOtpSent ? (
@@ -333,6 +346,8 @@ const Login = ({ onLogin }) => {
         placeholder="Enter OTP"
         value={otp}
         onChange={(e) => setOtp(e.target.value)}
+        disabled={isDisabled}
+
         required
         className="custom-background small-input fw-normal  rounded-0"
         style={{ width: '100%',
@@ -386,7 +401,83 @@ const Login = ({ onLogin }) => {
       VERIFY OTP
     </Button>
     </div>
-   
+    <div>
+      {/* Clickable text */}
+      {/* <label>
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={handleCheckboxChange}
+        />
+      </label> */}
+       <label>
+      <input
+        type="checkbox"
+        checked={isChecked}
+        onChange={handleCheckboxChange}
+      />
+    </label>
+      <span
+        onClick={() => setShowPopup(true)}
+        style={{
+          // color: 'blue',
+          // textDecoration: 'underline',
+          cursor: 'pointer',
+          fontSize: '16px',
+        }}
+      >
+i agree with terms & conditions Privacy Policy      </span>
+
+      {/* Popup modal */}
+      {showPopup && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '0',
+            left: '0',
+            height: '100vh',
+            backgroundColor: '#fff',
+            color: 'black',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            overflow:"hidden"
+          }}
+        >
+          <div
+            style={{
+              maxHeight: '100%',
+    overflowY: 'auto',
+    width: '100%',
+              padding: '20px',
+              borderRadius: '10px',
+              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+              minWidth: '300px',
+              textAlign: 'center',
+            }}
+          >
+         <PrivacyPolicyWeb />
+            <button
+              onClick={() => setShowPopup(false)}
+              style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                padding: '6px 12px',
+                backgroundColor: '#EFEFEF',
+                color: 'black',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+              }}
+            >
+              <FaArrowLeft /> <span className="m-0 ms-3">Privacy Policy</span>
+              </button>
+          </div>
+        </div>
+      )}
+    </div>
   </Form>
 )}
 </div>
@@ -411,3 +502,8 @@ const Login = ({ onLogin }) => {
 };
 
 export default Login;
+
+
+
+
+

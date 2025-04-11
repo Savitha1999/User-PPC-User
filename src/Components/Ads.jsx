@@ -1,22 +1,71 @@
-import React from 'react'
 
-export default function Ads() {
-    const images = [
-        'https://ads.timesgroup.com/assets/images/Slider/PR/Mobile/Multi-PRTemplate-2.jpg',  // Example image URLs
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShKmqPKadsxdZLlK0mxZQ4WGUwwPrA8kuPXA&s',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbGFxTju12ehKnWCaM7lhHaE85_iIIiRZyjg&s',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpwDRuCNSxXa-3RGn9y5f6NA8DV0Vy5d08OTvTjiK79DfZsQ1mQITOfg973MKEYsdtVVg&usqp=CAU',
-        'https://img.pikbest.com/origin/09/18/75/73bpIkbEsTzy5.jpg!w700wp',
-      ];
+import { useEffect, useRef } from "react";
+import CarAds from '../Assets/car_Ads.jpeg'
+import flatLandAd from '../Assets/flatLandAd.jpeg'
+import pondymatriAds from '../Assets/pondy_matriAds.jpeg'
+import pondymartiAds1 from '../Assets/pondymatri_Ads.jpeg'
+import rentpondyad from '../Assets/rentpondyad.jpeg'
+import tamilmatri from '../Assets/tamilmatri.jpeg'
+import usedcard from '../Assets/usedcar_ad.jpeg'
+const images = [
+  CarAds,
+  flatLandAd,
+  pondymatriAds,
+  pondymartiAds1,
+  rentpondyad,
+  tamilmatri,
+  usedcard,
+];
+
+function VerticalAutoScrollCarousel() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollBy({
+          top: 1,
+          behavior: "smooth",
+        });
+
+        // Loop back to top when scroll reaches the end
+        if (
+          containerRef.current.scrollTop + containerRef.current.clientHeight >=
+          containerRef.current.scrollHeight
+        ) {
+          containerRef.current.scrollTop = 0;
+        }
+      }
+    }, 20); // Adjust speed here
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-<div className="container-fluid">
-      <div className="col">
-        {images.map((src, index) => (
-          <div key={index} className="col-12">
-            <img src={src} alt={`Image ${index}`}
-             style={{ width: '100%', height: '350px',objectFit: 'cover',objectPosition: 'center'}} className='mb-5'/>
-          </div>
-        ))}
-      </div>
-    </div>  )
+    <div className="mb-2 d-flex flex-column align-items-center "
+      ref={containerRef}
+      style={{
+        height: "1250px",
+        overflowY: "hidden",
+        scrollBehavior: "smooth",
+      }}
+    >
+      {[...images, ...images].map((src, index) => (
+        <div key={index} className="mb-1">
+          <img
+            src={src}
+            alt={`Slide ${index}`}
+            style={{
+              width: "300px",
+              height: "300px",
+              objectFit: "cover",
+              display: "block",
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  );
 }
+
+export default VerticalAutoScrollCarousel;

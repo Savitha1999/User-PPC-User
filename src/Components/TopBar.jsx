@@ -76,9 +76,9 @@ const TopBar = ({ items, setActive, activeItem }) => {
             <img
               src={item.icon}
               alt={item.text}
-              style={{ width: "35px", height: "35px", objectFit: "cover" }}
+              style={{ width: "28px", height: "28px", objectFit: "cover" }}
             />
-            <span style={{ marginTop: "5px" ,         color:"#fff"
+            <span style={{ marginTop: "5px" , color:"#fff", fontSize:"10px"
 }}>{item.text}</span>
           </li>
         ))}

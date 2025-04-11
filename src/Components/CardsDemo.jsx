@@ -89,7 +89,7 @@ const CardsDemo = () => {
     <img
  src={
   property.photos && property.photos.length > 0
-    ? `http://localhost:5006/${property.photos[0]}`
+    ? `http://localhost:5000/${property.photos[0]}`
     : pic 
   }      alt="Property"
       style={{
@@ -164,6 +164,9 @@ const CardsDemo = () => {
                 Negotiable                </span> 
                   </h6>
                </div>
+               {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                 <h4 className="m-0" style={{ color:'#2F747F', fontSize:'13px'}}> Negotiable: <span style={{ color:'#555555' }}>{property.negotiation || 'N/A'}</span></h4>
+               </div> */}
               </div>
             </div>
           </div>
@@ -185,3 +188,103 @@ const CardsDemo = () => {
 };
 
 export default CardsDemo;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const AddModel = require('./models/AddModel'); // Assuming the schema file is in models folder
+
+// const router = express.Router();
+
+// // Fetch count of properties based on a status and phone number
+// router.get('/property-count/:status/:phoneNumber', async (req, res) => {
+//     try {
+//         const { status, phoneNumber } = req.params;
+//         let filter = {};
+
+//         if (status === 'sendInterest') {
+//             filter = { 'interestRequests.phoneNumber': phoneNumber };
+//         } else if (status === 'removedProperty') {
+//             filter = { 'favoriteRemoved.phoneNumber': phoneNumber };
+//         } else if (status === 'myProperty') {
+//             filter = { phoneNumber: phoneNumber };
+//         } else {
+//             filter = { status: status };
+//         }
+
+//         const count = await AddModel.countDocuments(filter);
+//         const data = await AddModel.find(filter);
+
+//         res.json({ count, data });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+// // Fetch all properties count
+// router.get('/all-properties-count', async (req, res) => {
+//     try {
+//         const count = await AddModel.countDocuments();
+//         res.json({ totalProperties: count });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+// // Fetch user's favorite properties count
+// router.get('/favorite-count/:phoneNumber', async (req, res) => {
+//     try {
+//         const { phoneNumber } = req.params;
+//         const count = await AddModel.countDocuments({ 'favoriteRequests.phoneNumber': phoneNumber });
+//         res.json({ favoriteProperties: count });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+// // Fetch user's removed favorite properties count
+// router.get('/removed-favorites-count/:phoneNumber', async (req, res) => {
+//     try {
+//         const { phoneNumber } = req.params;
+//         const count = await AddModel.countDocuments({ 'favoriteRemoved.phoneNumber': phoneNumber });
+//         res.json({ removedFavorites: count });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+// // Fetch interest buyer count
+// router.get('/interest-buyers-count/:phoneNumber', async (req, res) => {
+//     try {
+//         const { phoneNumber } = req.params;
+        
+//         // Fetch all documents where the user is in interestRequests
+//         const properties = await AddModel.find({ 'interestRequests.phoneNumber': phoneNumber });
+
+//         // Count the exact number of occurrences of the user's phone number
+//         const count = properties.reduce((total, property) => {
+//             return total + property.interestRequests.filter(req => req.phoneNumber === phoneNumber).length;
+//         }, 0);
+
+//         res.json({ interestBuyersCount: count });
+//     } catch (error) {
+//         res.status(500).json({ error: error.message });
+//     }
+// });
+
+// module.exports = router;

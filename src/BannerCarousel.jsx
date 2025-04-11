@@ -4,13 +4,14 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // Import images from assets folder
-import ppc from "../Assets/ppc.jpeg";
-import puc from "../Assets/puc.jpeg";
+import carsale from "../Assets/carsale.jpeg";
+import landFlat from "../Assets/landFlat.jpeg";
 import rentpondy from "../Assets/rentpondy.jpeg";
-import pmpondy from "../Assets/pmpondy.jpeg";
+import marriage from "../Assets/marriage.jpeg";
+import pondycars from "../Assets/pondycars.jpeg";
 
 const BannerCarousel = () => {
-  const banners = [ppc, puc, rentpondy, pmpondy];
+  const banners = [rentpondy, landFlat, marriage, carsale , pondycars];
 
   return (
     <div

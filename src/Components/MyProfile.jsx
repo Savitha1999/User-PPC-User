@@ -1,135 +1,5 @@
 
 
-// import React from 'react';
-// import { FaUserAlt, FaEnvelope, FaPhoneAlt, FaHome, FaSignOutAlt, FaArrowLeft } from 'react-icons/fa';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-// import logo from '../Assets/Sale Property-01.png'
-// import { useNavigate } from 'react-router-dom';
-
-
-// const MyProfile = () => {
-//   const { phoneNumber } = useParams();
-
-  
-//   const navigate = useNavigate();
-
-//   const handlePageNavigation = () => {
-//     navigate('/mobileviews'); // Redirect to the desired path
-//   };
-//   return (
-//     <div
-//       className="container-fluid d-flex justify-content-center"
-//       style={{
-//         height: '100vh',
-//         overflowY: 'scroll',
-//         scrollbarWidth: 'none', // For Firefox
-//         msOverflowStyle: 'none', // For IE and Edge
-//       }}
-//     >
-//       {/* Main Form Container with width 450px */}
-//       <div className="card p-4" style={{ width: '450px' }}>
-
-//           <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
-//                                 <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
-//                               </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}> My Profile</h3> </div>
-        
-                     
-        // {/* Top Image Centered */}
-        // <div className="text-center mb-4 mt-3">
-        //   <img
-        //     src={logo} // Replace with your image URL
-        //     alt="Profile"
-        //     className="img-fluid"
-        //     style={{ maxWidth: '150px' }}
-        //   />
-        // </div>
-
-//         {/* Form Section */}
-//         <form>
-//           {/* Name Input */}
-//           <div className="form-group mb-3 ">
-//           <label htmlFor="name" className="form-label"><FaUserAlt className='me-2'color="#4F4B7E"/>Name</label>
-//             <div className="input-group d-flex align-items-center" style={{ width: '100%' }}>
-//               {/* <div className="input-group-prepend">
-//                 <span className="input-group-text d-flex align-items-center" style={{ background: 'none', border: 'none', color:"#4F4B7E" }}>
-//                   <FaUserAlt />
-//                 </span>
-//               </div> */}
-//               <input type="text" className="form-control rounded-0" placeholder="Name"   style={{
-//                   border: 'none',
-//                   borderBottom: '1px solid #4F4B7E',
-//                 }}/>
-//             </div>
-//           </div>
-
-//           {/* Email Input */}
-//           <div className="form-group mb-3 ">
-//           <label htmlFor="email" className="form-label"><FaEnvelope className='me-2'color="#4F4B7E"/>Email</label>
-//             <div className="input-group d-flex align-items-center" style={{ width: '100%' }}>
-//               {/* <div className="input-group-prepend">
-//                 <span className="input-group-text d-flex align-items-center" style={{ background: 'none', border: 'none', color:"#4F4B7E" }}>
-//                   <FaEnvelope />
-//                 </span>
-//               </div> */}
-//               <input type="email" className="form-control rounded-0" placeholder="Email" style={{
-//                   border: 'none',
-//                   borderBottom: '1px solid #4F4B7E',
-//                 }}/>
-//             </div>
-//           </div>
-
-//           {/* Mobile Number Input */}
-//           <div className="form-group mb-3 ">
-//           <label htmlFor="mobile" className="form-label"><FaPhoneAlt className='me-2' color="#4F4B7E"/>Mobile Number</label>
-//             <div className="input-group d-flex align-items-center" style={{ width: '100%' }}>
-//               {/* <div className="input-group-prepend">
-//                 <span className="input-group-text d-flex align-items-center" style={{ background: 'none', border: 'none', color:"#4F4B7E" }}>
-//                   <FaPhoneAlt />
-//                 </span>
-//               </div> */}
-//               <input type="tel" className="form-control rounded-0" placeholder="Mobile Number" style={{
-//                   border: 'none',
-//                   borderBottom: '1px solid #4F4B7E',
-//                 }} />
-//             </div>
-//           </div>
-
-//           {/* Address Input */}
-//           <div className="form-group mb-3">
-//           <label htmlFor="address" className="form-label"> <FaHome className='me-2'color="#4F4B7E"/>Address</label>
-//             <div className="input-group d-flex align-items-center" style={{ width: '100%' }}>
-//               {/* <div className="input-group-prepend">
-//                 <span className="input-group-text d-flex align-items-center" style={{ background: 'none', border: 'none', color:"#4F4B7E" }}>
-//                   <FaHome />
-//                 </span>
-//               </div> */}
-//               <input type="text" className="form-control rounded-0" placeholder="Address" style={{
-//                   border: 'none',
-//                   borderBottom: '1px solid #4F4B7E',
-//                 }}/>
-//             </div>
-//           </div>
-
-//           {/* Action Buttons */}
-//           <div className="d-flex flex-column">
-//             <button type="button" className="btn w-100 mb-2" style={{background:"#4F4B7E", color:"#ffffff"}}>
-//               UPDATE PROFILE
-//             </button>
-//             <button type="button" className="btn w-100" style={{background:'#ffffff', border:'1px solid red'}}>
-//                LOG OUT
-//             </button>
-//           </div>
-//         </form>
-
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default MyProfile;
-
-
-
 
 
 
@@ -226,28 +96,47 @@ const MyProfile = () => {
   // const getProfileInitial = (name = "") => {
   //   return name ? name.charAt(0).toUpperCase() : "?";
   // };
+
+  
+  const handlePermanentLogout = async () => {
+    const confirm = window.confirm("Are you sure you want to permanently logout?");
+    if (!confirm) return;
+  
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/user/permanent-logout`, {
+        phone: profile.mobile
+      });
+  
+      alert(response.data.message || "User permanently logged out.");
+      setProfile({ name: "", email: "", mobile: phoneNumber, address: "" });
+      setIsEditing(false);
+      setIsLoggedIn(false);
+      navigate("/"); // Redirect to home/login
+    } catch (error) {
+      alert("Error logging out permanently.");
+    }
+  };
+  
+  
+
   
 
   return (
-    <div className="container-fluid d-flex justify-content-center align-items-center" style={{ height: "100vh", overflowY: "auto", background: "#f8f9fa" }}>
-      <div className="card p-4 shadow-lg rounded" style={{ width: "450px" }}>
-        
+    <div className="container d-flex align-items-center justify-content-center p-0">
+     
+     <div className="d-flex flex-column align-items-center justify-content-center m-0" 
+        style={{ maxWidth: '450px', margin: 'auto', width: '100%' , fontFamily: 'Inter, sans-serif'}}>        
         {/* Header */}
-        <div className="d-flex align-items-center justify-content-start w-100 bg-light p-2 rounded">
-          <button className="btn btn-light" onClick={() => navigate("/mobileviews")}>
+        <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
+        <button className="pe-5" onClick={() => navigate("/mobileviews")}>
             <FaArrowLeft color="#30747F" size={20} />
           </button>
           <h3 className="m-0 ms-3" style={{ fontSize: "20px", color: "#30747F" }}>My Profile</h3>
         </div>
+        <div className="row g-2 w-100">
 
-        {/* Profile Image */}
-        {/* <div className="text-center my-3">
-          <div className="rounded-circle d-flex align-items-center justify-content-center" 
-               style={{ width: "100px", height: "100px", background: "#30747F", color: "#fff", fontSize: "40px", fontWeight: "bold" }}>
-            {getProfileInitial()}
-          </div>
-        </div> */}
-<div className="text-center my-3">
+       
+<div className="text-center my-3 mt-5">
   {profile && profile.name ? (
     // 🟢 User has a profile: Show initials inside a circle
     <div
@@ -270,49 +159,210 @@ const MyProfile = () => {
       src={logo} // Replace with actual default image URL
       alt="Default Profile"
       className="img-fluid"
-      style={{ maxWidth: "100px" }}
+      width={80}
     />
   )}
 </div>
 
 
         {/* Form */}
-        <form>
-          <div className="form-group mb-3">
-            <label htmlFor="name" className="form-label"><FaUserAlt className="me-2" color="#4F4B7E"/>Name</label>
-            <input type="text" className="form-control" name="name" value={profile.name} onChange={handleChange} required />
-          </div>
-          <div className="form-group mb-3">
-            <label htmlFor="email" className="form-label"><FaEnvelope className="me-2" color="#4F4B7E"/>Email</label>
-            <input type="email" className="form-control" name="email" value={profile.email} onChange={handleChange} required />
-          </div>
-          <div className="form-group mb-3">
-            <label htmlFor="mobile" className="form-label"><FaPhoneAlt className="me-2" color="#4F4B7E"/>Mobile Number</label>
-            <input type="tel" className="form-control" name="mobile" value={profile.mobile} readOnly />
-          </div>
-          <div className="form-group mb-3">
-            <label htmlFor="address" className="form-label"><FaHome className="me-2" color="#4F4B7E"/>Address</label>
-            <input type="text" className="form-control" name="address" value={profile.address} onChange={handleChange} required />
-          </div>
+        <form className="p-4">
+         
+<div className="form-group mb-3">
+  <label htmlFor="name" className="form-label">
+    <FaUserAlt className="me-2" color="#4F4B7E" /> <strong>Name</strong>
+  </label>
+  <input
+    type="text"
+    name="name"
+    value={profile.name}
+    onChange={handleChange}
+    placeholder="Enter your name"
+    required
+    style={{
+      backgroundColor: "transparent",
+      border: "none",
+      borderBottom: "1px solid #ccc",
+      borderRadius: "0",
+      boxShadow: "none",
+      outline: "none",
+      width: "100%",
+    }}
+    onFocus={(e) => (e.target.style.borderBottom = "2px solid #4F4B7E")}
+    onBlur={(e) => (e.target.style.borderBottom = "1px solid #ccc")}
+  />
+</div>
 
+<div className="form-group mb-3">
+  <label htmlFor="email" className="form-label">
+    <FaEnvelope className="me-2" color="#4F4B7E" /> <strong>Email</strong>
+  </label>
+  <input
+    type="email"
+    name="email"
+    value={profile.email}
+    onChange={handleChange}
+    placeholder="Enter your email"
+    required
+    style={{
+      backgroundColor: "transparent",
+      border: "none",
+      borderBottom: "1px solid #ccc",
+      borderRadius: "0",
+      boxShadow: "none",
+      outline: "none",
+      width: "100%",
+    }}
+    onFocus={(e) => (e.target.style.borderBottom = "2px solid #4F4B7E")}
+    onBlur={(e) => (e.target.style.borderBottom = "1px solid #ccc")}
+  />
+</div>
+
+<div className="form-group mb-3">
+  <label htmlFor="mobile" className="form-label">
+    <FaPhoneAlt className="me-2" color="#4F4B7E" /> <strong>Mobile Number</strong>
+  </label>
+  <input
+    type="tel"
+    name="mobile"
+    value={profile.mobile}
+    readOnly
+    placeholder="Mobile number"
+    style={{
+      backgroundColor: "transparent",
+      border: "none",
+      borderBottom: "1px solid #ccc",
+      borderRadius: "0",
+      boxShadow: "none",
+      outline: "none",
+      width: "100%",
+    }}
+    onFocus={(e) => (e.target.style.borderBottom = "2px solid #4F4B7E")}
+    onBlur={(e) => (e.target.style.borderBottom = "1px solid #ccc")}
+  />
+</div>
+
+<div className="form-group mb-3">
+  <label htmlFor="address" className="form-label">
+    <FaHome className="me-2" color="#4F4B7E" /> <strong>Address</strong>
+  </label>
+  <input
+    type="text"
+    name="address"
+    value={profile.address}
+    onChange={handleChange}
+    placeholder="Enter your address"
+    required
+    style={{
+      backgroundColor: "transparent",
+      border: "none",
+      borderBottom: "1px solid #ccc",
+      borderRadius: "0",
+      boxShadow: "none",
+      outline: "none",
+      width: "100%",
+    }}
+    onFocus={(e) => (e.target.style.borderBottom = "2px solid #4F4B7E")}
+    onBlur={(e) => (e.target.style.borderBottom = "1px solid #ccc")}
+  />
+</div>
+
+
+<div className="col-12 d-flex align-items-center">
+  <img src={logo} alt="" width={25} className="me-2"/>
+  <div>
+    <div style={{ fontSize: "13px", color: "grey" }}>App Version</div>
+    <div style={{ fontSize: "15px", fontWeight: 600, color: "grey" }}>
+33    </div>
+  </div>
+</div>
           {/* Buttons */}
-          <div className="d-flex flex-column">
+          <div className="d-flex flex-column mt-5">
             {isEditing ? (
-              <button type="button" className="btn btn-primary w-100 mb-2" onClick={handleUpdate}>
-                UPDATE PROFILE
-              </button>
+             <button
+             type="button"
+             className="btn w-100 mb-2"
+             style={{
+               background: "#4F4B7E",
+               color: "#fff",
+               border: "none",
+               fontSize: "14px",
+               transition: "background 0.2s",
+             }}
+             onClick={handleUpdate}
+             onMouseDown={(e) => (e.target.style.background = "#3e3a6a")}
+             onMouseUp={(e) => (e.target.style.background = "#4F4B7E")}
+             onMouseLeave={(e) => (e.target.style.background = "#4F4B7E")}
+           >
+             UPDATE PROFILE
+         </button>
             ) : (
-              <button type="button" className="btn btn-success w-100 mb-2" onClick={handleSubmit}>
-                CREATE PROFILE
-              </button>
+              <button
+      type="button"
+      className="btn w-100 mb-2"
+      style={{
+        background: "#00B072",
+        color: "#fff",
+        border: "none",
+        fontSize: "14px",
+        transition: "background 0.2s",
+      }}
+      onClick={handleSubmit}
+      onMouseDown={(e) => (e.target.style.background = "#008e5e")}
+      onMouseUp={(e) => (e.target.style.background = "#00B072")}
+      onMouseLeave={(e) => (e.target.style.background = "#00B072")}
+    >
+      CREATE PROFILE
+    </button>
             )}
-            {isLoggedIn && (
-              <button type="button" className="btn btn-danger w-100" onClick={handleLogout}>
-                LOGOUT
-              </button>
-            )}
+          
+{isLoggedIn && (
+  <>
+   <button
+      type="button"
+      className="btn w-100"
+      style={{
+        color: "black",
+        border: "1px solid red",
+        fontSize: "14px",
+        background: "transparent",
+        transition: "background 0.2s",
+      }}
+      onClick={handleLogout}
+      onMouseDown={(e) => (e.target.style.background = "#ffe6e6")}
+      onMouseUp={(e) => (e.target.style.background = "transparent")}
+      onMouseLeave={(e) => (e.target.style.background = "transparent")}
+    >
+      LOGOUT
+  </button>
+   
+    {/* <button type="button" className="btn btn-outline-danger w-100" onClick={handlePermanentLogout}>
+      PERMANENT LOGOUT
+    </button> */}
+
+<button
+      type="button"
+      className="btn w-100 mb-2"
+      style={{
+        background: "#4F4B7E",
+        color: "#fff",
+        border: "none",
+        fontSize: "14px",
+        transition: "background 0.2s",
+      }}
+      onClick={handlePermanentLogout}
+      onMouseDown={(e) => (e.target.style.background = "#3e3a6a")}
+      onMouseUp={(e) => (e.target.style.background = "#D6D6D6")}
+      onMouseLeave={(e) => (e.target.style.background = "#4F4B7E")}
+    >
+      PERMANENT LOGOUT
+  </button>
+  </>
+)}
           </div>
         </form>
+        </div>
+
       </div>
     </div>
   );

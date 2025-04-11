@@ -6,31 +6,69 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaArrowLeft } from "react-icons/fa";
-
-import { FaRulerCombined, FaBed, FaUserAlt, FaCalendarAlt, FaRupeeSign } from 'react-icons/fa';
+import pic from '../../Assets/Default image_PP-01.png'; // Correct path
+import myImage from '../../Assets/Rectangle 766.png'; // Correct path
+import myImage1 from '../../Assets/Rectangle 145.png'; 
+import {FaCamera, FaEye , FaRulerCombined, FaBed, FaUserAlt, FaCalendarAlt, FaRupeeSign } from 'react-icons/fa';
 import { MdCall } from 'react-icons/md';
+
+
 const PropertyCard = ({ property , onRemove , onUndo }) => {
   const [properties, setProperties] = useState([]);
 
+  const navigate=useNavigate();
+ 
+  const handleCardClick = () => {
+    if (property?.ppcId) {
+      navigate(`/detail/${property.ppcId}`);
+    }
+  };
+
  
   
+  // return (
+  //   <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background: "#EFEFEF" }}>
+    
   return (
-    <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background: "#EFEFEF" }}>
+    <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background: "#EFEFEF" }}
+      onClick={handleCardClick}
+    >
     <div className="col-md-4 col-4 d-flex flex-column justify-content-between align-items-center">
       <div className="text-white py-1 px-2 text-center" style={{ width: '100%', background: "#2F747F" }}>
         PUC- {property.ppcId}
       </div>
-      <div style={{ position: "relative", width: "100%", height: '160px' }}>
+      {/* <div style={{ position: "relative", width: "100%", height: '160px' }}>
         <img
-          src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : "default.jpg"}
+          src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : "default.jpg"}
           alt="Property"
           className="img-fluid"
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-      </div>
+      </div> */}
+
+<div style={{ position: "relative", width: "100%", height:'160px'}}>
+            <img
+                                        src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic}
+                                        alt="Property"
+                                        className="img-fluid"
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                      />
+          
+          <div >
+          <div className="d-flex justify-content-between w-100" style={{ position: "absolute",
+          bottom: "0px"}}>
+          <span className="d-flex justify-content-center align-items-center" style={{ color:'#fff', background:`url(${myImage}) no-repeat center center`, backgroundSize:"cover" ,fontSize:'12px', width:'50px' }}>
+          <FaCamera className="me-1"/> 1
+          </span>
+          <span className="d-flex justify-content-center align-items-center" style={{ color:'#fff', background:`url(${myImage1}) no-repeat center center`, backgroundSize:"cover" ,fontSize:'12px', width:'50px' }}>
+          <FaEye className="me-1" />1
+          </span>
+          </div>
+          </div>
+          </div>
     </div>
-    <div className="col-md-8 col-8 ps-2">
-      <div className="d-flex justify-content-between">
+    <div className="col-md-8 col-8" style={{paddingLeft:"10px", background:"#F5F5F5"}}>
+    <div className="d-flex justify-content-between">
         <p className="m-0" style={{ color: '#5E5E5E', fontWeight: 'normal' }}>
           {property.propertyMode || 'N/A'}
         </p>
@@ -52,33 +90,37 @@ const PropertyCard = ({ property , onRemove , onUndo }) => {
       <p className='m-0' style={{ color: '#5E5E5E' }}>{property.city || 'N/A'}</p>
       <div className="card-body ps-2 m-0 pt-0 pe-2 d-flex flex-column justify-content-center">
       <div className="row">
-        <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                       <div className="col-6 d-flex align-items-center  p-1">
           <FaRulerCombined className="me-2" color="#2F747F" />
           <span style={{ fontSize: '13px', color: '#5E5E5E', fontWeight: 'medium' }}>
             {property.totalArea || 'N/A'}
           </span>
         </div>
-        <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                       <div className="col-6 d-flex align-items-center  p-1">
           <FaBed className="me-2" color="#2F747F" />
           <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
-            {property.bedrooms || 'N/A'}
+            {property.bedrooms || 'N/A'}BHK
           </span>
         </div>
-        <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                       <div className="col-6 d-flex align-items-center  p-1">
           <FaUserAlt className="me-2" color="#2F747F" />
           <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
-            {property.ownership || 'N/A'}
+            {property.postedBy || 'N/A'}
           </span>
         </div>
-        <div className="col-6 d-flex align-items-center mt-1 mb-1">
-          <FaCalendarAlt className="me-2" color="#2F747F" />
-          <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
-            {property.bestTimeToCall || 'N/A'}
-          </span>
-        </div>
+        <div className="col-6 d-flex align-items-center  p-1">
+        <FaCalendarAlt className="me-2" color="#2F747F"/> 
+                            <span style={{ fontSize:'13px', color:'#5E5E5E', fontWeight: 500 }}>
+                              {property.createdAt ? new Date(property.createdAt).toLocaleDateString('en-IN', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric'
+                              }) : 'N/A'}
+                            </span>     
+                            </div>    
 
-        <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
-          <h6 className="m-0">
+                            <div className="col-12 d-flex flex-col align-items-center p-1">
+                            <h6 className="m-0">
             <span style={{ fontSize: '17px', color: '#2F747F', fontWeight: 'bold', letterSpacing: "1px" }}>
               <FaRupeeSign className="me-2" color="#2F747F" />
               {property.price ? property.price.toLocaleString('en-IN') : 'N/A'}
@@ -89,20 +131,15 @@ const PropertyCard = ({ property , onRemove , onUndo }) => {
           </h6>
         </div>
 
-        <p style={{ color: "#2E7480", margin: "0px" }}>
-          <a href={`tel:${property.postedUserPhoneNumber}`} style={{ textDecoration: 'none', color: '#2E7480' }}>
+        <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
+        <a href={`tel:${property.postedUserPhoneNumber}`} style={{ textDecoration: 'none', color: '#2E7480' }}>
             <MdCall className="me-2" color="#2F747F" /> {property.postedUserPhoneNumber || 'N/A'}
           </a>
         </p>
       </div>
-
-      <div className="d-flex justify-content-between mt-2">
- 
-      </div>
-      <p>{property.status || 'N/A'}</p>
     </div>
     </div>
-
+<div className='text-center' style={{border:"2px solid #2F747F", borderRadius:"0px 0px 15px 15px",  overflow: "hidden", fontSize:"14px", color:"grey"}}>{property.status || 'N/A'} : <span>  {property.createdAt ? new Date(property.createdAt).toLocaleDateString('en-IN') : 'N/A'} </span></div>
   </div>
   
   );
@@ -113,7 +150,7 @@ const PhotoRequestOwner = ({ properties, onRemove }) => {
   
   return (
     <div className="container">
-      <div className="row mt-4 rounded-4">
+      <div className="row rounded-4 p-1">
         {filteredProperties.map((property) => (
           <PropertyCard key={property.ppcId} property={property} onRemove={onRemove} />
         ))}
@@ -126,8 +163,8 @@ const RemovedProperties = ({ removedProperties, onUndo }) => {
 
   return (
     <div className="container">
-      <div className="row mt-4 rounded-4">
-        {removedProperties.map((property) => (
+      <div className="row rounded-4 p-1">
+      {removedProperties.map((property) => (
           <PropertyCard key={property.ppcId} property={property} onUndo={onUndo} />
         ))}
       </div>
@@ -239,7 +276,7 @@ const handlePageNavigation = () => {
   navigate('/mobileviews'); // Redirect to the desired path
 };
   return (
-    <div style={{ maxWidth: '500px', margin: 'auto' }}>
+    <div style={{ maxWidth: '500px', margin: 'auto', background:"#F7F7F7" , fontFamily: 'Inter, sans-serif' }}>
       <Tab.Container activeKey={activeKey} onSelect={(key) => setActiveKey(key)}>
         <Row className="g-3">
           <Col lg={12} className="d-flex flex-column align-items-center">
@@ -248,12 +285,12 @@ const handlePageNavigation = () => {
         </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}>PHOTO REQUEST OWNER </h3> </div>
             <Nav variant="tabs" className="mb-3" style={{ width: '100%' }}>
               <Nav.Item style={{ flex: '1' }}>
-                <Nav.Link eventKey="All" style={{ backgroundColor: '#4F4B7E', color: 'white', textAlign: 'center' }}>
+                <Nav.Link eventKey="All" style={{ backgroundColor: '#30747F', color: 'white', textAlign: 'center' }}>
                   All
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item style={{ flex: '1' }}>
-                <Nav.Link eventKey="removed" style={{ backgroundColor: '#FF0000', color: 'white', textAlign: 'center' }}>
+                <Nav.Link eventKey="removed" style={{ backgroundColor: '#FFFFFF', color: 'grey', textAlign: 'center' }}>
                   Removed
                 </Nav.Link>
               </Nav.Item>

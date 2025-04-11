@@ -10,6 +10,17 @@ import { useNavigate } from "react-router-dom";
 const RemovedProperty = () => {
   const phoneNumber = localStorage.getItem("phoneNumber"); // Get phone number from localStorage
   const [removedUsers, setRemovedUsers] = useState([]); // Store deleted properties
+    const [message, setMessage] = useState("");
+      const [propertyUsers, setPropertyUsers] = useState([]);
+    
+  
+    useEffect(() => {
+      if (message) {
+        const timer = setTimeout(() => setMessage(""), 3000); // Auto-close after 3 seconds
+        return () => clearTimeout(timer); // Cleanup timer
+      }
+    }, [message]);
+    
 
   // Fetch removed properties when component loads
   useEffect(() => {
@@ -33,7 +44,7 @@ const RemovedProperty = () => {
     }
   };
 
-  // Undo delete property
+  
   const handleUndo = async (ppcId) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/undo-delete`, {
@@ -42,12 +53,12 @@ const RemovedProperty = () => {
       });
 
       if (response.status === 200) {
-        toast.success("Property restored successfully!");
-        setRemovedUsers((prev) => prev.filter((user) => user.ppcId !== ppcId)); // Remove from removed list
+        setMessage("Property status reverted successfully!");
+        setRemovedUsers((prev) => prev.filter((user) => user.ppcId !== ppcId));
+        setPropertyUsers((prev) => [...prev, { ...response.data.user }]);
       }
     } catch (error) {
-      toast.error("Error undoing property deletion.");
-      console.error("Undo Error:", error);
+      setMessage("Error undoing property status.");
     }
   };
 
@@ -59,7 +70,11 @@ const RemovedProperty = () => {
   };
 
   return (
-    <Container fluid className="p-3 my-3" style={{ maxHeight: "60vh", width: "480px" }}>
+    <div className="container d-flex align-items-center justify-content-center p-0" style={{fontFamily:"Inter, sans-serif",}}>
+     
+     <div className="d-flex flex-column align-items-center justify-content-center m-0" style={{ maxWidth: '500px', margin: 'auto', width: '100%' }}>
+     
+     
       <Helmet>
         <title>Pondy Property | Removed Properties</title>
       </Helmet>
@@ -67,13 +82,19 @@ const RemovedProperty = () => {
           <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
             <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
           </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}>Removed Properties </h3> </div>
+
+          <div className="fw-bold">
+      {message && <div className="alert text-success text-bold">{message}</div>}
+      {/* Your existing component structure goes here */}
+    </div>
     
+          <div className="row g-2 w-100">
 
       {removedUsers.length > 0 ? (
         removedUsers.map((user) => (
           <div
             key={user._id}
-            className="card mb-3 shadow p-1"
+            className="card mb-2 mt-3 shadow p-1"
             style={{ width: "100%", minWidth: "400px", background: "#F9F9F9" }}
           >
             <div className="row g-0">
@@ -147,8 +168,10 @@ const RemovedProperty = () => {
           <p>No Removed Property Data Found.</p>
         </div>
       )}
-    </Container>
-  );
+       </div> 
+
+ </div> 
+ </div> );
 };
 
 export default RemovedProperty;

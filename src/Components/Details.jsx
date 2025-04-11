@@ -1,7 +1,8 @@
 
 
+
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -9,7 +10,7 @@ import "swiper/css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { BiBed, BiBath, BiCar, BiMap, BiCalendar, BiUser, BiCube } from "react-icons/bi";
 import { AiOutlineEye, AiOutlineColumnWidth, AiOutlineColumnHeight } from "react-icons/ai";
-import { MdOutlineCurrencyRupee, MdElevator, MdOutlineChair } from "react-icons/md";
+import { MdOutlineCurrencyRupee, MdElevator, MdOutlineChair, MdCall } from "react-icons/md";
 import { TbArrowLeftRight } from "react-icons/tb";
 import { BsGraphUp, BsBank } from "react-icons/bs";
 import "swiper/css/navigation";
@@ -17,9 +18,11 @@ import "swiper/css/pagination";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import { RiLayoutLine } from "react-icons/ri";
-import { FaFacebook, FaRegHeart , FaLinkedin, FaPhone, FaRupeeSign, FaShareAlt, FaTwitter, FaUserAlt, FaWhatsapp, FaHeart, FaArrowLeft } from "react-icons/fa";
+import { FaFacebook, FaRegHeart , FaLinkedin, FaPhone, FaRupeeSign, FaShareAlt, FaTwitter, FaUserAlt, FaWhatsapp, FaHeart, FaArrowLeft, FaClock, FaUser, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 import icon1 from '../Assets/ico_interest_xd.png';
 import icon2 from '../Assets/ico_report_soldout_xd.png';
+import icon4 from '../Assets/Shortlist Bike-01.png';
+
 import icon3 from '../Assets/help1.png';
 // import contact from '../Assets/contact.png';
 import {  FaBalanceScale, FaFileAlt, FaGlobeAmericas, FaMapMarkerAlt, FaDoorClosed, FaMapSigns } from "react-icons/fa";
@@ -32,14 +35,24 @@ import contact from '../Assets/contact.png';
 import { toast, ToastContainer } from "react-toastify";
 // import { ToWords } from 'to-words';
 
-
+import promotion from '../Assets/PUC_App Promotion_2.png'
 import { ToWords } from 'to-words';
 
-
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  LinkedinShareButton,
+  FacebookIcon,
+  TwitterIcon,
+  WhatsappIcon,
+  LinkedinIcon,
+} from "react-share";
 
 const Details = () => {
   const [imageError, setImageError] = useState({});
-  
+  const [showOptions, setShowOptions] = useState(false);
+
   const handleImageError = (index) => {
     setImageError((prev) => ({ ...prev, [index]: true }));
   };
@@ -71,7 +84,9 @@ const Details = () => {
   const [interestClicked, setInterestClicked] = useState(false);
 
   const location = useLocation();
-  const { ppcId, phoneNumber } = location.state || {};
+  const { ppcId } = useParams();
+
+  const {  phoneNumber } = location.state || {};
   const [price, setPrice] = useState("");
   const [properties, setProperties] = useState([]);
   
@@ -80,36 +95,13 @@ const Details = () => {
   );
   // const [offerPrice, setofferPrice] = useState("");
   const [viewCount, setViewCount] = useState(0);
-  const [isFavorite, setIsFavorite] = useState(false);
-
 
   const [isHeartClicked, setIsHeartClicked] = useState(() => {
     // Check if there's a saved state in localStorage for this ppcId
     const storedState = localStorage.getItem(`isHeartClicked-${ppcId}`);
+    console.log(`Initializing state for ppcId ${ppcId}:`, storedState);
     return storedState ? JSON.parse(storedState) : false;
   });
-
-  const [favoriteAdded, setFavoriteAdded] = useState([]);
-  const [favoriteRemoved, setFavoriteRemoved] = useState([]);
-
-  useEffect(() => {
-      if (!phoneNumber) return;
-
-      const fetchFavoriteHistory = async () => {
-          try {
-              const response = await axios.get(`${process.env.REACT_APP_API_URL}/favorite-history/${phoneNumber}`);
-              const { favoriteAdded, favoriteRemoved } = response.data;
-
-              setFavoriteAdded(favoriteAdded);
-              setFavoriteRemoved(favoriteRemoved);
-          } catch (error) {
-              console.error("Error fetching favorite history:", error.response?.data?.message || error.message);
-          }
-      };
-
-      fetchFavoriteHistory();
-  }, [phoneNumber]); // Runs whenever phoneNumber changes
-
 
 
   const navigate = useNavigate();
@@ -122,10 +114,13 @@ const Details = () => {
     }
   }, [ppcId]);
 
+  
 //    // State to track if each action has been completed
 //  const [interestClicked, setInterestClicked] = useState(
 //   JSON.parse(localStorage.getItem(`interestSent-${ppcId}`)) || false
 // );
+
+
 const [soldOutClicked, setSoldOutClicked] = useState(
   JSON.parse(localStorage.getItem(`soldOutReported-${ppcId}`)) || false
 );
@@ -309,9 +304,9 @@ useEffect(() => {
   useEffect(() => {
     // Ensure propertyDetails is not null or undefined before accessing `video`
     if (propertyDetails?.video) {
-      setVideoUrl(`http://localhost:5006/${propertyDetails.video}`);
+      setVideoUrl(`http://localhost:5000/${propertyDetails.video}`);
     } else {
-      setVideoUrl("http://localhost:5006/default-video-url.mp4"); // Fallback to a default video
+      setVideoUrl("http://localhost:5000/default-video-url.mp4"); // Fallback to a default video
     }
     console.log('Video URL:', videoUrl); // For debugging
   }, [propertyDetails?.video]); // Runs when `propertyDetails.video` changes
@@ -336,6 +331,35 @@ useEffect(() => {
   const closeModal = () => setShowModal(false);
 
 
+  // const handleOwnerContactClick = async () => {
+  //   try {
+  
+  //     if (!phoneNumber || !ppcId) {
+  //       setMessage("Phone number and Property ID are required.");
+  //       return;
+  //     }
+  
+  //     // Send data to the backend to request owner contact details
+  //     const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+  //       phoneNumber,
+  //       ppcId,
+  //     });
+  
+  //     // Get the postedUserPhoneNumber from the response
+  //     const postedUserPhoneNumber = response.data.postedUserPhoneNumber;
+  
+  //     // Handle the response message and display the property owner's phone number
+  //     setMessage(`Owner's Phone: ${postedUserPhoneNumber}`);
+  //     setPostedUserPhoneNumber(postedUserPhoneNumber); // Save the phone number for later use/display
+  //     // setShowOwnerContact(true);  
+
+  //     toggleContactDetails(); 
+  //   } catch (error) {
+  //     setMessage("Failed to fetch owner contact details.");
+  //   }
+  // };
+
+ 
 
   const toggleContactDetails = () => {
     setShowContactDetails(prevState => !prevState);
@@ -385,8 +409,8 @@ useEffect(() => {
         { icon: <MdOutlineKitchen />, label: "Kitchen Type", value: propertyDetails.kitchenType },
         { icon: <GiWindow />, label: "Balconies", value: propertyDetails.balconies},
         { icon: <BiCube />, label: "Floors", value: propertyDetails.numberOfFloors },
-    { label: "western", value: propertyDetails.western, icon: <BiBath /> },
-    { label: "attached", value: propertyDetails.attachedBathrooms, icon: <BiBath /> },
+    { label: "Western", value: propertyDetails.western, icon: <BiBath /> },
+    { label: "Attached", value: propertyDetails.attachedBathrooms, icon: <BiBath /> },
 
         { icon: <BiCar />, label: "Car Park", value: propertyDetails.carParking },
         { icon: <MdElevator />, label: "Lift", value: propertyDetails.lift },
@@ -403,7 +427,7 @@ useEffect(() => {
         { heading: true, label: "Description"  }, // Heading 3
         { icon: <FaFileAlt />, label: "Description" ,value: propertyDetails.description },
       
-        // { heading: true, label: "Property Location Info" }, // Heading 4
+        { heading: true, label: "Property Location " }, // Heading 4
       
         // { icon: <BiMap />, label: "Location", value: "New York, USA" },
         { icon: <FaGlobeAmericas />, label: "Country", value: propertyDetails.country },
@@ -411,12 +435,43 @@ useEffect(() => {
         { icon: <MdLocationCity />, label: "City", value: propertyDetails.city },
         { icon: <FaMapMarkerAlt />, label: "District", value:  propertyDetails.district},
         { icon: <FaMapSigns />, label: "Nagar", value: propertyDetails.nagar },
-        { icon: <FaDoorClosed />, label: "Door Number", value: propertyDetails.doorNumber },
+        { icon: <FaMapMarkerAlt />, label: "Area", value: propertyDetails.area },
         { icon: <BiStreetView />, label: "Street Name", value: propertyDetails.streetName },
+
+        { icon: <FaDoorClosed />, label: "Door Number", value: propertyDetails.doorNumber },
 
        
       ];
 
+
+
+
+
+// const handleInterestClick = async () => {
+//   if (!phoneNumber || !ppcId) {
+//     setMessage("Phone number and Property ID are required.");
+//     return;
+//   }
+
+//   try {
+//     const response = await axios.post(`${process.env.REACT_APP_API_URL}/send-interests`, {
+//       phoneNumber,
+//       ppcId,
+//     });
+
+//     const { message, status } = response.data;
+
+//     if (status === "sendInterest") {
+//       setMessage("Interest sent successfully!");
+//       setInterestClicked(true);
+//       localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true));
+//     } else if (status === "alreadySaved") {
+//       setMessage("Interest already recorded for this property.");
+//     }
+//   } catch (error) {
+//     setMessage(error.response?.data?.message || "Something went wrong.");
+//   }
+// };
 
 const handleOwnerContactClick = async () => {
   try {
@@ -455,15 +510,49 @@ const handleOwnerContactClick = async () => {
 };
 
 
+// const handleInterestClick = async () => {
+//   if (!phoneNumber || !ppcId) {
+//     setMessage("Phone number and Property ID are required.");
+//     return;
+//   }
+
+//   // Prevent clicking if already sent
+//   if (interestClicked) {
+//     setMessage("Interest already recorded for this property.");
+//     return;
+//   }
+
+//   try {
+//     const response = await axios.post(`${process.env.REACT_APP_API_URL}/send-interests`, {
+//       phoneNumber,
+//       ppcId,
+//     });
+
+//     const { message, status } = response.data;
+
+//     if (status === "sendInterest") {
+//       setMessage("Interest sent successfully!");
+//       setInterestClicked(true);
+//       localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true)); // Store interest status
+//     } else if (status === "alreadySaved") {
+//       setMessage("Interest already recorded for this property.");
+//       setInterestClicked(true); // Update UI immediately
+//     }
+//   } catch (error) {
+//     setMessage(error.response?.data?.message || "Something went wrong.");
+//   }
+// };
+
 const handleInterestClick = async () => {
   if (!phoneNumber || !ppcId) {
     setMessage("Phone number and Property ID are required.");
     return;
   }
 
-  // Prevent clicking if already sent
-  if (interestClicked) {
+  // Prevent multiple clicks
+  if (interestClicked || localStorage.getItem(`interestSent-${ppcId}`)) {
     setMessage("Interest already recorded for this property.");
+    setInterestClicked(true);
     return;
   }
 
@@ -478,15 +567,18 @@ const handleInterestClick = async () => {
     if (status === "sendInterest") {
       setMessage("Interest sent successfully!");
       setInterestClicked(true);
-      localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true)); // Store interest status
+      localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true));
     } else if (status === "alreadySaved") {
       setMessage("Interest already recorded for this property.");
-      setInterestClicked(true); // Update UI immediately
+      setInterestClicked(true);
     }
   } catch (error) {
-    setMessage(error.response?.data?.message || "Something went wrong.");
+    const errMsg = error.response?.data?.message || "Something went wrong.";
+    setMessage(errMsg);
+    console.error("Interest Error:", error);
   }
 };
+
 
 const handleReportSoldOut = async () => {
   if (!phoneNumber || !ppcId) {
@@ -586,6 +678,41 @@ const confirmActionHandler = (actionType, actionMessage) => {
   });
 };
 
+// Define card data dynamically
+// const cards = [
+//   {
+//     img: icon1,
+//     text: interestClicked ? "Interest Sent" : "Send Your Interest",
+//   //   onClick: () =>
+//   //     !interestClicked && confirmActionHandler(handleInterestClick, "Are you sure you want to send interest?"),
+//   // },
+//   onClick: () => {
+//     if (interestClicked) {
+//       setMessage("Your interest is already sent."); // Show message instead of opening popup
+//       return;
+//     }
+//     confirmActionHandler(handleInterestClick, "Are you sure you want to send interest?");
+//   },
+// },
+//   {
+//     img: icon2,
+//     text: soldOutClicked ? "Sold Out Reported" : "Report Sold Out",
+//     onClick: () =>
+//       !soldOutClicked && confirmActionHandler(handleReportSoldOut, "Are you sure you want to report this property as sold out?"),
+//   },
+//   {
+//     img: icon2,
+//     text: propertyClicked ? "Property Reported" : "Report Property",
+//     onClick: () =>
+//       !propertyClicked && confirmActionHandler(handleReportProperty, "Are you sure you want to report this property?"),
+//   },
+//   {
+//     img: icon3,
+//     text: helpClicked ? "Help Requested" : "Need Help",
+//     onClick: () =>
+//       !helpClicked && confirmActionHandler(handleNeedHelp, "Are you sure you need help?"),
+//   },
+// ];
 
 const cards = [
   {
@@ -611,7 +738,7 @@ const cards = [
     },
   },
   {
-    img: icon2,
+    img: icon4,
     text: propertyClicked ? "Property Reported" : "Report Property",
     onClick: () => {
       if (propertyClicked) {
@@ -633,6 +760,9 @@ const cards = [
     },
   },
 ];
+
+
+
 
 
 const handleHeartClick = async () => {
@@ -725,12 +855,23 @@ const priceInWords = propertyDetails && propertyDetails.price
 const handlePageNavigation = () => {
   navigate('/mobileviews'); // Redirect to the desired path
 };
-  
+
+
+  const toggleShareOptions = () => {
+    setShowOptions(!showOptions);
+  };
+const currentUrl = `${window.location.origin}${location.pathname}`; // <- Works for localhost or live
+
   return (
-    <div
-      className="container mt-4 p-4"
+    <div className="container d-flex align-items-center justify-content-center p-0">
+
+    {/* <div
+      className="container"
       style={{ fontFamily: "Inter, sans-serif", height: "100vh", width: "450px" }}
-    >
+    > */}
+            <div className="d-flex flex-column align-items-center justify-content-center m-0" style={{fontFamily: "Inter, sans-serif", maxWidth: '500px', margin: 'auto', width: '100%' }}>
+            <div className="row g-2 w-100">
+
             <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
         <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
       </button> <h3 className="m-0 ms-3" style={{fontSize:"15px"}}>DETAIL PROPERTY</h3> </div>
@@ -825,8 +966,9 @@ const handlePageNavigation = () => {
             />
            
 <button
-  className="btn btn-danger"
+  className="btn"
   style={{
+    border:"none",
     position: "absolute",
     bottom: "10px",
     right: "10px",
@@ -834,7 +976,8 @@ const handlePageNavigation = () => {
     fontSize: "14px",
     cursor: "pointer",
     zIndex: 10,
-    background: photoRequested ? "#28a745" : "#dc3545", // Green if already requested
+    color:"#ffffff",
+    background: photoRequested ? "#3F61D8" : "#34ACD6", // Green if already requested
   }}
   onClick={!photoRequested ? handlePhotoRequest : null} // Disable re-clicking
 >
@@ -885,61 +1028,110 @@ const handlePageNavigation = () => {
   </div>
 </div>
 
-        <p className="text-start" style={{ color: "black" }}>
+        <p className="text-start m-0" style={{ color: "black" , fontSize:"18px" , paddingLeft:"10px"}}>
        <strong>{propertyDetails.propertyMode} |  {propertyDetails.propertyType}</strong>  
         </p>
          <h6
-        className="p-2 mt-3"
+        className="p-2 mt-3 "
         style={{
           backgroundColor: "rgb(47,116,127)",
                     color: "white",
                     borderRadius: "5px",
                     width: "27%",
-                    fontSize:'12px'
+                    fontSize:'12px',
+                    marginLeft:"10px"
         }}
       >
         PPC_ID : {propertyDetails.ppcId}
       </h6>
-      <div className="d-flex justify-content-between align-items-center">
-      <p style={{
+      <div className="d-flex justify-content-between align-items-center" style={{    paddingLeft:"10px",
+    paddingRight:"10px"}}>
+      <p className="m-0  " style={{
     color: "#4F4B7E",
     fontWeight: 'bold',
-    fontSize: "26px"
+    fontSize: "16px",
+
   }}>
     <MdOutlineCurrencyRupee size={26} /> {formattedPrice}
     <span style={{ fontSize: '14px', color: "#30747F", marginLeft: "10px" }}>
        Negotiation: {propertyDetails.negotiation}
     </span>
   </p>
+
   {/* ({priceInWords})  */}
 
-        <div className="d-flex gap-3">
+        <div className="d-flex gap-3 position-relative">
           <FaShareAlt
             style={{ cursor: "pointer", fontSize: "20px", color: "#30747F" }}
-            onClick={handleShareClick}
+            // onClick={handleShareClick}
+            onClick={toggleShareOptions}
+             url={currentUrl}
+             title="Share this page"
           />
-          <FaHeart
-            style={{ cursor: "pointer", fontSize: "20px", color: isHeartClicked ? "red" : "#30747F" }}
-            onClick={handleHeartClick}
-          />
+  
+          {isHeartClicked ? (
+  <FaHeart 
+    style={{ cursor: "pointer", fontSize: "20px", color: "red" }} 
+    onClick={handleHeartClick} 
+  />
+) : (
+  <FaRegHeart 
+    style={{ cursor: "pointer", fontSize: "20px", color: "#30747F" }} 
+    onClick={handleHeartClick} 
+  />
+)}
+    {showOptions && (
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            padding: "10px",
+            position: "absolute",
+            background: "#fff",
+            border: "1px solid #ddd",
+            borderRadius: "8px",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            top: "40px",
+            right:"0px",
+            zIndex: 999,
+          }}
+        >
+          <FacebookShareButton url={currentUrl}>
+            <FacebookIcon size={32} round />
+          </FacebookShareButton>
+
+          <TwitterShareButton url={currentUrl} >
+            <TwitterIcon size={32} round />
+          </TwitterShareButton>
+
+          <WhatsappShareButton url={currentUrl} >
+            <WhatsappIcon size={32} round />
+          </WhatsappShareButton>
+
+          <LinkedinShareButton url={currentUrl}>
+            <LinkedinIcon size={32} round />
+          </LinkedinShareButton>
+        </div>
+      )}
+      
         </div>
       </div>
-      <p>({priceInWords})</p>
+      <p style={{paddingLeft:"10px", paddingRight:"10px"}}>({priceInWords})</p>
 
-        <h4 className="fw-bold mt-3">Make an offer</h4>
+        <h4 className="fw-bold mt-0" style={{fontSize:"15px",paddingLeft:"10px"}}>Make an offer</h4>
             <form onSubmit={handleSubmit} className="d-flex">
                
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
                      <FaRupeeSign style={{ position: 'absolute', left: '10px', color: '#30747F' }} />
                      <input 
                         type="number" 
-                        className="w-75 mt-2" 
+                        className="w-75 me-2 m-0 ms-2" 
                         placeholder="Make an offer" 
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
                         style={{ padding: "8px 12px 8px 30px", borderRadius: "4px", border: "1px solid #30747F", marginRight: "10px", width: "100%" }} 
                     />
-                    <button 
+                    <button className="m-0"
                         type="submit" 
                         style={{ padding: "8px 12px", borderRadius: "4px", border: "1px solid #30747F", backgroundColor: "#30747F", color: "#fff" }}
                     >
@@ -947,8 +1139,9 @@ const handlePageNavigation = () => {
                     </button>
                 </div>
             </form>
+            <div className="container d-flex justify-content-center">
 
-      <div className="row g-3 mt-3">
+      <div className="row g-3 mt-0 w-100">
 
 {propertyDetailsList.map((detail, index) => {
 // Check if it's a heading, which should always be full-width (col-12)
@@ -956,7 +1149,7 @@ if (detail.heading) {
   return (
     <div key={index} className="col-12">
       <h4
-        className="mb-3 fw-bold"
+        className="m-0 fw-bold"
         style={{ color: "#000000", fontFamily: "Inter, sans-serif", fontSize: "16px" }}
       >
         {detail.label}
@@ -974,11 +1167,11 @@ const columnClass = isDescription ? "col-12" : "col-6";
 return (
   <div key={index} className={columnClass}>
     <div
-      className="d-flex align-items-center border rounded p-1 mb-1"
+      className="d-flex align-items-center border-0 rounded p-1 mb-1"
       style={{
-        backgroundColor: "#F9F9F9", // Background for the item
+        // backgroundColor: "#F9F9F9", // Background for the item
         width: "100%",
-        height: isDescription ? "auto" : "100px",
+        height: isDescription ? "auto" : "55px",
         wordBreak: "break-word",
         // height: detail.label === "Description" || detail.value === formData.description ? "auto" : "100px", // Full height for description
       }}
@@ -987,12 +1180,15 @@ return (
         {detail.icon} 
       </span>
       <div>
-      {!isDescription && <h6 className="mb-1">{detail.label || "N/A"}</h6>}  {/* ✅ Hide label for description */}
+      {!isDescription && <span className="mb-1" style={{fontSize:"12px", color:"grey"}}>{detail.label || "N/A"}</span>}  {/* ✅ Hide label for description */}
 
       {/* <h6 className="mb-1">{isDescription ? "Description" : detail.label || "N/A"}</h6> */}
         <p
           className="mb-0 p-0"
           style={{
+            fontSize:"14px",
+            color:"grey",
+            fontWeight:"600",
             padding: "10px",
             borderRadius: "5px",
             width: "100%", // Ensure the value takes full width
@@ -1005,20 +1201,20 @@ return (
   </div>
 );
 })}
-<div>
+{/* <div>
       <h5 className="pt-3 fw-bold"> Video </h5>
       <video width="100%" height="auto" controls>
         <source src="path_to_your_video.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-    </div>
+    </div> */}
 
       {/* Contact Info Section */}
       <h5 className="pt-3 fw-bold">Contact Info</h5>
    
 
-<button 
-  className="btn rounded-1 p-2 text-center d-flex align-items-center" 
+<div 
+  className="btn rounded-1 p-2 text-center d-flex align-items-center justify-content-center" 
   style={{ background: 'transparent', border: '1px solid #30747F', color: '#30747F' }} 
   onClick={handleOwnerContactClick}
 >
@@ -1028,32 +1224,110 @@ return (
     style={{ width: '20px', height: '20px', marginRight: '8px' }} 
   />
   View owner contact details
-</button>
+</div>
       {showContactDetails && (
         <div className="mt-3">
-          <p style={{color:'red'}}><strong style={{color:'black'}}>Name:</strong> {propertyDetails.ownerName || "Not Available"}</p>
-          {/* <p><strong>Phone Number:</strong> {propertyDetails.phoneNumber || "Not Available"}</p> */}
+          {/* <p style={{color:'red'}}><strong style={{color:'black'}}>Name:</strong> {propertyDetails.ownerName || "Not Available"}</p>
           <p style={{color:'red'}}><strong style={{color:'black'}}>Phone Number:</strong> <a href={`tel:${propertyDetails.phoneNumber}`} style={{ color: "red", textDecoration: "none" }}>{propertyDetails.phoneNumber || "Not Available"}</a></p>
           <p style={{color:'red'}}><strong style={{color:'black'}}>Alternate Number:</strong> {propertyDetails.phoneNumber || "Not Available"}</p>
           <p style={{color:'red'}}><strong style={{color:'black'}}>email:</strong> {propertyDetails.email || "Not Available"}</p>
           <p style={{color:'red'}}><strong style={{color:'black'}}>Address:</strong> {propertyDetails.city || "Not Available"}</p>
           <p style={{color:'red'}}><strong style={{color:'black'}}>Best Time to Call:</strong> {propertyDetails.bestTimeToCall || "Not Available"}</p>
+        */}
+   <div className="row g-3">
 
-          <span className="d-flex justify-content-between align-items-center">
-  <button
+{/* Name */}
+<div className="col-6 d-flex align-items-center">
+  <FaUser style={{ fontSize: "16px", color: "#30747F", marginRight: "10px" }} />
+  <div>
+    <div style={{ fontSize: "13px", color: "grey" }}>Name</div>
+    <div style={{ fontSize: "15px", fontWeight: 600, color: "grey" }}>
+      {propertyDetails.ownerName || "N/A"}
+    </div>
+  </div>
+</div>
+
+{/* Email */}
+<div className="col-12 d-flex align-items-center">
+  <FaEnvelope style={{ fontSize: "16px", color: "#30747F", marginRight: "10px" }} />
+  <div>
+    <div style={{ fontSize: "13px", color: "grey" }}>Email</div>
+    <div style={{ fontSize: "15px", fontWeight: 600, color: "grey" }}>
+      {propertyDetails.email || "N/A"}
+    </div>
+  </div>
+</div>
+
+{/* Mobile */}
+<div className="col-6 d-flex align-items-center">
+  <FaPhoneAlt style={{ fontSize: "16px", color: "#30747F", marginRight: "10px" }} />
+  <div>
+    <div style={{ fontSize: "13px", color: "grey" }}>Mobile</div>
+    <div style={{ fontSize: "15px", fontWeight: 600, color: "grey" }}>
+      {propertyDetails.phoneNumber || "N/A"}
+    </div>
+  </div>
+</div>
+
+{/* Alternate Phone */}
+<div className="col-6 d-flex align-items-center">
+  <FaPhoneAlt style={{ fontSize: "16px", color: "#30747F", marginRight: "10px" }} />
+  <div>
+    <div style={{ fontSize: "13px", color: "grey" }}>Alternate Phone</div>
+    <div style={{ fontSize: "15px", fontWeight: 600, color: "grey" }}>
+      {/* {propertyDetails.alternatePhone || "N/A"} */}
+         <a
+                            href={`tel:${propertyDetails.alternatePhone}`}
+                            style={{
+                              textDecoration: "none",
+                              color: "#2E7480",
+                            }}
+                          >
+                            {propertyDetails.alternatePhone || "N/A"}
+                            </a>
+    </div>
+  </div>
+</div>
+
+{/* Address */}
+<div className="col-12 d-flex align-items-center">
+  <FaMapMarkerAlt style={{ fontSize: "16px", color: "#30747F", marginRight: "10px" }} />
+  <div>
+    <div style={{ fontSize: "13px", color: "grey" }}>Address</div>
+    <div style={{ fontSize: "15px", fontWeight: 600, color: "grey" }}>
+      {propertyDetails.rentalPropertyAddress || "N/A"}
+    </div>
+  </div>
+</div>
+
+{/* Best Time to Call */}
+<div className="col-12 d-flex align-items-center">
+  <FaClock style={{ fontSize: "16px", color: "#30747F", marginRight: "10px" }} />
+  <div>
+    <div style={{ fontSize: "13px", color: "grey" }}>Best Time to Call</div>
+    <div style={{ fontSize: "15px", fontWeight: 600, color: "grey" }}>
+      {propertyDetails.bestTimeToCall || "N/A"}
+    </div>
+  </div>
+</div>
+
+</div>
+
+          <span className="d-flex justify-content-end align-items-center">
+  {/* <button
     className="btn btn-link p-0"
     style={{ color: "#30747F", textDecoration: "underline" }}
     onClick={toggleContactDetails}
   >
     Show less
-  </button>
+  </button> */}
 
   <button
-    className="btn btn-outline-#30747F mt-2 d-flex align-items-center gap-2"
+    className="btn btn-outline-#30747F m-0 d-flex align-items-center gap-2"
     style={{ color: "white",backgroundColor:" #30747F", border: "1px solid #30747F" }}
     onClick={() => (window.location.href = `tel:${propertyDetails.phoneNumber}`)}
   >
-    <FaPhone /> Call
+    <FaPhoneAlt /> Call
   </button>
 </span>
         </div>
@@ -1141,41 +1415,39 @@ return (
     >
       <p>{popupMessage}</p>
       <button
+              className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+
         onClick={() => {
           confirmAction();
           setShowPopup(false);
         }}
-        style={{
-          margin: "10px",
-          padding: "8px 15px",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          fontSize: "14px",
-          background: "#28a745", // Green button
-          color: "white",
-        }}
+        style={{ background:  "#2F747F", width: "80px", fontSize: "13px" }}
+
       >
         Yes
       </button>
       <button
+              className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+
         onClick={() => setShowPopup(false)}
-        style={{
-          margin: "10px",
-          padding: "8px 15px",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-          fontSize: "14px",
-          background: "#dc3545", // Red button
-          color: "white",
-        }}
+        style={{ background:  "#FF0000", width: "80px", fontSize: "13px" }}
+
       >
         No
       </button>
     </div>
   </div>
 )}
+{/* 
+     {showPopup && (
+  <div className="popup">
+    <div className="popup-content">
+      <p>{popupMessage}</p>
+      <button onClick={() => { confirmAction(); setShowPopup(false); }}>Yes</button>
+      <button onClick={() => setShowPopup(false)}>No</button>
+    </div>
+  </div>
+)} */}
 
 
 {message && (
@@ -1201,10 +1473,17 @@ return (
 
 
     </div>
-    <ToastContainer />
     </div>
+
+    <ToastContainer />
+   <img src={promotion} alt="" className="p-4 m-0" />
+    </div>
+    </div>
+    </div>
+
   );
 };
 
 export default Details;
+
 

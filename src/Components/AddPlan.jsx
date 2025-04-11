@@ -73,20 +73,6 @@ const createOrUpdatePlan = async () => {
         });
     };
 
-    // const createOrUpdatePlan = async () => {
-    //     try {
-    //         if (editingPlanId) {
-    //             await axios.put(`${process.env.REACT_APP_API_URL}/update-plan-data/${editingPlanId}`, formData);
-    //         } else {
-    //             await axios.post(`${process.env.REACT_APP_API_URL}/store-plan`, formData);
-    //         }
-    //         fetchPlans();
-    //         resetForm();
-    //     } catch (error) {
-    //         console.error(`Error ${editingPlanId ? 'updating' : 'creating'} plan`, error);
-    //     }
-    // };
-
     const handleEdit = (plan) => {
         setFormData(plan);
         setEditingPlanId(plan._id);

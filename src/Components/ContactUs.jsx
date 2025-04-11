@@ -1,15 +1,20 @@
 
 
-import React, { useState } from 'react';
-import { FaEnvelope, FaGlobe, FaUser, FaPhone, FaArrowLeft } from 'react-icons/fa';
-import { BiSolidMessageSquareDetail } from "react-icons/bi";
-import logo from '../Assets/Sale Property-01.png'
-import homeup from '../Assets/homeup.jpg'
-import { WhatsApp } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 
-const ContactUsApp = () => {
+
+
+import React, { useState } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { FaEnvelope, FaPhone, FaUser } from "react-icons/fa";
+import { BiSolidMessageSquareDetail } from "react-icons/bi";
+import onlinPay from '../Assets/online_pay.jpeg'
+
+
+const ContactedPage = () => {
+  const [captcha, setCaptcha] = useState("B7C4I9j");
+
   const navigate = useNavigate();
   const [responseMessage, setResponseMessage] = useState('');
     const [error, setError] = useState('');
@@ -21,7 +26,6 @@ const ContactUsApp = () => {
       phoneNumber: '',
       message: ''
     });
-    const { phoneNumber } = useParams(); // Get mobile number from URL
 
   
     // State for handling response messages
@@ -41,7 +45,7 @@ const handleSubmit = async (e) => {
     if (response.status === 201) {
       setResponseMessage('Contact form submitted successfully!');
       setError('');
-      setFormData({ name: '', email: '', phoneNumber: phoneNumber, message: '' }); // Reset form
+      setFormData({ name: '', email: '', phoneNumber: '', message: '' }); // Reset form
     }
   } catch (error) {
     if (error.response) {
@@ -54,96 +58,34 @@ const handleSubmit = async (e) => {
   }
 };
 
-  const cardData = [
-    {
-      id: 1,
-      imgSrc: logo,
-      title: 'Pondy Property',
-    //   text: 'This is the content for Card 1.',
-    },
-    {
-      id: 2,
-      icon: <FaEnvelope size={50} color='grey' />,
-      title: 'Email',
-      text: 'info@ppcpondy.com',
-    },
-    {
-      id: 3,
-      icon: <FaGlobe size={50} color='grey' />,
-      title: 'Website',
-      text: 'Visit: www.ppcpondy.com',
-    },
-    {
-      id: 4,
-      imgSrc: homeup,
-      title: 'Main Office',
-      text: 'No.89, Aurobindo Street, M.G Road Junction, Puducherry-605001',
-      title2: 'Branch Office',
-      text2: 'No.64, Saint Therese Street, (Opposite Road To Pothys), Puducherry-605001',
-      text3: "Mobile: +91 8111022255",
-    text4: 'WhatsApp : +91 8111022255',
-    text5:'Land Line: 0413 2222244',
-
-    },
-  ];
+  const refreshCaptcha = () => {
+    const newCaptcha = Math.random().toString(36).substring(2, 8).toUpperCase();
+    setCaptcha(newCaptcha);
+  };
 
   return (
-    <div
-      className="d-flex flex-column mx-auto custom-scrollbar"
-      style={{
-        maxWidth: '450px',
-        height: '100vh',
-        overflow: 'auto',
-        scrollbarWidth: 'none', /* For Firefox */
-        msOverflowStyle: 'none', /* For Internet Explorer */
-        fontFamily: 'Inter, sans-serif'
-      }}
-    >
-    <div className="d-flex align-items-center justify-content-start w-100 pt-2 pb-2" style={{background:"#EFEFEF" }}>
-              <button className="pe-5" onClick={() => navigate('/mobileviews')}><FaArrowLeft color="#30747F"/> 
-            </button> <h3 className="m-0 ms-3" style={{fontSize:"15px", fontWeight:"bold"}}>CONTACT US</h3> </div>
-        <h4>Contact Us</h4>
-      {/* Cards Section */}
-      <div className="mb-4">
-        {cardData.map((card) => (
-          <div className="card mb-3 shadow" key={card.id}>
-            <div className="row g-0">
-              {/* Image/Icon */}
-              <div className="col-4 d-flex justify-content-center align-items-center">
-                {card.icon ? (
-                  card.icon
-                ) : (
-                  <img
-                    style={{height:'50px'}}               
-                    src={card.imgSrc}
-                    className="img-fluid rounded-start"
-                    alt={`Card ${card.id}`}
-                  />
-                )}
-              </div>
-              {/* Content */}
-              <div className="col-8">
-                <div className="card-body">
-                  <h5 className="card-title">{card.title}</h5>
-                  <p className="card-text" style={{color:'grey'}}>{card.text}</p>
-                  <h5 className="card-title">{card.title2}</h5>
-                  <p className="card-text" style={{color:'grey'}}>{card.text2}</p>
-                  <p className="card-text" style={{color:'grey'}}>{card.text3}</p>
-                  <p className="card-text" style={{color:'grey'}}>{card.text4}</p>
-                  <p className="card-text" style={{color:'grey'}}>{card.text5}</p>
-
-                </div>
-              </div>
+    <div className="container mt-4" style={{ backgroundColor: "#F5F5F5", padding: "20px" }}>
+      <div className="row">
+        {/* Contact Form Section */}
+        <div className="col-md-8">
+        <div className="p-3  fw-bold text-start" style={{ backgroundColor: "#F0F0F0",  }}>
+              Contact With Us
             </div>
-          </div>
-        ))}
-      </div>
+          <div className="card shadow-lg p-4 border-0">
+          
+            <p className="text-muted mt-2">
+              If you did not find the answer to your question or problem, please get in
+              touch with us using the form below and we will respond as soon as possible.
+            </p>
 
+         
 
-<div className='text-center shadow p-1'><h4>Quick Contact</h4></div>
       
       {/* Form Section */}
       <form className="row g-3 p-3" onSubmit={handleSubmit}>
+          {/* Response Messages */}
+          {responseMessage && <p className="text-success text-center">{responseMessage}</p>}
+      {error && <p className="text-danger text-center">{error}</p>}
         <div className="col-12">
           <label htmlFor="name" className="form-label">Name</label>
           <div className="input-group">
@@ -177,16 +119,134 @@ const handleSubmit = async (e) => {
         </div>
 
         <div className="col-12 text-center">
+     
           <button type="submit" className="btn" style={{ background: '#E74C3C', color: "#fff" }}>Submit</button>
+          <button type="button" className="btn ms-3 btn-success" style={{background:"#1F2937", border:"none"}}
+     onClick={refreshCaptcha}>
+      Refresh
+    </button>
         </div>
+
+        <div className="mb-3 text-center"> 
+  <label className="fw-bold">
+    Please Enter <span className="text-primary">Correct Captcha:</span>
+  </label>
+
+  <div className="border p-3 shadow-sm d-flex flex-column align-items-center">
+    <div className="p-2 mb-2 text-center fw-bold" 
+         style={{ backgroundColor: "#6600CC", fontSize: "20px", color: "#26A1E2", width: "150px" }}>
+      {captcha}
+    </div>
+    <input type="text" className="form-control w-50" />
+  </div>
+  </div>
+
+
       </form>
 
-      {/* Response Messages */}
-      {responseMessage && <p className="text-success text-center">{responseMessage}</p>}
-      {error && <p className="text-danger text-center">{error}</p>}
+      <h5 className="mt-5">Map-Branch Office chetty street</h5>
+          <div style={{ width: "100%", height: "400px" }}>
+      <iframe
+        title="Puducherry Location"
+        width="100%"
+        height="100%"
+        frameBorder="0"
+        style={{ border: 0 }}
+        src="https://maps.google.com/maps?q=11.937389,79.829361&z=17&output=embed"
+        // src="https://maps.app.goo.gl/mEHenGsSpSGymQAK7"
+        allowFullScreen
+      ></iframe>
+    </div>
+    <h5 className="mt-5">Map-Main office Aravind Street (<span style={{color:"red"}}>renovation</span>)</h5>
+          <div style={{ width: "100%", height: "400px" }}>
+      <iframe
+        title="Puducherry Location"
+        width="100%"
+        height="100%"
+        frameBorder="0"
+        style={{ border: 0 }}
+        src="https://www.google.com/maps?q=Pondy%20Used%20Cars,%2089%20Aurobindo%20Street,%20Mahatma%20Gandhi%20Rd%20Junction,%20Puducherry%20605001&z=17&output=embed"
+        // src="https://maps.app.goo.gl/mEHenGsSpSGymQAK7"
+        allowFullScreen
+      ></iframe>
     </div>
 
+      
+          </div>
+        </div>
+
+        {/* Sidebar Section */}
+              <div className="col-md-4">
+                {/* Main Office */}
+                <div className="card shadow p-3 mb-3 border-light" style={{ borderLeft: "5px solid #D4EEFF" }}>
+                  <div className="p-2  fw-bold text-center" style={{ backgroundColor: "#F0F0F0",  }}>
+                    Main Office
+                  </div>
+                  
+                  <p>
+                    <strong>Address:</strong># 89, Aurobindo Street,
+      (M.G Road Junction),
+      Puducherry - 605001.
+      
+                  </p>
+                  <p><strong>Landline:</strong> +91-0413 - 2914409 </p>
+                  <p><strong>Mobile:</strong> +91-91505 24409</p>
+                  <p><strong>Email:</strong>  info@pondyproperty.com</p>
+                  <p><strong>Email:</strong>  contact@pondyproperty.com</p>
+                  <p><strong>Working Hours:</strong>  09:30 AM - 08:30 PM (Monday – Saturday)
+                  10:30 AM - 06:30 PM (Sunday)</p>
+                  <p><strong>Confirm office opening hours on government and local holidays.</strong></p>
+      
+                </div>
+      
+                {/* Branch Office */}
+                <div className="card shadow p-3 mb-3 border-light" style={{ borderLeft: "5px solid #D4EEFF" }}>
+                  <div className="p-2  fw-bold text-center" style={{ backgroundColor: "#F0F0F0",  }}>
+                    Branch Office
+                  </div>
+                  <p>
+                    <strong>Address:</strong> 101, Chetty Street,
+      (M.G Road Junction),
+      Puducherry - 605001.
+      
+                  </p>
+                  <p><strong>Landline:</strong> +91-0413 - 2914409 </p>
+                  <p><strong>Mobile:</strong> +91-91505 24409</p>
+                  <p><strong>Email:</strong>  info@pondyproperty.com</p>
+                  <p><strong>Email:</strong>  contact@pondyproperty.com</p>
+                  <p><strong>Working Hours:</strong>  09:30 AM - 08:30 PM (Monday – Saturday)
+                  10:30 AM - 06:30 PM (Sunday)</p>
+      
+                  <p><strong>Confirm office opening hours on government and local holidays.</strong></p>
+                </div>
+      
+                {/* Bank Details */}
+                <div className="card shadow p-3 mb-3 border-light" style={{ borderLeft: "5px solid #D4EEFF" }}>
+                  <div className="p-2  fw-bold text-center" style={{ backgroundColor: "#F0F0F0", color: "#222222" }}>
+                    Bank Details
+                  </div>
+                  <p><strong>Account Name:</strong> KALAISELVI</p>
+                  <p><strong>Bank Name:</strong> AXIS BANK </p>
+                  <p><strong>Account Number:</strong> 924010047404397</p>
+                  <p><strong>IFSC Code:</strong> UTIB0005555</p>
+                  <p><strong>Bank Address:</strong> Axis bank
+          Auroville Branch Tamil Nadu 
+          Pincode : 605101
+      </p>
+      <p><strong>GPAY,PHONE PE AND ALL UPI PAYMENT:</strong></p>
+      <p><strong>UPI NUMBER:</strong> 9150524409 – KALAI SELVI RAJENDRAN </p>
+      <p><strong>UPI ID:</strong> rksbalarks@okaxis</p>
+                </div>
+                <div className="card shadow p-3 border-light" style={{ borderLeft: "5px solid #D4EEFF" }}>
+                  <div className="p-2  fw-bold text-center" style={{ backgroundColor: "#F0F0F0", color: "#222222" }}>
+                    SCAN HERE
+                  </div>
+       <img src={onlinPay} alt="" />
+                </div>
+              </div>
+              </div>
+    </div>
   );
 };
 
-export default ContactUsApp;
+export default ContactedPage;

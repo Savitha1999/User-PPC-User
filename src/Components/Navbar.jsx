@@ -2,11 +2,37 @@
 
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FaHome, FaBuilding, FaLightbulb, FaUserCircle, FaRocket, FaCogs, FaPhone, FaInfoCircle, FaRegAddressCard, FaShare, FaStar, FaShieldAlt, FaUsers, FaEnvelope, FaRegBell } from 'react-icons/fa';
+import { FaHome, FaBuilding, FaLightbulb, FaUserCircle, FaRocket, FaCogs, FaInfoCircle, FaRegAddressCard, FaShare, FaStar, FaShieldAlt, FaUsers, FaEnvelope, FaRegBell, FaShippingFast } from 'react-icons/fa';
 import logo from "../Assets/ppc logo.jpg";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { MdClose } from "react-icons/md";
+import { MdClose, MdPolicy } from "react-icons/md";
+import { FaPhone } from "react-icons/fa6";
+import { RiApps2AiFill } from 'react-icons/ri';
+import { HiDocumentText } from 'react-icons/hi2';
+import { BiSolidLogIn } from 'react-icons/bi';
+import axios from 'axios';
+
+
+
+
+
+// const READ_NOTIFICATIONS_KEY = "readNotifications";
+
+// // Utility: Get and Save to localStorage
+// const getReadNotificationsFromStorage = () => {
+//   const stored = localStorage.getItem(READ_NOTIFICATIONS_KEY);
+//   return stored ? JSON.parse(stored) : [];
+// };
+
+// const saveReadNotificationToStorage = (id) => {
+//   const stored = getReadNotificationsFromStorage();
+//   if (!stored.includes(id)) {
+//     const updated = [...stored, id];
+//     localStorage.setItem(READ_NOTIFICATIONS_KEY, JSON.stringify(updated));
+//   }
+// };
+
 
 const SidebarApp = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -14,6 +40,14 @@ const SidebarApp = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [hoveredLink, setHoveredLink] = useState(null);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [notifications, setNotifications] = useState([]);
+
+    const [hasUnread, setHasUnread] = useState(false);
+    const [hasClickedBell, setHasClickedBell] = useState(false);
+  
 
   const handleMouseEnter = (linkId) => setHoveredLink(linkId);
   const handleMouseLeave = () => setHoveredLink(null);
@@ -34,19 +68,52 @@ const SidebarApp = () => {
   const phoneNumber = statePhoneNumber || storedPhoneNumber;
   const countryCode = stateCountryCode || storedCountryCode;
 
-  const fullPhoneNumber = `${countryCode}${phoneNumber}`;
+  const fullPhoneNumber = `${phoneNumber}`;
 
   const toggleSidebar = () => setSidebarOpen(!isSidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
 
+
+
+
+
+  const fetchUnreadNotifications = async () => {
+    try {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/get-unread-notifications`, {
+        params: { phoneNumber },
+      });
+      const unread = res.data.notifications || [];
+
+      setNotifications(unread);
+      setHasUnread(unread.length > 0);
+
+    } catch (error) {
+      console.error("Error fetching unread notifications", error);
+    }
+  };
+
   useEffect(() => {
-    if (phoneNumber && countryCode) {
+    if (phoneNumber) {
+      fetchUnreadNotifications();
+    }
+  }, [phoneNumber]);
+
+  const handleBellClick = () => {
+    setHasClickedBell(true);
+    navigate('/notification');
+
+    // You can show the notifications dropdown or modal here
+  };
+
+
+  useEffect(() => {
+    if (phoneNumber ) {
       localStorage.setItem('phoneNumber', phoneNumber);
-      localStorage.setItem('countryCode', countryCode);
+      // localStorage.setItem('countryCode', countryCode);
     } else {
       toast.error('Missing required information.');
     }
-  }, [phoneNumber, countryCode]);
+  }, [phoneNumber]);
 
   const handleLinkClick = (path) => {
     navigate(path, { state: { phoneNumber: fullPhoneNumber } });
@@ -69,44 +136,62 @@ const SidebarApp = () => {
     };
   }, [isSidebarOpen]);
 
+
+
+
+
+
+
   return (
-    <div className="d-flex" style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Sidebar */}
-      <div
-        ref={sidebarRef}
-        className={`position-fixed bg-light border-end ${isSidebarOpen ? 'd-block' : 'd-none'}`}
-        style={{
-          width: '300px',
-          height: '100vh',
-          overflowY: 'auto',
-          transition: 'left 0.3s ease',
-          zIndex: 2000,
-          scrollbarWidth:"none"
-        }}
-      >
-        <button
-          className="btn position-absolute top-0 end-0 m-"
-          onClick={toggleSidebar}
-          aria-label="Close Sidebar"
-        ><MdClose />
-</button>
-<ul className="nav flex-column p-0">
-      <li style={{ background: '#30747F' }}>
-        <div className="d-flex align-items-center p-2">
-          <img
-            src={logo}
-            alt=""
-            style={{ height: '80px', width: '80px' }}
-            className="mb-2 mb-md-0 rounded-4"
-          />
-          <div className="ml-md-3 ml-2" style={{ marginLeft: '5px' }}>
-            <h6 style={{ color: 'white' }}>Pondy Property</h6>
-            <p style={{ color: 'white', fontSize: '13px' }}>
-              Buy and sell your Property in Pondicherry
-            </p>
-          </div>
-        </div>
-      </li>
+<div className="d-flex" style={{ fontFamily: "Inter, sans-serif" }}>
+  {/* Sidebar */}
+  <div
+    ref={sidebarRef}
+    className={`position-fixed bg-light border-end ${isSidebarOpen ? "d-block" : "d-none"}`}
+    style={{
+      width: "300px",
+      height: "auto", 
+      transition: "left 0.3s ease",
+      zIndex: 2000,
+      display: "flex",
+      flexDirection: "column",
+      overflow: "hidden", // Prevents children from exceeding
+    }}
+  >
+    <button
+      className="btn position-absolute top-0 end-0 m-0"
+      onClick={toggleSidebar}
+      aria-label="Close Sidebar"
+    >
+      <MdClose />
+    </button>
+
+    {/* Fixed Header */}
+    <div
+      style={{
+        background: "#30747F",
+        flexShrink: 0, // Prevents header from shrinking
+        padding: "10px",
+      }}
+      className="d-flex align-items-center w-100"
+    >
+      <img
+        src={logo}
+        alt="Logo"
+        style={{ height: "80px", width: "80px" }}
+        className="mb-2 mb-md-0 rounded-4"
+      />
+      <div className="ms-md-3 ms-2">
+        <h6 style={{ color: "white" }}>Pondy Property</h6>
+        <p style={{ color: "white", fontSize: "13px" }}>
+          Buy and sell your Property in Pondicherry
+        </p>
+      </div>
+    </div>
+    <div className="row g-2 mt-1"
+     style={{background:"#ffffff", overflowY: "scroll", scrollbarWidth: "none" , width:"300px", height: "75vh", }}>
+    <ul className="nav flex-column pb-5 w-100 ">
+
 
       {/* Phone number in sidebar */}
       {phoneNumber && (
@@ -158,8 +243,8 @@ const SidebarApp = () => {
           style={getLinkStyle('my-plan')}
           onMouseEnter={() => handleMouseEnter('my-plan')}
           onMouseLeave={handleMouseLeave}
-          href={`/my-plan/${phoneNumber}`}
-          onClick={() => handleLinkClick(`/my-plan/${phoneNumber}`)}
+          href={`/my-plan`}
+          onClick={() => handleLinkClick(`/my-plan`)}
         >
           <FaLightbulb className="me-2" style={{ color: '#30747F' }} /> My Plan
         </a>
@@ -184,12 +269,13 @@ const SidebarApp = () => {
           style={getLinkStyle('plans')}
           onMouseEnter={() => handleMouseEnter('plans')}
           onMouseLeave={handleMouseLeave}
-          href="/plans"
-          onClick={() => handleLinkClick("/plans")}
+          href="/add-plan"
+          onClick={() => handleLinkClick("/add-plan")}
         >
           <FaRocket className="me-2" style={{ color: '#30747F' }} /> Upgrade Membership
         </a>
       </li>
+
 
       <li className="nav-item">
         <a
@@ -211,7 +297,7 @@ const SidebarApp = () => {
           onMouseEnter={() => handleMouseEnter('contactus')}
           onMouseLeave={handleMouseLeave}
           href="/contactus"
-          onClick={() => handleLinkClick("/mobileviews")}
+          onClick={() => handleLinkClick("/contactus")}
         >
           <FaPhone className="me-2" style={{ color: '#30747F' }} /> Contact Us
         </a>
@@ -239,7 +325,7 @@ const SidebarApp = () => {
           href="/refund-mobile"
           onClick={() => handleLinkClick("/refund-mobile")}
         >
-          <FaInfoCircle className="me-2" style={{ color: '#30747F' }} /> Refund Policy
+          <MdPolicy className="me-2" style={{ color: '#30747F' }} /> Refund Policy
         </a>
       </li>
 
@@ -252,7 +338,7 @@ const SidebarApp = () => {
           href="/terms-conditions"
           onClick={() => handleLinkClick("terms-conditions")}
         >
-          <FaInfoCircle className="me-2" style={{ color: '#30747F' }} /> Terms And Conditions
+          <HiDocumentText  className="me-2" style={{ color: '#30747F' }} /> Terms And Conditions
         </a>
       </li>
 
@@ -265,7 +351,7 @@ const SidebarApp = () => {
           href="/shiping-delivery-app"
           onClick={() => handleLinkClick("shiping-delivery")}
         >
-          <FaInfoCircle className="me-2" style={{ color: '#30747F' }} />Shipping & Delivery
+          <FaShippingFast  className="me-2" style={{ color: '#30747F' }} />Shipping & Delivery
         </a>
       </li>
 
@@ -278,7 +364,7 @@ const SidebarApp = () => {
           href="/mobileviews"
           onClick={() => handleLinkClick("/mobileviews")}
         >
-          <FaRegAddressCard className="me-2" style={{ color: '#30747F' }} /> More App
+          <RiApps2AiFill className="me-2" style={{ color: '#30747F' }} /> More App
         </a>
       </li>
 
@@ -343,10 +429,12 @@ const SidebarApp = () => {
           href="/mobileviews"
           onClick={() => handleLinkClick("/mobileviews")}
         >
-          <FaEnvelope className="me-2" style={{ color: '#30747F' }} /> Login
+          <BiSolidLogIn  className="me-2" style={{ color: '#30747F' }} /> Login
         </a>
       </li>
     </ul>
+    </div>
+
       </div>
 
       {/* Main Content */}
@@ -360,9 +448,54 @@ const SidebarApp = () => {
             ☰
           </button>
           <span className="navbar-brand mb-0 text-center mx-auto">Pondy Property</span>
-          <button className="btn border-0" style={{ fontWeight: 'bold' }}>
+          {/* <button className="btn border-0" style={{ fontWeight: 'bold' }}>
             <FaRegBell color="#30747F" size={24} />
-          </button>
+          </button> */}
+
+{/* <div style={{ position: "relative" }}>
+  <button className="btn border-0" style={{ fontWeight: 'bold' }}>
+    <FaRegBell color="#30747F" size={24} />
+  </button>
+
+  {notifications && (
+    <span
+      style={{
+        position: "absolute",
+        top: "4px",
+        right: "4px",
+        width: "10px",
+        height: "10px",
+        backgroundColor: "red",
+        borderRadius: "50%",
+        zIndex: 1,
+      }}
+    ></span>
+  )}
+</div> */}
+
+<div style={{ position: "relative" }}>
+      <button className="btn border-0" style={{ fontWeight: "bold" }} onClick={handleBellClick}>
+        <FaRegBell color="#30747F" size={24} />
+      </button>
+
+      {/* Show red badge only if there are unread notifications AND user hasn’t clicked yet */}
+      {hasUnread && !hasClickedBell && (
+        <span
+          style={{
+            position: "absolute",
+            top: "4px",
+            right: "4px",
+            width: "10px",
+            height: "10px",
+            backgroundColor: "red",
+            borderRadius: "50%",
+            zIndex: 1,
+          }}
+        ></span>
+      )}
+    </div>
+
+
         </nav>
       </div>
     </div>

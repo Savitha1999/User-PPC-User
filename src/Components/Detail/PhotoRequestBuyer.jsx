@@ -187,19 +187,19 @@ useEffect(() => {
   
   return (
     <div className="container d-flex align-items-center justify-content-center p-0">
-      <div className="d-flex flex-column align-items-center justify-content-center m-0" style={{ maxWidth: '500px', margin: 'auto', width: '100%' }}>
+      <div className="d-flex flex-column align-items-center justify-content-center m-0" style={{ maxWidth: '500px', margin: 'auto', width: '100%', background:"#F7F7F7" , fontFamily: 'Inter, sans-serif'}}>
         {/* Buttons for filtering */}
         <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
           <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
         </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}>PHOTO REQUEST BUYER </h3> </div>
         <div className="row g-2 w-100">
           <div className="col-6 p-0">
-            <button className="w-100" style={{ backgroundColor: '#4F4B7E', color: 'white' }} onClick={() => setActiveKey("All")}>
+            <button className="w-100" style={{ backgroundColor: '#30747F', color: 'white' }} onClick={() => setActiveKey("All")}>
               All Properties
             </button>
           </div>
           <div className="col-6 p-0">
-            <button className="w-100" style={{ backgroundColor: '#FF0000', color: 'white' }} onClick={() => setActiveKey("Removed")}>
+            <button className="w-100" style={{ backgroundColor: '#FFFFFF', color: 'grey' }} onClick={() => setActiveKey("Removed")}>
               Removed Properties
             </button>
           </div>

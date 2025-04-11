@@ -58,7 +58,7 @@ const Carousel = () => {
   return (
     <>
       <div
-        className="p-1 mt-5"
+        className="p-1 mt-3"
         style={{
           background: "linear-gradient(to right, #ee9ca7 , #ffdde1)",
           backgroundSize: "cover",
@@ -85,7 +85,7 @@ const Carousel = () => {
                     <div className="card w-100 h-100" style={{ display: "flex", flexDirection: "column" }}>
                       <img
                         src={property.photos && property.photos.length > 0
-                          ? `http://localhost:5006/${property.photos[0]}`
+                          ? `http://localhost:5000/${property.photos[0]}`
                           : "https://d17r9yv50dox9q.cloudfront.net/car_gallery/default.jpg"
                         }
                         className="card-img-top"
@@ -98,11 +98,11 @@ const Carousel = () => {
                         }}
                       />
                       <div className="card-body d-flex flex-column" style={{ flex: "1", justifyContent: "space-between" }}>
-                        <p className="card-title">{property.propertyMode || "N/A"}</p>
-                        <p className="card-text text-muted">
+                        <p className="card-title m-0">{property.propertyMode || "N/A"}</p>
+                        <p className="card-text text-muted m-0">
                           <MdLocationOn color="#2F747F" /> {property.city || "N/A"}
                         </p>
-                        <p className="card-text">
+                        <p className="card-text mb-1">
                           <span style={{ color: "#06AAD4" }}>
                             <FaRupeeSign color="#06AAD4" /> {property.price || "0"}
                           </span>
@@ -110,25 +110,25 @@ const Carousel = () => {
                         <div className="container p-0">
                           <div className="row">
                             <div className="col-md-6 col-6">
-                              <p>
+                              <p className="m-0">
                                 <FaRulerCombined className="icon" />{" "}
                                 {property.totalArea ? `${property.totalArea}${property.areaUnit}` : "N/A"}
                               </p>
                             </div>
                             <div className="col-md-6 col-6">
-                              <p>
-                                <FaBed className="icon ms-3" /> {property.bedrooms || "N/A"} Bhk
+                              <p className="m-0">
+                                <FaBed className="icon ms-3" /> {property.bedrooms || "N/A"}
                               </p>
                             </div>
                           </div>
                           <div className="row">
                             <div className="col-md-6 col-6">
-                              <p>
+                              <p className="m-0">
                                 <FaUserAlt className="icon" /> {property.ownership || "N/A"}
                               </p>
                             </div>
                             <div className="col-md-6 col-6">
-                              <p>
+                              <p className="m-0">
                                 <FaCalendarAlt className="icon ms-3" /> {property.bestTimeToCall || "N/A"}
                               </p>
                             </div>
@@ -138,7 +138,7 @@ const Carousel = () => {
                           className="btn mt-auto"
                           style={{
                             width: "100%",
-                            background: "#2294B1",
+                            background: "#EE9DA8",
                             color: "#FFC631",
                             border: "none",
                             height: "50px",
@@ -152,18 +152,33 @@ const Carousel = () => {
                   </div>
                 ))
               ) : (
-                <p>No properties found.</p>
+                <p className="m-0">No properties found.</p>
               )}
             </div>
           </Link>
 
           {/* Navigation Buttons */}
           <div style={{ textAlign: "center", marginTop: "10px", position: "absolute", top: "10px", right: "10px", zIndex: 1 }}>
-            <button onClick={prevSlide} className="btn" style={{ background: "#C23AA0", color: "#fff", border: "none", height: "50px", width: "100px" }}>Prev</button>
-            <button onClick={nextSlide} className="btn btn-secondary" style={{ background: "#A5009C", color: "#fff", border: "none", height: "50px", width: "100px", marginLeft: "10px" }}>Next</button>
+            <button onClick={prevSlide} className="btn" style={{ background: "#FFBCD9", color: "#fff", border: "none", height: "50px", width: "100px" }}>Prev</button>
+            <button onClick={nextSlide} className="btn btn-secondary" style={{ background: "#EE9DA8", color: "#fff", border: "none", height: "50px", width: "100px", marginLeft: "10px" }}>Next</button>
           </div>
 
-          <p onClick={handleClick} style={{ float: "right", fontSize: "16px", color: "red", cursor: "pointer" }}>view more</p>
+          <button onClick={handleClick}
+           style={{ float: "right", 
+             marginRight: "10px",
+             marginBottom:"10px",
+            backgroundColor: "#BA2560", // Light blue-gray button
+            color: "#F7F7F7",
+            fontSize: "16px",
+            fontWeight:"500",
+            border: "none",
+            borderRadius: "30px",
+            boxShadow: `
+            8px 8px 20px rgba(194, 122, 139, 0.3),
+            -8px -8px 20px rgba(255, 255, 255, 0.6)
+          `,
+            cursor: "pointer",
+}}>view more</button>
         </div>
       </div>
       <NewProperty />

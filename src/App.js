@@ -12,7 +12,7 @@ export default function App() {
     <>
     <Header />
     <BannerCarousel />
-     <div className="container-fluid">
+     <div className="container-fluid ps-5 pe-4">
       <div className="row">
         {/* Main Content */}
         <div className="col-12 col-md-9" style={{fontFamily:"Inter, sans-serif", fontWeight:'Medium'}}>
@@ -20,13 +20,14 @@ export default function App() {
           <Carousel />
           </div>
         {/* Sidebar */}
-        <div className="d-none d-md-block col-md-3 mt-4">
+        <div className="d-none d-md-block col-md-3 mt-3 p-0 ">
           <Ads />
           </div>
       </div>
     </div>
+    {/* <ShareButtons /> */}
     {/* <CardCarousel /> */}
-    <FrontFooter />
+   <FrontFooter/>
     </>
   )
 }

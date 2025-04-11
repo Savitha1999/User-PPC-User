@@ -13,17 +13,29 @@ import pic from '../../Assets/Default image_PP-01.png'; // Correct path
 import { FaArrowLeft } from "react-icons/fa";
 
 const PropertyCard = ({ property, onRemove, onUndo }) => {
-  return (
-    
-
-    <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background:"#EFEFEF"}}>
-                  <div className="col-md-4 col-4 d-flex flex-column justify-content-between align-items-center">
+ 
+  const navigate = useNavigate();
+                  
+                    const handleCardClick = () => {
+                      if (property?.ppcId) {
+                        navigate(`/detail/${property.ppcId}`);
+                      }
+                    };
+                  
+                  return (
+                    
+                
+                    <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background:"#EFEFEF"}}
+                    onClick={handleCardClick}
+                > 
+                 
+                 <div className="col-md-4 col-4 d-flex flex-column justify-content-between align-items-center">
                   <div className="text-white py-1 px-2 text-center" style={{ width: '100%', background: "#2F747F" }}>
  PUC- {property.ppcId}
  </div>
 
 
- <div style={{ position: "relative", width: "100%", height:'150px'}}>
+ <div style={{ position: "relative", width: "100%", height:'160px'}}>
             <img
                                         src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic}
                                         alt="Property"
@@ -46,8 +58,8 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
 
 
                  </div>
-                 <div className="col-md-8 col-8 ps-2">
-                  <div className="d-flex justify-content-between"><p className="mb-1 fw-bold" style={{ color:'#5E5E5E' }}>{property.propertyMode || 'N/A'}</p>
+                 <div className="col-md-8 col-8" style={{paddingLeft:"10px", background:"#F5F5F5"}}>
+                 <div className="d-flex justify-content-between"><p className="m-0 fw-bold" style={{ color:'#5E5E5E' }}>{property.propertyMode || 'N/A'}</p>
                  
                   {/* <p className="m-0 ps-3 pe-3" style={{background:"green", color:"white", cursor:"pointer", borderRadius: '0px 0px 0px 15px'}} onClick={() => onUndo(property.ppcId, property.postedUserPhoneNumber)}>UNDO</p> */}
                   {onRemove && (
@@ -61,29 +73,45 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
                    <p className=" fw-bold m-0" style={{ color:'#5E5E5E'}}>{property.city || 'N/A'}</p>
                    <div className="card-body ps-2 m-0 pt-0 pe-2 d-flex flex-column justify-content-center">
                      <div className="row">
-                       <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                         <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.totalArea || 'N/A'}</span>
+                       <div className="col-6 d-flex align-items-center  p-1">
+                         <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.totalArea || 'N/A'}{property.areaUnit || 'N/A'}</span>
                        </div>
-                       <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                         <FaBed className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.bedrooms || 'N/A'}</span>
+                       <div className="col-6 d-flex align-items-center  p-1">
+                         <FaBed className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.bedrooms || 'N/A'} BHK</span>
                        </div>
-                       <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                         <FaUserAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.ownership || 'N/A'}</span>
+                       <div className="col-6 d-flex align-items-center  p-1">
+                         <FaUserAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.postedBy || 'N/A'}</span>
                        </div>
-                       <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                       {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
                          <FaCalendarAlt className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#5E5E5E' }}>{property.bestTimeToCall || 'N/A'}</span>
+                       </div> */}
+                      <div className="col-6 d-flex align-items-center p-1">
+                      <FaCalendarAlt className="me-2" color="#2F747F"/> 
+                       <span style={{ fontSize:'13px', color:'#5E5E5E', fontWeight: 500 }}>
+                         {property.createdAt ? new Date(property.createdAt).toLocaleDateString('en-IN', {
+                           year: 'numeric',
+                           month: 'short',
+                           day: 'numeric'
+                         }) : 'N/A'}
+                       </span>     
+                       </div>    
+
+                       {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                         <FaRupeeSign className="me-2" color="#2F747F"/> <span style={{ fontSize:'13px', color:'#2E7480' }}>{property.price || 'N/A'}</span>
                        </div>
-                 
-                        <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
-                                   <h6 className="m-0">
-                                   <span style={{ fontSize:'17px', color:'#2F747F', fontWeight:'bold', letterSpacing:"1px" }}> <FaRupeeSign className="me-2" color="#2F747F"/>{property.price ? property.price.toLocaleString('en-IN') : 'N/A'}
+                       <div className="col-6 d-flex align-items-center  p-1">
+                         <p className="m-0" style={{ color:'#2F747F', fontSize:'13px',fontWeight:"bold"}}> Negotiation: <span style={{ color:'#5E5E5E' }}>{property.negotiation || 'N/A'}</span></p>
+                       </div> */}
+                        <div className="col-12 d-flex flex-col align-items-center p-1">
+                        <h6 className="m-0">
+                                   <span style={{ fontSize:'15px', color:'#2F747F', fontWeight:'bold', letterSpacing:"1px" }}> <FaRupeeSign className="me-2" color="#2F747F"/>{property.price ? property.price.toLocaleString('en-IN') : 'N/A'}
                                    </span> 
                                    <span style={{ color:'#2F747F', fontSize:'13px', marginLeft:"5px",fontSize:'11px',}}> 
                                    Negotiable                </span> 
                                      </h6>
                                   </div>
-                       <p style={{ color: "#2E7480", margin: "0px" }}>
-                    <a
+                                  <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
+                                  <a
                       href={`tel:${property.interestedUser}`}
                       style={{
                         textDecoration: "none",
@@ -205,20 +233,20 @@ const App = () => {
   return (
     <div className="container d-flex align-items-center justify-content-center p-0">
       <div className="d-flex flex-column align-items-center justify-content-center m-0" 
-        style={{ maxWidth: '500px', margin: 'auto', width: '100%' }}>
+        style={{ maxWidth: '500px', margin: 'auto', width: '100%' , background:"#F7F7F7",fontFamily: 'Inter, sans-serif'}}>
         <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
           <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
         </button> <h3 className="m-0 ms-3" style={{fontSize:"15px"}}>CONTACT OWNER </h3> </div>
         {/* Buttons for filtering */}
         <div className="row g-2 w-100">
           <div className="col-6 p-0">
-            <button className="w-100" style={{ backgroundColor: '#4F4B7E', color: 'white' }} 
+            <button className="w-100" style={{ backgroundColor: '#30747F', color: 'white' }} 
               onClick={() => setActiveKey("All")}>
               All Properties
             </button>
           </div>
           <div className="col-6 p-0">
-            <button className="w-100" style={{ backgroundColor: '#FF0000', color: 'white' }} 
+            <button className="w-100" style={{ backgroundColor: '#FFFFFF', color: 'grey' }} 
               onClick={() => setActiveKey("Removed")}>
               Removed Properties
             </button>
