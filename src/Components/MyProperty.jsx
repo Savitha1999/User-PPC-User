@@ -39,6 +39,9 @@ const MyProperty = () => {
   const [ppcId, setPpcId] = useState(null);
   const [message, setMessage] = useState("");
   const [modalData, setModalData] = useState({ show: false, action: null, payload: null, message: "" });
+  const [hover, setHover] = useState(false);
+  const [hoverDelete, setHoverDelete] = useState(false);
+  const [hoverEdit, setHoverEdit] = useState(false);
 
 
 
@@ -318,12 +321,44 @@ const MyProperty = () => {
                                          </div>
                                          <span style={{color:"grey", fontSize:"11px"}}>Edit and Submit Ad to complete</span>
                                          <div className="d-flex justify-content-around mt-2">
-                                         <button className="btn btn-sm" style={{ background: '#FF4500', color: '#fff', width: '40%' }} onClick={() => confirmDelete(user.ppcId)}>                                
+                                         {/* <button className="btn btn-sm" style={{ background: '#FF4500', color: '#fff', width: '40%' }} onClick={() => confirmDelete(user.ppcId)}>                                
                                            Remove
                               </button>
                                 <button className="btn" style={{ width: '40%', background:"#2F747F", color:"#fff" }} onClick={() => confirmEdit(user)}>
                                   Edit
-                                </button>
+                                </button> */}
+
+<button
+        className="btn btn-sm"
+        style={{
+          background: hoverDelete ? 'red' : '#FF4500',
+          color: '#fff',
+          width: '40%',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={() => setHoverDelete(true)}
+        onMouseLeave={() => setHoverDelete(false)}
+        onClick={() => confirmDelete(user.ppcId)}
+      >
+        Remove
+      </button>
+
+      <button
+        className="btn btn-sm"
+        style={{
+          background: hoverEdit ? '#4ba0ad' : '#2F747F',
+          color: '#fff',
+          width: '40%',
+          marginLeft: '8px',
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={() => setHoverEdit(true)}
+        onMouseLeave={() => setHoverEdit(false)}
+        onClick={() => confirmEdit(user)}
+      >
+        Edit
+      </button>
+
                               </div>
                                         </div>
                                       </div>
@@ -395,13 +430,27 @@ const MyProperty = () => {
                               </div>
                             </div>
                             <div className="d-flex justify-content-center mt-2">
-                              <button
+                              {/* <button
                                 className="btn btn-sm"
                                 style={{ background: '#2F747F', color: '#fff', width: '50%' }}
                                 onClick={() => confirmUndo(user.ppcId)}
                               >
                                 Undo
-                              </button>
+                              </button> */}
+                              <button
+      className="btn btn-sm"
+      style={{
+        background: hover ?  'green':'#19575f' , // hover vs default
+        color: hover ? '#e0f7fa' : '#fff',         // text color on hover
+        width: '50%',
+        transition: 'all 0.3s ease'
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      onClick={() => confirmUndo(user.ppcId)}
+    >
+      Undo
+    </button>
                             </div>
                           </div>
                         </div>

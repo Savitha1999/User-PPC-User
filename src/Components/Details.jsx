@@ -304,9 +304,9 @@ useEffect(() => {
   useEffect(() => {
     // Ensure propertyDetails is not null or undefined before accessing `video`
     if (propertyDetails?.video) {
-      setVideoUrl(`http://localhost:5000/${propertyDetails.video}`);
+      setVideoUrl(`http://localhost:5006/${propertyDetails.video}`);
     } else {
-      setVideoUrl("http://localhost:5000/default-video-url.mp4"); // Fallback to a default video
+      setVideoUrl("http://localhost:5006/default-video-url.mp4"); // Fallback to a default video
     }
     console.log('Video URL:', videoUrl); // For debugging
   }, [propertyDetails?.video]); // Runs when `propertyDetails.video` changes
@@ -331,35 +331,6 @@ useEffect(() => {
   const closeModal = () => setShowModal(false);
 
 
-  // const handleOwnerContactClick = async () => {
-  //   try {
-  
-  //     if (!phoneNumber || !ppcId) {
-  //       setMessage("Phone number and Property ID are required.");
-  //       return;
-  //     }
-  
-  //     // Send data to the backend to request owner contact details
-  //     const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
-  //       phoneNumber,
-  //       ppcId,
-  //     });
-  
-  //     // Get the postedUserPhoneNumber from the response
-  //     const postedUserPhoneNumber = response.data.postedUserPhoneNumber;
-  
-  //     // Handle the response message and display the property owner's phone number
-  //     setMessage(`Owner's Phone: ${postedUserPhoneNumber}`);
-  //     setPostedUserPhoneNumber(postedUserPhoneNumber); // Save the phone number for later use/display
-  //     // setShowOwnerContact(true);  
-
-  //     toggleContactDetails(); 
-  //   } catch (error) {
-  //     setMessage("Failed to fetch owner contact details.");
-  //   }
-  // };
-
- 
 
   const toggleContactDetails = () => {
     setShowContactDetails(prevState => !prevState);
