@@ -288,7 +288,7 @@ const MatchedBuyer = () => {
           </button>
         </div>
 
-        
+{/*         
         {message && (
   <div className="modal-overlay"
     style={{
@@ -313,7 +313,7 @@ const MatchedBuyer = () => {
       </div>
     </div>
   </div>
-)}
+)} */}
 
       {/* Content Display */}
       {loading ? (

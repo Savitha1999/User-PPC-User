@@ -28,6 +28,68 @@ const App = () => {
   const [popupAction, setPopupAction] = useState(null);
   const [popupMessage, setPopupMessage] = useState("");
 
+  
+      const [isPressed, setIsPressed] = useState(false);
+      const [hoverEdit, setHoverEdit] = useState(false);
+      const [hoverDelete, setHoverDelete] = useState(false);
+      const [isCallPressed, setIsCallPressed] = useState(false);
+      const [isDeletePressed, setIsDeletePressed] = useState(false);
+    
+      
+      const handleCallButtonClick = (ppcId, phoneNumber, property) => {
+        setMessage({
+          title: 'Do you want to call this user?',
+          onConfirm: () => handleCall(ppcId, phoneNumber, property, 'calledUser'),
+          onCancel: () => handleCall(ppcId, phoneNumber, property, 'callFailed'),
+        });
+      };
+      
+    
+      const handleCall = async (ppcId, phoneNumber, property, status) => {
+        // Only open dialer if user confirmed
+        if (status === 'calledUser') {
+          window.location.href = `tel:${phoneNumber}`;
+        }
+      
+        const callData = {
+          ppcId: property.ppcId,
+          phoneNumber,
+          propertyPhoneNumber: property.postedUserPhoneNumber || '', // Owner's number
+          status, // 'calledUser' or 'callFailed'
+      
+          propertyMode: property.propertyMode || '',
+          propertyType: property.propertyType || '',
+          postedBy: property.postedBy || '',
+          area: property.area || '',
+          city: property.city || '',
+          district: property.district || '',
+          state: property.state || '',
+          bestTimeToCall: property.bestTimeToCall || '',
+          areaUnit: property.areaUnit || '',
+          totalArea: property.totalArea || '',
+          bedrooms: property.bedrooms || '',
+          facing: property.facing || '',
+          ownership: property.ownership || '',
+        };
+      
+        try {
+          const res = await fetch(`${process.env.REACT_APP_API_URL}/user-call`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(callData),
+          });
+      
+          if (!res.ok) throw new Error('Failed to log call');
+          const data = await res.json();
+        } catch (error) {
+        }
+      };
+      
+    
+    
+
   const confirmAction = (message, action) => {
     setPopupMessage(message);
     setPopupAction(() => action);
@@ -330,6 +392,34 @@ const handleRejectOffer = async (ppcId, buyerPhoneNumber) => {
            </Modal>
          </div>
 
+         
+    {message && (
+  <div className="modal-overlay"
+    style={{
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    backgroundColor: '#fff',
+    width: '100%',
+    maxWidth: '400px',
+    padding: '10px',
+    zIndex: 10,
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    borderRadius: '8px',
+    animation: 'popupOpen 0.3s ease-in-out',
+  }}>
+    <div className="modal-box">
+      <h5 style={{ color: "#2B3C4D", fontWeight: "bold" }}>{message.title}</h5>
+      <div className="modal-buttons">
+        <button className="me-1 ps-3 pe-3 pt-1 pb-1" style={{background:"#05B99E", color:"#fff"}} onClick={message.onConfirm}>Yes</button>
+        <button className="m-0 ps-3 pe-3  pt-1 pb-1" style={{background:"#E86D56", color:"#fff"}} onClick={message.onCancel}>No</button>
+      </div>
+    </div>
+  </div>
+)}
+    
+
           {/* Property List */}
           <div className="col-12">
             <div className="w-100 d-flex align-items-center justify-content-center" style={{ maxWidth: '500px' }}>
@@ -489,24 +579,94 @@ View
 )}
 {showFullNumber
 ?  <div className="d-flex justify-content-between align-items-center ps-2 pe-2 mt-1">
-<button
+{/* <button
         className="btn text-white px-3 py-1 flex-grow-1 mx-1"
         style={{ background:  "#2F747F", width: "80px", fontSize: "13px" }}
 
      >
         Call
-      </button>   
+      </button>    */}
+
+<button
+        className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+        style={{
+          background: isCallPressed
+            ? '#2b5f66'
+            : hoverEdit
+            ? '#4ba0ad'
+            : '#2F747F',
+          color: '#fff',
+          width: '80px',
+          fontSize: '13px',
+          transition: 'all 0.2s ease',
+        }}
+        onMouseEnter={() => setHoverEdit(true)}
+        onMouseLeave={() => {
+          setHoverEdit(false);
+          setIsCallPressed(false);
+        }}
+        onMouseDown={() => setIsCallPressed(true)}
+        onMouseUp={() => setIsCallPressed(false)}
+        onClick={() => handleCallButtonClick(property.ppcId, user, property)}
+      >
+        Call
+      </button>
 
       <button className="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{ background: activeButton === "accept" ? "#4CAF50" : "#2F747F", width: "80px", fontSize: "11px" }} onClick={() => { setActiveButton("accept"); onAccept(property.ppcId, property.buyerPhoneNumber, "accept"); }}>YES</button>
          <button className="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{ background: activeButton === "reject" ? "#FF5733" : "#2F747F", width: "80px", fontSize: "11px" }} onClick={() => { setActiveButton("reject"); onReject(property.ppcId, property.buyerPhoneNumber, "reject"); }}>NO</button>
      
            {onRemove && (
-            <button className="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{ background:  "#FF0000", width: "80px", fontSize: "13px" }}
-            onClick={() => onRemove(property.ppcId, property.buyerPhoneNumber)}>Remove</button>
+            // <button className="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{ background:  "#FF0000", width: "80px", fontSize: "13px" }}
+            // onClick={() => onRemove(property.ppcId, property.buyerPhoneNumber)}
+            // >Remove</button>
+            <button
+            className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+            style={{
+              background: isDeletePressed
+                ? '#c90000'
+                : hoverDelete
+                ? 'red'
+                : '#FF4500',
+              color: '#fff',
+              width: '80px',
+              fontSize: '13px',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={() => setHoverDelete(true)}
+            onMouseLeave={() => {
+              setHoverDelete(false);
+              setIsDeletePressed(false);
+            }}
+            onMouseDown={() => setIsDeletePressed(true)}
+            onMouseUp={() => setIsDeletePressed(false)}
+            onClick={() => onRemove(property.ppcId, property.buyerPhoneNumber)}
+            >
+            Remove
+          </button>
+
           )}
           {onUndo && (
-            <button cclassName="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{ background:  "green", width: "80px", fontSize: "13px" }}
-             onClick={() => onUndo(property.ppcId, property.buyerPhoneNumber)}>Undo</button>
+            // <button cclassName="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{ background:  "green", width: "80px", fontSize: "13px" }}
+            //  onClick={() => onUndo(property.ppcId, property.buyerPhoneNumber)}
+            // >Undo</button>
+            
+
+<button
+      className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+      style={{
+        background: isPressed ? "green" : "#2F747F", // darker green on press
+        width: "80px",
+        fontSize: "13px",
+        transition: "all 0.2s ease"
+      }}
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      onMouseLeave={() => setIsPressed(false)} // resets if mouse leaves button
+      onClick={() => onUndo(property.ppcId, property.buyerPhoneNumber)}
+      >
+      Undo
+    </button>
+
           )}
 </div>
 : ''}
