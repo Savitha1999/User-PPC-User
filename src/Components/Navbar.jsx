@@ -253,11 +253,11 @@ const SidebarApp = () => {
       <li className="nav-item">
         <a
           className="nav-link"
-          style={getLinkStyle('my-profile')}
+          style={getLinkStyle(`/my-profile/${phoneNumber}`)}
           onMouseEnter={() => handleMouseEnter('my-profile')}
           onMouseLeave={handleMouseLeave}
-          href="/my-profile"
-          onClick={() => handleLinkClick("/my-profile")}
+          href={`/my-profile/${phoneNumber}`}
+          onClick={() => handleLinkClick(`/my-profile/${phoneNumber}`)}
         >
           <FaUserCircle className="me-2" style={{ color: '#30747F' }} /> My Profile
         </a>

@@ -12,6 +12,38 @@ import myImage1 from '../../Assets/Rectangle 145.png';
 import {FaCamera, FaEye , FaRulerCombined, FaBed, FaUserAlt, FaCalendarAlt, FaRupeeSign } from 'react-icons/fa';
 import { MdCall } from 'react-icons/md';
 const PropertyCard = ({ property , onRemove , onUndo }) => {
+
+  const [message, setMessage] = useState({ text: "", type: "" });
+
+
+  const navigate = useNavigate();
+ 
+   const handleCardClick = () => {
+     if (property?.ppcId) {
+       navigate(`/detail/${property.ppcId}`);
+     }
+   };
+
+
+ 
+   const handleContactClick = async (e) => {
+     e.stopPropagation(); // Prevent card click from firing
+     try {
+       const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+         ppcId: property.ppcId,
+         phoneNumber: property.postedUserPhoneNumber,
+       });
+       if (response.data.success) {
+         setMessage && setMessage("Contact saved successfully");
+       } else {
+         setMessage && setMessage("Contact failed");
+       }
+     } catch (error) {
+       console.error("Contact API error:", error);
+       setMessage && setMessage("An error occurred");
+     }
+   };
+
   const [properties, setProperties] = useState([]);
 
  
@@ -182,11 +214,22 @@ const PropertyCard = ({ property , onRemove , onUndo }) => {
           </h6>
         </div>
 
-        <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
+        {/* <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
         <a href={`tel:${property.postedUserPhoneNumber}`} style={{ textDecoration: 'none', color: '#2E7480' }}>
             <MdCall className="me-2" color="#2F747F" /> {property.postedUserPhoneNumber || 'N/A'}
           </a>
-        </p>
+        </p> */}
+
+                    <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
+                      <a
+                        href={`tel:${property.postedUserPhoneNumber}`}
+                        onClick={handleContactClick}
+                        style={{ textDecoration: "none", color: "#2E7480" }}
+                      >
+                        <MdCall className="me-2" color="#2F747F" />{" "}
+                        {property.postedUserPhoneNumber || "N/A"}
+                      </a>
+                    </p>
       </div>
     </div>
     </div>

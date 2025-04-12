@@ -17,127 +17,188 @@ import { Button, Modal } from "react-bootstrap";
 import { FaArrowLeft } from "react-icons/fa";
 
 
+
 const PropertyCard = ({ property, onRemove, onUndo }) => {
   const [showFullNumber, setShowFullNumber] = useState(false);
 
+  const [message, setMessage] = useState({ text: "", type: "" });
+
+
+  const handleContactLog = async () => {
+    try {
+      await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+        ppcId: property.ppcId,
+        viewerPhoneNumber: property.viewerPhoneNumber,
+        uniqueId: property.uniqueId,
+      });
+      console.log('Contact logged successfully');
+    } catch (error) {
+      console.error('Error logging contact:', error);
+    }
+  };
+
+  const handleCallClick = () => {
+    handleContactLog();
+    window.location.href = `tel:${property.viewerPhoneNumber}`;
+  };
+
   return (
     <>
+      <div
+        className="card p-2 w-100 w-md-50 w-lg-33"
+        style={{
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          overflow: "hidden",
+          marginBottom: "15px",
+          fontFamily: "Inter, sans-serif",
+        }}
+      >
+        <div className="row d-flex align-items-center">
+          <div className="col-3 d-flex align-items-center justify-content-center mb-1">
+            <img
+              src={profil}
+              alt="Placeholder"
+              className="rounded-circle mt-2"
+              style={{ width: "80px", height: "80px", objectFit: "cover" }}
+            />
+          </div>
+          <div className='p-0' style={{ background: "#707070", width: "2px", height: "80px" }}></div>
+          <div className="col-7 p-0 ms-4">
+            <div className='text-center rounded-1 w-100 mb-1' style={{ border: "2px solid #30747F", color: "#30747F", fontSize: "13px" }}>
+              INTERESTED BUYER
+            </div>
+            <div className="d-flex">
+              <p className="mb-1" style={{ color: "#474747", fontWeight: "500", fontSize: "12px" }}>
+                PUC- {property.ppcId}
+              </p>
+            </div>
+            <h5 className="mb-1" style={{ color: "#474747", fontWeight: "500", fontSize: "16px" }}>
+              {property.propertyType || "N/A"} | {property.city || "N/A"}
+            </h5>
+          </div>
+        </div>
 
-<div
-// key={index}
-className="card p-2 w-100 w-md-50 w-lg-33"
-style={{
-  border: "1px solid #ddd",
-  borderRadius: "10px",
-  overflow: "hidden",
-  marginBottom: "15px",
-  fontFamily: "Inter, sans-serif",
-}}
->
-<div className="row d-flex align-items-center">
-  <div className="col-3 d-flex align-items-center justify-content-center mb-1">
-    <img
-      src={profil}
-      alt="Placeholder"
-      className="rounded-circle mt-2"
-      style={{ width: "80px", height: "80px", objectFit: "cover" }}
-    />
+        <div className="p-1">
+          <div className="d-flex align-items-center mb-2">
+            <div className="d-flex flex-row align-items-start justify-content-between ps-3">
+              <div className="d-flex align-items-center">
+                <MdCall color="#30747F" style={{ fontSize: "20px", marginRight: "8px" }} />
+                <div>
+                  <h6 className="m-0 text-muted" style={{ fontSize: "11px" }}>
+                    Buyer Phone
+                  </h6>
+                  {/* <span className="card-text" style={{ fontWeight: "500" }}>
+                    <a
+                      href={`tel:${property.viewerPhoneNumber}`}
+                      onClick={handleContactLog}
+                      style={{ textDecoration: "none", color: "#1D1D1D" }}
+                    >
+                      {showFullNumber
+                        ? property.viewerPhoneNumber
+                        : property.viewerPhoneNumber?.slice(0, 5) + "*****"}
+                    </a>
+                  </span> */}
 
-  </div>
-  <div className='p-0' style={{background:"#707070", width:"2px", height:"80px"}}></div>
-  <div className="col-7 p-0 ms-4">
-    <div className='text-center rounded-1 w-100 mb-1' style={{border:"2px solid #30747F", color:"#30747F", fontSize:"13px"}}>INTERESTED BUYER</div>
-    <div className="d-flex">
-      <p className="mb-1" style={{ color: "#474747", fontWeight: "500",fontSize:"12px" }}>
-      PUC- {property.ppcId}
-      </p>
-    </div>    
+<span className="card-text" style={{ fontWeight: "500" }}>
+  <a
+    href={`tel:${property.viewerPhoneNumber}`}
+    onClick={handleContactLog}
+    style={{ textDecoration: "none", color: "#1D1D1D" }}
+  >
+    {showFullNumber
+      ? property.viewerPhoneNumber
+      : property.viewerPhoneNumber?.slice(0, 5) + "*****"}
+  </a>
+</span>
 
-    <h5 className="mb-1" style={{ color: "#474747", fontWeight: "500",fontSize:"16px" }}>
-      {property.propertyType || "N/A"} |{property.city || "N/A"}
-    </h5>
- 
-  </div>
-</div>
-
-<div className="p-1">
-
-  <div className="d-flex align-items-center mb-2">
-  <div className="d-flex  flex-row align-items-start justify-content-between ps-3">
-
-   
-    <div className="d-flex align-items-center ">
-      <MdCall color="#30747F" style={{ fontSize: "20px", marginRight: "8px" }} />
-      <div>
-        <h6 className="m-0 text-muted" style={{ fontSize: "11px" }}>
-           Buyer Phone
-        </h6>
-        <span className="card-text" style={{  fontWeight:"500"}}>
-        <a href={`tel:${property.viewerPhoneNumber}`} style={{ textDecoration: "none", color: "#1D1D1D" }}>
-{showFullNumber
-? property.viewerPhoneNumber
-: property.viewerPhoneNumber?.slice(0, 5) + "*****"}
-</a>
-        </span>
-      </div>
-    </div>
-    <div className="d-flex align-items-center ms-3">
-      <FaCalendarAlt color="#30747F" style={{ fontSize: "20px", marginRight: "8px" }} />
-      <div>
-        <h6 className="m-0 text-muted" style={{ fontSize: "11px" }}>
-        Interest Received Date
-        </h6>
-        <span className="card-text" style={{ color: "#1D1D1D", fontWeight:"500"}}>
-        {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : 'N/A'}
-        </span>
-      </div>
-    </div>
-    </div>
+                </div>
               </div>
-  {!showFullNumber && (
-<button className='w-100 m-0 p-1'
-onClick={() => setShowFullNumber(true)}
-style={{
-  background: "#2F747F", 
-  color: "white", 
-  border: "none", 
- 
-  marginLeft: "10px", 
-  cursor: "pointer",
-  borderRadius: "5px"
-}}>
-View
-</button>
-)}
-{showFullNumber
-?  <div className="d-flex justify-content-between align-items-center ps-2 pe-2 mt-1">
+              <div className="d-flex align-items-center ms-3">
+                <FaCalendarAlt color="#30747F" style={{ fontSize: "20px", marginRight: "8px" }} />
+                <div>
+                  <h6 className="m-0 text-muted" style={{ fontSize: "11px" }}>
+                    Interest Received Date
+                  </h6>
+                  <span className="card-text" style={{ color: "#1D1D1D", fontWeight: "500" }}>
+                    {property.createdAt ? new Date(property.createdAt).toLocaleDateString() : 'N/A'}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {!showFullNumber && (
+            <button
+              className='w-100 m-0 p-1'
+              onClick={() => setShowFullNumber(true)}
+              style={{
+                background: "#2F747F",
+                color: "white",
+                border: "none",
+                marginLeft: "10px",
+                cursor: "pointer",
+                borderRadius: "5px"
+              }}
+            >
+              View
+            </button>
+          )}
+
+          {showFullNumber && (
+            <div className="d-flex justify-content-between align-items-center ps-2 pe-2 mt-1">
+              {/* <button
+                className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+                style={{ background: "#2F747F", width: "80px", fontSize: "13px" }}
+              >
+                Call
+              </button> */}
+
 <button
-        className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-        style={{ background:  "#2F747F", width: "80px", fontSize: "13px" }}
+  className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+  style={{ background: "#2F747F", width: "80px", fontSize: "13px" }}
+  onClick={async () => {
+    try {
+      // Make API call to save contact
+      await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+        ppcId: property.ppcId,  // Replace with actual PPC ID if needed
+        phoneNumber: property.viewerPhoneNumber,
+      });
+      setMessage({ text: "Contact logged successfully", type: "success" });
 
-     >
-        Call
-      </button>   
+      // Open dialer after logging contact
+      window.location.href = `tel:${property.viewerPhoneNumber}`;
+    } catch (error) {
+      setMessage({ text: "Error logging contact", type: "error" });
+    }
+  }}
+>
+  Call
+</button>
 
-
-
-      {/* <button className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-        style={{ background:  "#FF0000", width: "80px", fontSize: "13px" }}
-        onClick={() => handleRemoveProperty(property.ppcId, user)}> Remove</button> */}
-
-        
-{onRemove && (
-<button className="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{background:"#FF0000", color:"white", cursor:"pointer",}} onClick={() => onRemove(property.ppcId, property.viewerPhoneNumber, property.uniqueId)}>Remove</button>
-)}
-{onUndo && (
-<button className="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{background:"green", color:"white", cursor:"pointer", }} onClick={() => onUndo(property.ppcId, property.viewerPhoneNumber, property.uniqueId)}>Undo</button>
-)}
-</div>
-: ''}
-
-</div>
-</div>
-</>
+              {onRemove && (
+                <button
+                  className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+                  style={{ background: "#FF0000", color: "white", cursor: "pointer" }}
+                  onClick={() => onRemove(property.ppcId, property.viewerPhoneNumber, property.uniqueId)}
+                >
+                  Remove
+                </button>
+              )}
+              {onUndo && (
+                <button
+                  className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+                  style={{ background: "green", color: "white", cursor: "pointer" }}
+                  onClick={() => onUndo(property.ppcId, property.viewerPhoneNumber, property.uniqueId)}
+                >
+                  Undo
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   );
 };
 

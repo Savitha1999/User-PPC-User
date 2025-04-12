@@ -101,7 +101,7 @@ const Login = ({ onLogin }) => {
   
     if (!phoneNumber) {
       toast.error('Please enter a valid phone number.', {
-        position: "top-center",
+        position: 'top-center',
         autoClose: 5000,
       });
       return;
@@ -110,57 +110,48 @@ const Login = ({ onLogin }) => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_API_URL}/user/register`, {
         phone: phoneNumber,
-        countryCode,
-        mode: 'web'
+        countryCode: '+91', // or dynamic if needed
+        mode: 'web',
       });
   
       const message = response.data.message;
       const generatedOtp = response.data.data?.otp;
   
-      // ✅ Case 1: Already Verified → Directly Navigate
-      if (message.includes('already verified')) {
-        toast.success('Welcome back! Logged in successfully.', {
-          position: "top-center",
-          autoClose: 5000,
+      // ✅ Navigate to OTP screen after delay
+      if (generatedOtp) {
+        toast.success(`OTP sent! Your OTP is: ${generatedOtp}}`, {
+          position: 'top-center',
+          autoClose: 20000,
         });
+  
+        setMockOtp(generatedOtp); // if you're using mock OTP for dev
+        setIsOtpSent(true);
+        setOtpTimer(30);
+        setCanResendOtp(false);
   
         setTimeout(() => {
           navigate('/mobileviews', { state: { phoneNumber } });
         }, 5000);
-  
-        return;
       }
-  
-      // ✅ Case 2: OTP Sent → Show OTP Input
-      if (generatedOtp) {
-        toast.success(`OTP sent! Your OTP is: ${generatedOtp}`, {
-          position: "top-center",
-          autoClose: 20000,
-        });
-        setMockOtp(generatedOtp);
-        setIsOtpSent(true);
-        setOtpTimer(30);
-        setCanResendOtp(false);
-      }
-  
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Something went wrong!';
   
-      // ✅ Special handling for permanently logged-out users
-      if (errorMessage.includes('permanently logged out')) {
-        toast.error('Access Denied: You are permanently logged out. Please cannot log in again.', {
-          position: "top-center",
+      // ✅ Handle permanently logged-out case
+      if (errorMessage.toLowerCase().includes('permanently')) {
+        toast.error('Access Denied: You are permanently logged out. Please contact admin.', {
+          position: 'top-center',
           autoClose: 10000,
         });
         return;
       }
   
       toast.error(errorMessage, {
-        position: "top-center",
+        position: 'top-center',
         autoClose: 5000,
       });
     }
   };
+  
   
   const handleVerifyOtp = async (e) => {
     e.preventDefault();

@@ -87,8 +87,33 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
               navigate(`/detail/${property.ppcId}`);
             }
           };
+
+
+
+          const [message, setMessage] = useState({ text: "", type: "" });
+         
+          const handleContactClick = async (e) => {
+            e.stopPropagation(); // Prevent card click from firing
+            try {
+              const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+                ppcId: property.ppcId,
+                phoneNumber: property.postedUserPhoneNumber,
+              });
+              if (response.data.success) {
+                setMessage && setMessage("Contact saved successfully");
+              } else {
+                setMessage && setMessage("Contact failed");
+              }
+            } catch (error) {
+              console.error("Contact API error:", error);
+              setMessage && setMessage("An error occurred");
+            }
+          };
+
   return (
     
+    <div>
+    {message && <p style={{ color: message.type === "success" ? "green" : "red" }}>{message.text}</p>}
 
     <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background:"#EFEFEF"}}
     onClick={handleCardClick}
@@ -195,21 +220,20 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
                                    Negotiable                </span> 
                                      </h6>
                                   </div>
-                                  <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
-                                  <a
-                      href={`tel:${property.interestedUser}`}
-                      style={{
-                        textDecoration: "none",
-                        color: "#2E7480",
-                      }}
-                    >
-                      <MdCall className="me-2" color="#2F747F" />{" "}
-                      {property.postedUserPhoneNumber || 'N/A'}
-                    </a>
-                  </p>
+                                <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
+                                              <a
+                                                href={`tel:${property.postedUserPhoneNumber}`}
+                                                onClick={handleContactClick}
+                                                style={{ textDecoration: "none", color: "#2E7480" }}
+                                              >
+                                                <MdCall className="me-2" color="#2F747F" />{" "}
+                                                {property.postedUserPhoneNumber || "N/A"}
+                                              </a>
+                                            </p>
                       </div>
                     </div>
                   </div>
+               </div>
                </div>
   );
 };

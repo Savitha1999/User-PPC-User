@@ -70,67 +70,6 @@ const ContactBuyer = () => {
   const [popupMessage, setPopupMessage] = useState("");
   const navigate = useNavigate();
 
-
-    const [hover, setHover] = useState(false);
-      const [hoverDelete, setHoverDelete] = useState(false);
-      const [hoverEdit, setHoverEdit] = useState(false);
-    
-    
-  
-  const handleCallButtonClick = (ppcId, phoneNumber, property) => {
-    setMessage({
-      title: 'Do you want to call this user?',
-      onConfirm: () => handleCall(ppcId, phoneNumber, property, 'calledUser'),
-      onCancel: () => handleCall(ppcId, phoneNumber, property, 'callFailed'),
-    });
-  };
-  
-
-  const handleCall = async (ppcId, phoneNumber, property, status) => {
-    // Only open dialer if user confirmed
-    if (status === 'calledUser') {
-      window.location.href = `tel:${phoneNumber}`;
-    }
-  
-    const callData = {
-      ppcId: property.ppcId,
-      phoneNumber,
-      propertyPhoneNumber: property.postedUserPhoneNumber || '', // Owner's number
-      status, // 'calledUser' or 'callFailed'
-  
-      propertyMode: property.propertyMode || '',
-      propertyType: property.propertyType || '',
-      postedBy: property.postedBy || '',
-      area: property.area || '',
-      city: property.city || '',
-      district: property.district || '',
-      state: property.state || '',
-      bestTimeToCall: property.bestTimeToCall || '',
-      areaUnit: property.areaUnit || '',
-      totalArea: property.totalArea || '',
-      bedrooms: property.bedrooms || '',
-      facing: property.facing || '',
-      ownership: property.ownership || '',
-    };
-  
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/user-call`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(callData),
-      });
-  
-      if (!res.ok) throw new Error('Failed to log call');
-      const data = await res.json();
-      console.log('Call logged:', data);
-    } catch (error) {
-      console.error('Error logging call:', error);
-    }
-  };
-  
-
   const handlePageNavigation = () => {
     navigate('/mobileviews'); // Redirect to the desired path
   };
@@ -250,6 +189,33 @@ useEffect(() => {
     return () => clearTimeout(timer); // Cleanup timer
   }
 }, [message]);
+
+
+
+const handleContact = (ppcId, userPhone) => {
+  confirmAction("Do you want to call this user?", async () => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+        ppcId,
+        phoneNumber: userPhone,
+      });
+
+      if (response.data.success) {
+        setMessage({ text: "Contact saved successfully", type: "success" });
+        window.location.href = `tel:${userPhone}`;
+      } else {
+        setMessage({ text: "Contact failed", type: "error" });
+      }
+    } catch (error) {
+      console.error("Contact API error:", error);
+      setMessage({ text: "An error occurred", type: "error" });
+    }
+    setShowPopup(false);
+  });
+};
+
+
+
   return (
     <div className="container d-flex align-items-center justify-content-center p-0">
           <div className="d-flex flex-column align-items-center justify-content-center m-0" style={{ maxWidth: '500px', margin: 'auto', width: '100%', background:"#F7F7F7" ,fontFamily: 'Inter, sans-serif'}}>
@@ -282,33 +248,6 @@ useEffect(() => {
       </Modal>
     </div>
 
-    
-    {message && (
-  <div className="modal-overlay"
-    style={{
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#fff',
-    width: '100%',
-    maxWidth: '400px',
-    padding: '10px',
-    zIndex: 10,
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    borderRadius: '8px',
-    animation: 'popupOpen 0.3s ease-in-out',
-  }}>
-    <div className="modal-box">
-      <h5 style={{ color: "#2B3C4D", fontWeight: "bold" }}>{message.title}</h5>
-      <div className="modal-buttons">
-        <button className="me-1 ps-3 pe-3 pt-1 pb-1" style={{background:"#05B99E", color:"#fff"}} onClick={message.onConfirm}>Yes</button>
-        <button className="m-0 ps-3 pe-3  pt-1 pb-1" style={{background:"#E86D56", color:"#fff"}} onClick={message.onCancel}>No</button>
-      </div>
-    </div>
-  </div>
-)}
-      
 
   {loading ? (
   <p>Loading...</p>
@@ -360,11 +299,24 @@ useEffect(() => {
                       <MdCall color="#30747F" style={{ fontSize: "20px", marginRight: "8px" }} />
                       <div>
                         <h6 className="m-0 text-muted" style={{ fontSize: "11px" }}>Buyer Phone</h6>
-                        <span className="card-text" style={{ fontWeight:"500"}}>
+                        {/* <span className="card-text" style={{ fontWeight:"500"}}>
                           <a href={`tel:${user}`} style={{ textDecoration: "none", color: "#1D1D1D" }}>
                             {showFullNumber[index] ? user : user?.slice(0, 5) + "*****"}
                           </a>
-                        </span>
+                        </span> */}
+
+<span
+  style={{ textDecoration: "none", color: "#1D1D1D", cursor: "pointer" }}
+  onClick={async () => {
+    if (!showFullNumber[index]) return;
+    await handleContact(property.ppcId, user);
+    window.location.href = `tel:${user}`;
+  }}
+>
+  {showFullNumber[index] ? user : user?.slice(0, 5) + "*****"}
+</span>
+
+
                       </div>
                     </div>
                     <div className="d-flex align-items-center ms-3">
@@ -392,46 +344,24 @@ useEffect(() => {
                       onClick={() => window.location.href = `tel:${user}`}
                     >
                       Call
-                    </button>  */}
+                    </button>    */}
 
-                    
 <button
-        className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-        style={{
-          background: hoverEdit ? '#4ba0ad' : '#2F747F',
-          color: '#fff',
-          width: "80px", fontSize: "13px",
-          transition: 'all 0.3s ease'
-        }}
-        onMouseEnter={() => setHoverEdit(true)}
-        onMouseLeave={() => setHoverEdit(false)}
-        onClick={() => handleCallButtonClick(property.ppcId, user, property)}
-        >
-        Call
-      </button>
+  className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+  style={{ background: "#2F747F", width: "80px", fontSize: "13px" }}
+  onClick={async () => {
+    await handleContact(property.ppcId, user);
+    window.location.href = `tel:${user}`;
+  }}
+>
+  Call
+</button>
 
-                    {/* <button className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+                    <button className="btn text-white px-3 py-1 flex-grow-1 mx-1"
                       style={{ background:  "#FF0000", width: "80px", fontSize: "13px" }}
                       onClick={() => handleRemoveContact(property.ppcId, user)}>
                       Remove
-                    </button> */}
-
-                               
-<button
-        className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-        style={{
-          background: hoverDelete ? 'red' : '#FF4500',
-          color: '#fff',
-          width: "80px", fontSize: "13px",
-          transition: 'all 0.3s ease'
-        }}
-        onMouseEnter={() => setHoverDelete(true)}
-        onMouseLeave={() => setHoverDelete(false)}
-        onClick={() => handleRemoveContact(property.ppcId, user)}
-        >
-        Remove
-      </button>
-           
+                    </button>
                   </div>
                 )}
               </div>
@@ -524,34 +454,16 @@ useEffect(() => {
           )}
           {showFullNumber && (
             <div className="d-flex justify-content-between align-items-center ps-2 pe-2 mt-1">
-              {/* <button
+              <button
                 className="btn text-white px-3 py-1 flex-grow-1 mx-1"
                 style={{ background: "#2F747F", width: "80px", fontSize: "13px" }}
                 onClick={() => (window.location.href = `tel:${property.contactUser}`)}
-              >Call</button> */}
-
-              {/* <button
+              >Call</button>
+              <button
                 className="btn text-white px-3 py-1 flex-grow-1 mx-1"
                 style={{ background: "green", width: "80px", fontSize: "13px" }}
                 onClick={() => handleUndoRemove(property.ppcId, property.contactUser)}
-              >Undo</button> */}
-
-              
-
-<button
-      className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-      style={{
-        background: hover ?  'green':'#19575f' , // hover vs default
-        color: hover ? '#e0f7fa' : '#fff',         // text color on hover
-        width: "80px", fontSize: "13px",
-        transition: 'all 0.3s ease'
-      }}
-      onMouseDown={() => setHover(true)}
-      onMouseUp={() => setHover(false)}
-      onClick={() => handleUndoRemove(property.ppcId, property.contactUser)}
-      >
-      Undo
-    </button>
+              >Undo</button>
             </div>
           )}
         </div>

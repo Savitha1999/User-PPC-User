@@ -170,23 +170,23 @@ const fetchImageCount = async () => {
   }
 };
 
-  // // Fetch property views
-  // const fetchPropertyViews = async () => {
-  //   if (!ppcId) {
-  //     return;
-  //   }
+  // Fetch property views
+  const fetchPropertyViews = async () => {
+    if (!ppcId) {
+      return;
+    }
 
-  //   try {
-  //     const response = await axios.get(
-  //       `${process.env.REACT_APP_API_URL}/property-views/${ppcId}`
-  //     );
-  //     setViewCount(response.data.views);
-  //   } catch (error) {
-  //     const errorMessage =
-  //       error.response?.data?.message || "Failed to fetch property views.";
-  //     toast.error(errorMessage);
-  //   }
-  // };
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/property-views/${ppcId}`
+      );
+      setViewCount(response.data.views);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Failed to fetch property views.";
+      toast.error(errorMessage);
+    }
+  };
 
   useEffect(() => {
     if (ppcId || phoneNumber) {
@@ -194,11 +194,11 @@ const fetchImageCount = async () => {
     }
   }, [phoneNumber, ppcId]);
 
-  // useEffect(() => {
-  //   if (ppcId) {
-  //     fetchPropertyViews();
-  //   }
-  // }, [ppcId]);
+  useEffect(() => {
+    if (ppcId) {
+      fetchPropertyViews();
+    }
+  }, [ppcId]);
 
   useEffect(() => {
     const savedState = localStorage.getItem("isHeartClicked");
@@ -249,27 +249,28 @@ const storeUserViewedProperty = async (phoneNumber, ppcId) => {
       `${process.env.REACT_APP_API_URL}/user-viewed-property`,
       { phoneNumber, ppcId }
     );
+    fetchUserViewedProperties(phoneNumber); // Fetch updated viewed properties
   } catch (error) {
   }
 };
 
-//  // ✅ Fetch viewed properties for the logged-in user
-//  const fetchUserViewedProperties = async (phoneNumber) => {
-//   try {
-//     const response = await axios.get(
-//       `${process.env.REACT_APP_API_URL}/user-viewed-properties?phoneNumber=${phoneNumber}`
-//     );
-//     setViewedProperties(response.data.viewedProperties);
-//   } catch (error) {
-//   }
-// };
+ // ✅ Fetch viewed properties for the logged-in user
+ const fetchUserViewedProperties = async (phoneNumber) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_API_URL}/user-viewed-properties?phoneNumber=${phoneNumber}`
+    );
+    setViewedProperties(response.data.viewedProperties);
+  } catch (error) {
+  }
+};
 
-// // ✅ Fetch viewed properties when userPhoneNumber changes
-// useEffect(() => {
-//   if (userPhoneNumber) {
-//     fetchUserViewedProperties(userPhoneNumber);
-//   }
-// }, [userPhoneNumber]);
+// ✅ Fetch viewed properties when userPhoneNumber changes
+useEffect(() => {
+  if (userPhoneNumber) {
+    fetchUserViewedProperties(userPhoneNumber);
+  }
+}, [userPhoneNumber]);
 
 
 
@@ -303,9 +304,9 @@ const storeUserViewedProperty = async (phoneNumber, ppcId) => {
   useEffect(() => {
     // Ensure propertyDetails is not null or undefined before accessing `video`
     if (propertyDetails?.video) {
-      setVideoUrl(`http://localhost:5000/${propertyDetails.video}`);
+      setVideoUrl(`http://localhost:5006/${propertyDetails.video}`);
     } else {
-      setVideoUrl("http://localhost:5000/default-video-url.mp4"); // Fallback to a default video
+      setVideoUrl("http://localhost:5006/default-video-url.mp4"); // Fallback to a default video
     }
     console.log('Video URL:', videoUrl); // For debugging
   }, [propertyDetails?.video]); // Runs when `propertyDetails.video` changes
@@ -330,35 +331,6 @@ const storeUserViewedProperty = async (phoneNumber, ppcId) => {
   const closeModal = () => setShowModal(false);
 
 
-  // const handleOwnerContactClick = async () => {
-  //   try {
-  
-  //     if (!phoneNumber || !ppcId) {
-  //       setMessage("Phone number and Property ID are required.");
-  //       return;
-  //     }
-  
-  //     // Send data to the backend to request owner contact details
-  //     const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
-  //       phoneNumber,
-  //       ppcId,
-  //     });
-  
-  //     // Get the postedUserPhoneNumber from the response
-  //     const postedUserPhoneNumber = response.data.postedUserPhoneNumber;
-  
-  //     // Handle the response message and display the property owner's phone number
-  //     setMessage(`Owner's Phone: ${postedUserPhoneNumber}`);
-  //     setPostedUserPhoneNumber(postedUserPhoneNumber); // Save the phone number for later use/display
-  //     // setShowOwnerContact(true);  
-
-  //     toggleContactDetails(); 
-  //   } catch (error) {
-  //     setMessage("Failed to fetch owner contact details.");
-  //   }
-  // };
-
- 
 
   const toggleContactDetails = () => {
     setShowContactDetails(prevState => !prevState);
@@ -446,101 +418,33 @@ const storeUserViewedProperty = async (phoneNumber, ppcId) => {
 
 
 
-// const handleInterestClick = async () => {
-//   if (!phoneNumber || !ppcId) {
-//     setMessage("Phone number and Property ID are required.");
-//     return;
-//   }
-
-//   try {
-//     const response = await axios.post(`${process.env.REACT_APP_API_URL}/send-interests`, {
-//       phoneNumber,
-//       ppcId,
-//     });
-
-//     const { message, status } = response.data;
-
-//     if (status === "sendInterest") {
-//       setMessage("Interest sent successfully!");
-//       setInterestClicked(true);
-//       localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true));
-//     } else if (status === "alreadySaved") {
-//       setMessage("Interest already recorded for this property.");
-//     }
-//   } catch (error) {
-//     setMessage(error.response?.data?.message || "Something went wrong.");
-//   }
-// };
-
-const handleOwnerContactClick = async () => {
-  try {
-    if (!phoneNumber || !ppcId) {
-      setMessage("Phone number and Property ID are required.");
-      return;
-    }
-
-    // Check if the user has already requested this owner's contact
-    const contactSaved = localStorage.getItem(`ownerContact-${ppcId}`);
-    if (contactSaved) {
-      setMessage("You have already requested the owner's contact.");
-      return;
-    }
-
-    // Send request to fetch owner contact details
-    const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
-      phoneNumber,
-      ppcId,
-    });
-
-    const { postedUserPhoneNumber, status } = response.data;
-
-    if (status === "alreadySaved") {
-      setMessage("Owner contact request is already saved.");
-    } else {
-      setMessage(`Owner's Phone: ${postedUserPhoneNumber}`);
-      setPostedUserPhoneNumber(postedUserPhoneNumber);
-      localStorage.setItem(`ownerContact-${ppcId}`, JSON.stringify(true)); // Store in localStorage
-    }
-
-    toggleContactDetails();
-  } catch (error) {
-    setMessage("Failed to fetch owner contact details.");
-  }
-};
+      const handleOwnerContactClick = async () => {
+        try {
+          if (!phoneNumber || !ppcId) {
+            setMessage("Phone number and Property ID are required.");
+            return;
+          }
+      
+          const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+            phoneNumber,
+            ppcId,
+          });
+      
+          const { success, postedUserPhoneNumber, message } = response.data;
+      
+          if (success) {
+            // setMessage(`Owner's Phone: ${postedUserPhoneNumber}`);
+            setPostedUserPhoneNumber(postedUserPhoneNumber);
+          } else {
+          }
+      
+          toggleContactDetails();
+        } catch (error) {
+        }
+      };
+      
 
 
-// const handleInterestClick = async () => {
-//   if (!phoneNumber || !ppcId) {
-//     setMessage("Phone number and Property ID are required.");
-//     return;
-//   }
-
-//   // Prevent clicking if already sent
-//   if (interestClicked) {
-//     setMessage("Interest already recorded for this property.");
-//     return;
-//   }
-
-//   try {
-//     const response = await axios.post(`${process.env.REACT_APP_API_URL}/send-interests`, {
-//       phoneNumber,
-//       ppcId,
-//     });
-
-//     const { message, status } = response.data;
-
-//     if (status === "sendInterest") {
-//       setMessage("Interest sent successfully!");
-//       setInterestClicked(true);
-//       localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true)); // Store interest status
-//     } else if (status === "alreadySaved") {
-//       setMessage("Interest already recorded for this property.");
-//       setInterestClicked(true); // Update UI immediately
-//     }
-//   } catch (error) {
-//     setMessage(error.response?.data?.message || "Something went wrong.");
-//   }
-// };
 
 const handleInterestClick = async () => {
   if (!phoneNumber || !ppcId) {
@@ -661,7 +565,6 @@ const handleNeedHelp = async () => {
     }
   } catch (error) {
     
-    toast.error(error.response?.data?.message || "Failed to send interest."); // Dynamic error handling
   }
 };
 
@@ -677,41 +580,6 @@ const confirmActionHandler = (actionType, actionMessage) => {
   });
 };
 
-// Define card data dynamically
-// const cards = [
-//   {
-//     img: icon1,
-//     text: interestClicked ? "Interest Sent" : "Send Your Interest",
-//   //   onClick: () =>
-//   //     !interestClicked && confirmActionHandler(handleInterestClick, "Are you sure you want to send interest?"),
-//   // },
-//   onClick: () => {
-//     if (interestClicked) {
-//       setMessage("Your interest is already sent."); // Show message instead of opening popup
-//       return;
-//     }
-//     confirmActionHandler(handleInterestClick, "Are you sure you want to send interest?");
-//   },
-// },
-//   {
-//     img: icon2,
-//     text: soldOutClicked ? "Sold Out Reported" : "Report Sold Out",
-//     onClick: () =>
-//       !soldOutClicked && confirmActionHandler(handleReportSoldOut, "Are you sure you want to report this property as sold out?"),
-//   },
-//   {
-//     img: icon2,
-//     text: propertyClicked ? "Property Reported" : "Report Property",
-//     onClick: () =>
-//       !propertyClicked && confirmActionHandler(handleReportProperty, "Are you sure you want to report this property?"),
-//   },
-//   {
-//     img: icon3,
-//     text: helpClicked ? "Help Requested" : "Need Help",
-//     onClick: () =>
-//       !helpClicked && confirmActionHandler(handleNeedHelp, "Are you sure you need help?"),
-//   },
-// ];
 
 const cards = [
   {
@@ -1112,54 +980,7 @@ const currentUrl = `${window.location.origin}${location.pathname}`; // <- Works 
           </LinkedinShareButton>
         </div>
       )}
-       {/* {showOptions && (
-        <div
-          onClick={toggleShareOptions}
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            backgroundColor: "rgba(0,0,0,0.4)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            zIndex: 999,
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              display: "flex",
-              gap: "15px",
-              padding: "20px",
-              background: "#fff",
-              borderRadius: "12px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-              transform: showOptions ? "scale(1)" : "scale(0.9)",
-              opacity: showOptions ? 1 : 0,
-              transition: "all 0.3s ease",
-            }}
-          >
-            <FacebookShareButton url={currentUrl}>
-              <FacebookIcon size={40} round />
-            </FacebookShareButton>
-
-            <TwitterShareButton url={currentUrl} title={currentUrl}>
-              <TwitterIcon size={40} round />
-            </TwitterShareButton>
-
-            <WhatsappShareButton url={currentUrl} title={currentUrl}>
-              <WhatsappIcon size={40} round />
-            </WhatsappShareButton>
-
-            <LinkedinShareButton url={currentUrl}>
-              <LinkedinIcon size={40} round />
-            </LinkedinShareButton>
-          </div>
-        </div>
-      )} */}
+      
         </div>
       </div>
       <p style={{paddingLeft:"10px", paddingRight:"10px"}}>({priceInWords})</p>

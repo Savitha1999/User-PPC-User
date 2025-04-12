@@ -1,22 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -30,7 +12,47 @@ const MyProfile = () => {
   const [profile, setProfile] = useState({ name: "", email: "", mobile: phoneNumber, address: "" });
   const [isEditing, setIsEditing] = useState(false); // Track profile existence
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login state
+  const [showModal, setShowModal] = useState(false);
+  const [actionType, setActionType] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
+  const handleAction = () => {
+    switch (actionType) {
+      case "update":
+        handleUpdate();
+        setSuccessMessage("Profile updated successfully!");
+        break;
+      case "create":
+        handleSubmit();
+        setSuccessMessage("Profile created successfully!");
+        break;
+      case "logout":
+        handleLogout();
+        setSuccessMessage("Logged out successfully!");
+        break;
+      case "permanentLogout":
+        handlePermanentLogout();
+        setSuccessMessage("Permanently logged out!");
+        break;
+      default:
+        break;
+    }
+
+    setShowModal(false);
+    setShowSuccess(true);
+
+    // Hide the success message after 3 seconds
+    setTimeout(() => {
+      setShowSuccess(false);
+      setSuccessMessage("");
+    }, 3000);
+  };
+
+  const openModal = (type) => {
+    setActionType(type);
+    setShowModal(true);
+  };
   // Fetch Profile Data on Mount
   useEffect(() => {
     if (phoneNumber) {
@@ -75,7 +97,7 @@ const MyProfile = () => {
       email: profile.email,
       address: profile.address,
     })
-      .then(() => alert("Profile updated successfully!"))
+      // .then(() => alert("Profile updated successfully!"))
       .catch((error) => console.error("Error updating profile:", error));
   };
 
@@ -277,7 +299,7 @@ const MyProfile = () => {
   </div>
 </div>
           {/* Buttons */}
-          <div className="d-flex flex-column mt-5">
+          {/* <div className="d-flex flex-column mt-5">
             {isEditing ? (
              <button
              type="button"
@@ -335,31 +357,125 @@ const MyProfile = () => {
     >
       LOGOUT
   </button>
-   
-    {/* <button type="button" className="btn btn-outline-danger w-100" onClick={handlePermanentLogout}>
-      PERMANENT LOGOUT
-    </button> */}
+
 
 <button
       type="button"
       className="btn w-100 mb-2"
       style={{
-        background: "#4F4B7E",
+        background: "red",
         color: "#fff",
         border: "none",
         fontSize: "14px",
         transition: "background 0.2s",
       }}
       onClick={handlePermanentLogout}
-      onMouseDown={(e) => (e.target.style.background = "#3e3a6a")}
-      onMouseUp={(e) => (e.target.style.background = "#D6D6D6")}
-      onMouseLeave={(e) => (e.target.style.background = "#4F4B7E")}
+      onMouseDown={(e) => (e.target.style.background = "red")}
+      onMouseUp={(e) => (e.target.style.background = "red")}
+      onMouseLeave={(e) => (e.target.style.background = "red4F4B7E")}
     >
       PERMANENT LOGOUT
   </button>
   </>
 )}
+          </div> */}
+
+<div className="d-flex flex-column mt-5">
+      {isEditing ? (
+        <button
+          type="button"
+          className="btn w-100 mb-2"
+          style={{ background: "#4F4B7E", color: "#fff", border: "none", fontSize: "14px" }}
+          onClick={() => openModal("update")}
+        >
+          UPDATE PROFILE
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="btn w-100 mb-2"
+          style={{ background: "#00B072", color: "#fff", border: "none", fontSize: "14px" }}
+          onClick={() => openModal("create")}
+        >
+          CREATE PROFILE
+        </button>
+      )}
+
+      {isLoggedIn && (
+        <>
+          <button
+            type="button"
+            className="btn w-100 mb-2"
+            style={{ color: "black", border: "1px solid red", fontSize: "14px", background: "transparent" }}
+            onClick={() => openModal("logout")}
+          >
+            LOGOUT
+          </button>
+
+          <button
+            type="button"
+            className="btn w-100 mb-2"
+            style={{ background: "red", color: "#fff", border: "none", fontSize: "14px" }}
+            onClick={() => openModal("permanentLogout")}
+          >
+            PERMANENT LOGOUT
+          </button>
+        </>
+      )}
+
+      {/* Confirmation Modal */}
+      {showModal && (
+        <div className="modal show d-block" tabIndex="-1" style={{ background: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog">
+            <div className="modal-content animate__animated animate__fadeInDown">
+              <div className="modal-header">
+                <h5 className="modal-title">Please Confirm</h5>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)} />
+              </div>
+              <div className="modal-body">
+                <p>
+                  {actionType === "update" && "Are you sure you want to update the profile?"}
+                  {actionType === "create" && "Do you want to create the profile?"}
+                  {actionType === "logout" && "Are you sure you want to logout?"}
+                  {actionType === "permanentLogout" &&
+                    "This will permanently logout your account. Continue?"}
+                </p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn" style={{background:"#FF0000" ,  color:"#fff"}} onClick={() => setShowModal(false)}>
+                  Cancel
+                </button>
+                <button className="btn btn-primary" style={{background:"#2F747F" ,  color:"#fff"}} onClick={handleAction}>
+                  Confirm
+                </button>
+              </div>
+            </div>
           </div>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {showSuccess && (
+        <div className="w-100 p-2"
+style={{  position: "fixed",
+  top: "30px",
+  left: "50%",
+  transform: "translateX(-50%)",
+  backgroundColor: "#ffffff",
+  color: "grey",
+  // padding: "12px 20px",
+  borderRadius: "8px",
+  fontSize: "14px",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+  zIndex: 1050,
+  opacity: 0.95,
+  transition: "transform 0.3s ease-in-out, opacity 0.3s ease-in-out",
+  // Optional animation
+  transform: showSuccess ? "translateX(-50%) translateY(0)" : "translateX(-50%) translateY(-20px)",
+ }} >  {successMessage}
+        </div>
+      )}
+    </div>
         </form>
         </div>
 

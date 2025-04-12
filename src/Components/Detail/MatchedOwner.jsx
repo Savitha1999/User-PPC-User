@@ -86,8 +86,32 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
         }
       };
 
+        const [message, setMessage] = useState({ text: "", type: "" });
+      
+  const handleContactClick = async (e) => {
+    e.stopPropagation(); // Prevent card click from firing
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+        ppcId: property.ppcId,
+        phoneNumber: property.postedUserPhoneNumber,
+      });
+      if (response.data.success) {
+        setMessage && setMessage("Contact saved successfully");
+      } else {
+        setMessage && setMessage("Contact failed");
+      }
+    } catch (error) {
+      console.error("Contact API error:", error);
+      setMessage && setMessage("An error occurred");
+    }
+  };
+
+  
+
   return (
-    
+    <div>
+    {message && <p style={{ color: message.type === "success" ? "green" : "red" }}>{message.text}</p>}
+
 
     <div className="row g-0 rounded-4 mb-2" style={{ border: '1px solid #ddd', overflow: "hidden", background:"#EFEFEF"}}
     onClick={handleCardClick}
@@ -178,6 +202,7 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
                        <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
                     <a
                       href={`tel:${property.phoneNumber}`}
+                      onClick={handleContactClick}
                       style={{
                         textDecoration: "none",
                         color: "#2E7480",
@@ -186,7 +211,8 @@ const PropertyCard = ({ property, onRemove, onUndo }) => {
                       <MdCall className="me-1" color="#2F747F" />{" "}
                       {property.phoneNumber || 'N/A'}
                     </a>
-                  </p>
+                    </p>
+               </div>
                       </div>
                     </div>
                   </div>

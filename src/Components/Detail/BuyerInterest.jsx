@@ -50,6 +50,7 @@ import {  FaCalendarAlt } from "react-icons/fa";
 import { Button, Modal } from "react-bootstrap";
 import { FaArrowLeft } from "react-icons/fa";
 
+
 const App = () => {
   const { phoneNumber } = useParams();
   const [properties, setProperties] = useState([]);
@@ -70,60 +71,6 @@ const App = () => {
     const [hoverDelete, setHoverDelete] = useState(false);
     const [hoverEdit, setHoverEdit] = useState(false);
   
-  
-  const handleCallButtonClick = (ppcId, phoneNumber, property) => {
-    setMessage({
-      title: 'Do you want to call this user?',
-      onConfirm: () => handleCall(ppcId, phoneNumber, property, 'calledUser'),
-      onCancel: () => handleCall(ppcId, phoneNumber, property, 'callFailed'),
-    });
-  };
-  
-
-  const handleCall = async (ppcId, phoneNumber, property, status) => {
-    // Only open dialer if user confirmed
-    if (status === 'calledUser') {
-      window.location.href = `tel:${phoneNumber}`;
-    }
-  
-    const callData = {
-      ppcId: property.ppcId,
-      phoneNumber,
-      propertyPhoneNumber: property.postedUserPhoneNumber || '', // Owner's number
-      status, // 'calledUser' or 'callFailed'
-  
-      propertyMode: property.propertyMode || '',
-      propertyType: property.propertyType || '',
-      postedBy: property.postedBy || '',
-      area: property.area || '',
-      city: property.city || '',
-      district: property.district || '',
-      state: property.state || '',
-      bestTimeToCall: property.bestTimeToCall || '',
-      areaUnit: property.areaUnit || '',
-      totalArea: property.totalArea || '',
-      bedrooms: property.bedrooms || '',
-      facing: property.facing || '',
-      ownership: property.ownership || '',
-    };
-  
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/user-call`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(callData),
-      });
-  
-      if (!res.ok) throw new Error('Failed to log call');
-      const data = await res.json();
-    } catch (error) {
-    }
-  };
-  
-
-
   useEffect(() => {
     if (!phoneNumber) {
       setLoading(false);
@@ -276,13 +223,37 @@ useEffect(() => {
     setShowPopup(false);
 
   });
-
 };
+
+const handleContact = (ppcId, userPhone) => {
+  confirmAction("Do you want to call this user?", async () => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+        ppcId,
+        phoneNumber: userPhone,
+      });
+
+      if (response.data.success) {
+        setMessage({ text: "Contact saved successfully", type: "success" });
+        window.location.href = `tel:${userPhone}`;
+      } else {
+        setMessage({ text: "Contact failed", type: "error" });
+      }
+    } catch (error) {
+      console.error("Contact API error:", error);
+      setMessage({ text: "An error occurred", type: "error" });
+    }
+    setShowPopup(false);
+  });
+};
+
 const navigate = useNavigate();
 
 const handlePageNavigation = () => {
   navigate('/mobileviews'); // Redirect to the desired path
 };
+
+
   return (
     <div className="container d-flex align-items-center justify-content-center p-0" style={{fontFamily:"Inter, sans-serif",}}>
      
@@ -307,32 +278,7 @@ const handlePageNavigation = () => {
         </button>
         </div>
 
-        {message && (
-  <div className="modal-overlay"
-    style={{
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#fff',
-    width: '100%',
-    maxWidth: '400px',
-    padding: '10px',
-    zIndex: 10,
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    borderRadius: '8px',
-    animation: 'popupOpen 0.3s ease-in-out',
-  }}>
-    <div className="modal-box">
-      <h5 style={{ color: "#2B3C4D", fontWeight: "bold" }}>{message.title}</h5>
-      <div className="modal-buttons">
-        <button className="me-1 ps-3 pe-3 pt-1 pb-1" style={{background:"#05B99E", color:"#fff"}} onClick={message.onConfirm}>Yes</button>
-        <button className="m-0 ps-3 pe-3  pt-1 pb-1" style={{background:"#E86D56", color:"#fff"}} onClick={message.onCancel}>No</button>
-      </div>
-    </div>
-  </div>
-)}
-
+      
 
       {/* Display Messages */}
       <div>
@@ -443,29 +389,16 @@ const handlePageNavigation = () => {
         )}
           {showFullNumber
             ?  <div className="d-flex justify-content-between align-items-center ps-2 pe-2 mt-1">
-{/* <button
-  className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-  style={{ background: "#2F747F", width: "80px", fontSize: "13px" }}
-  onClick={() => handleCallButtonClick(property.ppcId, user, property)}
->
-  Call
-</button> */}
+<div className="d-flex justify-content-between mt-2">
+                      <button
+                        className="btn btn-sm text-white"
+                        style={{ background: "#2F747F", width: "48%" }}
+                        onClick={() => handleContact(property.ppcId, user)}
+                      >
+                        Call
+                      </button>
+                      </div>
 
-
-<button
-        className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-        style={{
-          background: hoverEdit ? '#4ba0ad' : '#2F747F',
-          color: '#fff',
-          width: "80px", fontSize: "13px",
-          transition: 'all 0.3s ease'
-        }}
-        onMouseEnter={() => setHoverEdit(true)}
-        onMouseLeave={() => setHoverEdit(false)}
-        onClick={() => handleCallButtonClick(property.ppcId, user, property)}
-        >
-        Call
-      </button>
 
 {/* 
                   <button className="btn text-white px-3 py-1 flex-grow-1 mx-1"

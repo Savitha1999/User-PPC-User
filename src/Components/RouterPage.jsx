@@ -94,7 +94,7 @@ import MoreComponent from './MoreComponent';
 import DetailProperty from './DetailProperty';
 import FAQ from './FAQ';
 import PrivacyPolicyWeb from './PrivacyPolicyWeb';
-
+import PropertyAssistance from './BuyerAssistance';
 
 
 
@@ -177,6 +177,7 @@ export default function RouterPage() {
 
         <Route path='/owner' element={< Owner />} />
         <Route path='/RefundPolicy' element={< RefundPolicy />} />
+        <Route path='/buyer-assistance/:phoneNumber' element={isAuthenticated ? <PropertyAssistance phone={phoneNumber} /> : <App to="/" />} />
 
         <Route path='/matched-owner/:phoneNumber' element={isAuthenticated ? <MatchedOwner phone={phoneNumber} /> : <App to="/" />} />
         <Route path='/matched-buyer/:phoneNumber' element={isAuthenticated ? <MatchedBuyer phone={phoneNumber} /> : <App to="/" />} />

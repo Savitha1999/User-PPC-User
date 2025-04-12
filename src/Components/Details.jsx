@@ -418,101 +418,33 @@ useEffect(() => {
 
 
 
-// const handleInterestClick = async () => {
-//   if (!phoneNumber || !ppcId) {
-//     setMessage("Phone number and Property ID are required.");
-//     return;
-//   }
-
-//   try {
-//     const response = await axios.post(`${process.env.REACT_APP_API_URL}/send-interests`, {
-//       phoneNumber,
-//       ppcId,
-//     });
-
-//     const { message, status } = response.data;
-
-//     if (status === "sendInterest") {
-//       setMessage("Interest sent successfully!");
-//       setInterestClicked(true);
-//       localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true));
-//     } else if (status === "alreadySaved") {
-//       setMessage("Interest already recorded for this property.");
-//     }
-//   } catch (error) {
-//     setMessage(error.response?.data?.message || "Something went wrong.");
-//   }
-// };
-
-const handleOwnerContactClick = async () => {
-  try {
-    if (!phoneNumber || !ppcId) {
-      setMessage("Phone number and Property ID are required.");
-      return;
-    }
-
-    // Check if the user has already requested this owner's contact
-    const contactSaved = localStorage.getItem(`ownerContact-${ppcId}`);
-    if (contactSaved) {
-      setMessage("You have already requested the owner's contact.");
-      return;
-    }
-
-    // Send request to fetch owner contact details
-    const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
-      phoneNumber,
-      ppcId,
-    });
-
-    const { postedUserPhoneNumber, status } = response.data;
-
-    if (status === "alreadySaved") {
-      setMessage("Owner contact request is already saved.");
-    } else {
-      setMessage(`Owner's Phone: ${postedUserPhoneNumber}`);
-      setPostedUserPhoneNumber(postedUserPhoneNumber);
-      localStorage.setItem(`ownerContact-${ppcId}`, JSON.stringify(true)); // Store in localStorage
-    }
-
-    toggleContactDetails();
-  } catch (error) {
-    setMessage("Failed to fetch owner contact details.");
-  }
-};
+      const handleOwnerContactClick = async () => {
+        try {
+          if (!phoneNumber || !ppcId) {
+            setMessage("Phone number and Property ID are required.");
+            return;
+          }
+      
+          const response = await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+            phoneNumber,
+            ppcId,
+          });
+      
+          const { success, postedUserPhoneNumber, message } = response.data;
+      
+          if (success) {
+            // setMessage(`Owner's Phone: ${postedUserPhoneNumber}`);
+            setPostedUserPhoneNumber(postedUserPhoneNumber);
+          } else {
+          }
+      
+          toggleContactDetails();
+        } catch (error) {
+        }
+      };
+      
 
 
-// const handleInterestClick = async () => {
-//   if (!phoneNumber || !ppcId) {
-//     setMessage("Phone number and Property ID are required.");
-//     return;
-//   }
-
-//   // Prevent clicking if already sent
-//   if (interestClicked) {
-//     setMessage("Interest already recorded for this property.");
-//     return;
-//   }
-
-//   try {
-//     const response = await axios.post(`${process.env.REACT_APP_API_URL}/send-interests`, {
-//       phoneNumber,
-//       ppcId,
-//     });
-
-//     const { message, status } = response.data;
-
-//     if (status === "sendInterest") {
-//       setMessage("Interest sent successfully!");
-//       setInterestClicked(true);
-//       localStorage.setItem(`interestSent-${ppcId}`, JSON.stringify(true)); // Store interest status
-//     } else if (status === "alreadySaved") {
-//       setMessage("Interest already recorded for this property.");
-//       setInterestClicked(true); // Update UI immediately
-//     }
-//   } catch (error) {
-//     setMessage(error.response?.data?.message || "Something went wrong.");
-//   }
-// };
 
 const handleInterestClick = async () => {
   if (!phoneNumber || !ppcId) {
@@ -633,7 +565,6 @@ const handleNeedHelp = async () => {
     }
   } catch (error) {
     
-    toast.error(error.response?.data?.message || "Failed to send interest."); // Dynamic error handling
   }
 };
 

@@ -373,6 +373,27 @@ const PropertyList = ({ properties, onRemove, onUndo, onAccept, onReject }) => {
 const PropertyCard = ({ property, onRemove, onUndo, onAccept, onReject }) => {
   const [activeButton, setActiveButton] = useState(property.status || null);
     const [showFullNumber, setShowFullNumber] = useState(false);
+
+      const [message, setMessage] = useState({ text: "", type: "" });
+    
+
+    // 1. Create a handler function to log contact and initiate call
+const handleContactBuyer = async (buyerPhoneNumber, ppcId) => {
+  try {
+    // Call the /contact API
+    await axios.post(`${process.env.REACT_APP_API_URL}/contact`, {
+      ppcId: ppcId,
+      phoneNumber: buyerPhoneNumber,
+    });
+    setMessage({ text: "Contact logged successfully", type: "success" });
+
+    // Open dialer
+    window.location.href = `tel:${buyerPhoneNumber}`;
+  } catch (error) {
+    setMessage({ text: "Failed to log contact", type: "error" });
+  }
+};
+
   
   return (
 
@@ -450,13 +471,28 @@ style={{
         <h6 className="m-0 text-muted" style={{ fontSize: "11px" }}>
            Buyer Phone
         </h6>
-        <span className="card-text" style={{  fontWeight:"500"}}>
+        {/* <span className="card-text" style={{  fontWeight:"500"}}>
         <a href={`tel:${property.buyerPhoneNumber}`} style={{ textDecoration: "none", color: "#1D1D1D" }}>
 {showFullNumber
 ? property.buyerPhoneNumber
 : property.buyerPhoneNumber?.slice(0, 5) + "*****"}
 </a>
-        </span>
+        </span> */}
+
+<span className="card-text" style={{ fontWeight: "500" }}>
+  <span
+    onClick={() => {
+      if (showFullNumber) {
+        handleContactBuyer(property.buyerPhoneNumber, property.ppcId);
+      }
+    }}
+    style={{ textDecoration: "none", color: "#1D1D1D", cursor: "pointer" }}
+  >
+    {showFullNumber
+      ? property.buyerPhoneNumber
+      : property.buyerPhoneNumber?.slice(0, 5) + "*****"}
+  </span>
+</span>
       </div>
     </div>
     <div className="d-flex align-items-center ms-3">
@@ -489,13 +525,22 @@ View
 )}
 {showFullNumber
 ?  <div className="d-flex justify-content-between align-items-center ps-2 pe-2 mt-1">
-<button
+{/* <button
         className="btn text-white px-3 py-1 flex-grow-1 mx-1"
         style={{ background:  "#2F747F", width: "80px", fontSize: "13px" }}
 
      >
         Call
-      </button>   
+      </button>    */}
+
+      
+<button
+  className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+  style={{ background: "#2F747F", width: "80px", fontSize: "13px" }}
+  onClick={() => handleContactBuyer(property.buyerPhoneNumber, property.ppcId)}
+>
+  Call
+</button>
 
       <button className="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{ background: activeButton === "accept" ? "#4CAF50" : "#2F747F", width: "80px", fontSize: "11px" }} onClick={() => { setActiveButton("accept"); onAccept(property.ppcId, property.buyerPhoneNumber, "accept"); }}>YES</button>
          <button className="btn text-white px-3 py-1 flex-grow-1 mx-1" style={{ background: activeButton === "reject" ? "#FF5733" : "#2F747F", width: "80px", fontSize: "11px" }} onClick={() => { setActiveButton("reject"); onReject(property.ppcId, property.buyerPhoneNumber, "reject"); }}>NO</button>

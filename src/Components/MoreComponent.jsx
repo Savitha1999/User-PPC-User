@@ -712,13 +712,13 @@ fetchContactBuyerCount();
     count={interestBuyersCount}
     badgeClass="bg-primary" 
 />
-
+{/* 
 <MenuLink  
     to={`/help-buyer/${phoneNumber}`} 
     label="Help Requests Buyers"
     count={helpRequestsCount}
     badgeClass="bg-danger" 
-/>
+/> */}
 
 
 <MenuLink  
@@ -767,20 +767,20 @@ fetchContactBuyerCount();
     count={buyerViewedCount}
     badgeClass="bg-success" 
 />
-
+{/* 
 <MenuLink  
     to={`/report-property-buyer/${phoneNumber}`} 
     label=" Report Property Buyers"
     count={reportRequestsCount}
     badgeClass="bg-warning" 
-/>
-
+/> */}
+{/* 
 <MenuLink  
     to={`/soldout-buyer/${phoneNumber}`} 
     label=" Sold-Out Buyers "
     count={soldOutRequestsCount}
     badgeClass="bg-danger" 
-/>
+/> */}
 
 
 
@@ -799,6 +799,11 @@ fetchContactBuyerCount();
                         </div>
                         <ul className="list-group">
 
+
+                        <MenuLink 
+                        to={`/buyer-assistance/${phoneNumber}`}
+    label="Buyer Assistance " 
+/>
                         <MenuLink 
     to={`/interest-owner/${phoneNumber}`} 
     label=" My Send Interest  "  
@@ -820,12 +825,6 @@ fetchContactBuyerCount();
     badgeClass="bg-info" 
 />
 
-<MenuLink  
-    to={`/help-owner/${phoneNumber}`} 
-    label="My Help Requests "
-    count={helpOwnersCount}
-    badgeClass="bg-warning" 
-/>
 
 <MenuLink  
     to={`/contact-owner/${phoneNumber}`} 
@@ -844,54 +843,34 @@ fetchContactBuyerCount();
 
 
 <MenuLink  
-    to={`/report-property-owner/${phoneNumber}`} 
-    label="My Report Property "
-    count={reportPropertyOwnersCount}
-    badgeClass="bg-warning" 
-/>
-
-<MenuLink  
-    to={`/soldout-owner/${phoneNumber}`} 
-    label="My Sold-Out "
-    count={soldOutOwnersCount}
-    badgeClass="bg-warning" 
-/>
-
-<MenuLink  
     to={`/favorite-owner/${phoneNumber}`} 
     label="My Shortlist Property"
     count={favoriteOwnerCount}
     badgeClass="bg-success" 
 />
+
+
 {/* 
-<MenuLink  
-    to={`/favorite-remove-owner/${phoneNumber}`} 
-    label="My Shortlist Removed Property"
-    count={favoriteRemovedOwnerCount}
-    badgeClass="bg-danger" 
-/> */}
-
-
-
 <MenuLink  
     to={`/view-owner/${phoneNumber}`} 
     label="Viewed Properties"
     count={viewedPropertiesCount}
     badgeClass="bg-info" 
-/>
+/> */}
 
 
-
+{/* 
 <MenuLink 
     to={`/my-call`} 
     label="My Called List "
     count={callUserCount}  
-/>
+/> */}
 
 <MenuLink 
     to={`/my-last-property`} 
     label="My Last Viewed Property "  
-    // count={planCount}   
+    count={viewedPropertiesCount}
+
 />
 
 

@@ -86,19 +86,19 @@ const App = () => {
     navigate('/mobileviews'); // Redirect to the desired path
   };
   return (
-    <div style={{ maxWidth: '500px', margin: 'auto' , background:"#F7F7F7"}}>
+    <div style={{ maxWidth: '500px', margin: 'auto' }}>
       <Tab.Container activeKey={activeKey} onSelect={(key) => setActiveKey(key)}>
         <Row className="g-3">
           <Col lg={12} className="d-flex flex-column align-items-center">
-          <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" , fontFamily: 'Inter, sans-serif' }}>
+          <div className="d-flex align-items-center justify-content-start w-100" style={{background:"#EFEFEF" }}>
           <button className="pe-5" onClick={handlePageNavigation}><FaArrowLeft color="#30747F"/> 
         </button> <h3 className="m-0 ms-3" style={{fontSize:"20px"}}>  VIEWED OWNER </h3> </div>
             <Nav variant="tabs" className="mb-3" style={{ width: '100%' }}>
               <Nav.Item style={{ flex: '1' }}>
-                <Nav.Link eventKey="All" style={{ backgroundColor: '#30747F', color: 'white', textAlign: 'center' }}>All</Nav.Link>
+                <Nav.Link eventKey="All" style={{ backgroundColor: '#4F4B7E', color: 'white', textAlign: 'center' }}>All</Nav.Link>
               </Nav.Item>
               <Nav.Item style={{ flex: '1' }}>
-                <Nav.Link eventKey="removed" style={{ backgroundColor: '#FFFFFF', color: 'grey', textAlign: 'center' }}>Removed</Nav.Link>
+                <Nav.Link eventKey="removed" style={{ backgroundColor: '#FF0000', color: 'white', textAlign: 'center' }}>Removed</Nav.Link>
               </Nav.Item>
             </Nav>
             <Tab.Content>
@@ -116,24 +116,11 @@ const App = () => {
   );
 };
 
-const ViewedOwner = ({ property ,properties, onRemove, setProperties, setRemovedProperties }) => {
+const ViewedOwner = ({ properties, onRemove, setProperties, setRemovedProperties }) => {
   const { phoneNumber } = useParams();
   const [loading, setLoading] = useState(true);
   const [removedProperties, setRemovedPropertiesLocal] = useState([]);
-  const [showPopup, setShowPopup] = useState(false);
-  const [actionType, setActionType] = useState(""); // "remove" or "undo"
 
-  const handleConfirm = () => {
-    if (actionType === "remove") {
-      handleRemove(property.ppcId, property.postedUserPhoneNumber);
-    } 
-    setShowPopup(false);
-  };
-
-  const openPopup = (type) => {
-    setActionType(type);
-    setShowPopup(true);
-  };
   useEffect(() => {
     // Load removed properties from localStorage
     const storedRemovedProperties = localStorage.getItem('removedProperties');
@@ -194,7 +181,7 @@ const ViewedOwner = ({ property ,properties, onRemove, setProperties, setRemoved
               </div>
               <div style={{ position: "relative", width: "100%", height:'160px'}}>
 <img
-                      src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic }
+                      src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic }
                       alt="Property"
                       className="img-fluid"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -218,86 +205,34 @@ bottom: "0px"}}>
                 <p className="m-0" style={{ color: '#5E5E5E', fontWeight: 'normal' }}>
                   {property.propertyMode || 'N/A'}
                 </p>
-                {/* <p
+                <p
                   className="mb-0 ps-3 pe-3 text-center pt-1"
                   style={{ background: "#FF0000", color: "white", cursor: "pointer", borderRadius: '0px 0px 0px 15px', fontSize: "12px" }}
                   onClick={() => handleRemove(property.ppcId, property.postedUserPhoneNumber)}
                 >
                   REMOVED
-                </p> */}
-                  <p
-          className="mb-0 ps-3 pe-3 text-center pt-1"
-          style={{
-            background: "#FF0000",
-            color: "white",
-            cursor: "pointer",
-            borderRadius: '0px 0px 0px 15px',
-            fontSize: "12px"
-          }}
-          onClick={() => openPopup("remove")}
-        >
-          REMOVED
-        </p>
-        {showPopup && (
-        <div
-        style={{
-          position: "fixed",
-          background: "white",
-          border: "1px solid #ccc",
-          padding: "10px",
-          borderRadius: "5px",
-          boxShadow: "0 0 10px rgba(0,0,0,0.2)",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 1000,
-          width: "260px",
-          textAlign: "center",
-        }}         >
-            <p className="mb-1" style={{
-            color:"#007C7C", fontSize:"12px"
-          }}>
-              Are you sure you want to <strong>{actionType === "remove" ? "remove this property" : "remove this property"}</strong>?
-            </p>
-            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-            <button className='p-1' style={{ background:  "#2F747F", width: "80px", fontSize: "13px", border:"none" }}  onClick={handleConfirm}>Yes</button>
-              <button className="ms-3 p-1" style={{ background:  "#FF0000", width: "80px", fontSize: "13px" , border:"none"}}onClick={() => setShowPopup(false)}>No</button>
-            </div>
-        </div>
-      )}
+                </p>
               </div>
               <p className="fw-bold m-0" style={{ color: '#000000' }}>{property.propertyType || 'N/A'}</p>
               <p className='m-0' style={{ color: '#5E5E5E' }}>{property.city || 'N/A'}</p>
               <div className="card-body ps-2 m-0 pt-0 pe-2 d-flex flex-column justify-content-center">
                 <div className="row">
-                       <div className="col-6 d-flex align-items-center  p-1">
-                    <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E', fontWeight: 'medium' }}>{property.totalArea || 'N/A'}{property.areaUnit || 'N/A'}</span>
+                  <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                    <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E', fontWeight: 'medium' }}>{property.totalArea || 'N/A'}</span>
                   </div>
-                  <div className="col-6 d-flex align-items-center  p-1">
-                  <FaBed className="me-2" color="#2F747F" />
-                          <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
-                            {property.bedrooms || 'N/A'}BHK
-                          </span>
-                        </div>
-                             <div className="col-6 d-flex align-items-center  p-1">
-                          <FaUserAlt className="me-2" color="#2F747F" />
-                          <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
-                            {property.postedBy || 'N/A'}
-                          </span>
-                        </div>
-                           <div className="col-6 d-flex align-items-center  p-1">
-                                                                                     <FaCalendarAlt className="me-2" color="#2F747F"/> 
-                                            <span style={{ fontSize:'13px', color:'#5E5E5E', fontWeight: 500 }}>
-                                              {property.createdAt ? new Date(property.createdAt).toLocaleDateString('en-IN', {
-                                                year: 'numeric',
-                                                month: 'short',
-                                                day: 'numeric'
-                                              }) : 'N/A'}
-                                            </span>     
-                                            </div> 
-                                            <div className="col-12 d-flex flex-col align-items-center p-1">
-                                            <h6 className="m-0">
-                      <span style={{ fontSize: '15px', color: '#2F747F', fontWeight: 'bold', letterSpacing: "1px" }}>
+                  <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                    <FaBed className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E' }}>{property.bedrooms || 'N/A'}</span>
+                  </div>
+                  <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                    <FaUserAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E' }}>{property.ownership || 'N/A'}</span>
+                  </div>
+                  <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                    <FaCalendarAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E' }}>{property.bestTimeToCall || 'N/A'}</span>
+                  </div>
+
+                  <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
+                    <h6 className="m-0">
+                      <span style={{ fontSize: '17px', color: '#2F747F', fontWeight: 'bold', letterSpacing: "1px" }}>
                         <FaRupeeSign className="me-2" color="#2F747F" />{property.price ? property.price.toLocaleString('en-IN') : 'N/A'}
                       </span>
                       <span style={{ color: '#2F747F', fontSize: '13px', marginLeft: "5px", fontSize: '11px' }}>
@@ -306,8 +241,8 @@ bottom: "0px"}}>
                     </h6>
                   </div>
 
-                  <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
-                  <a href={`tel:${property.interestedUser}`} style={{ textDecoration: 'none', color: '#2E7480' }}>
+                  <p style={{ color: "#2E7480", margin: "0px" }}>
+                    <a href={`tel:${property.interestedUser}`} style={{ textDecoration: 'none', color: '#2E7480' }}>
                       <MdCall className="me-2" color="#2F747F" /> {property.phoneNumber || 'N/A'}
                     </a>
                   </p>
@@ -322,21 +257,7 @@ bottom: "0px"}}>
 };
 
 
-const RemovedProperties = ({ property, removedProperties, onUndo }) => {
-  const [showPopup, setShowPopup] = useState(false);
-  const [actionType, setActionType] = useState(""); // "remove" or "undo"
-
-  const handleConfirm = () => {
-    if (actionType === "undo") {
-      onUndo(property.ppcId, property.postedUserPhoneNumber);
-    } 
-    setShowPopup(false);
-  };
-
-  const openPopup = (type) => {
-    setActionType(type);
-    setShowPopup(true);
-  };
+const RemovedProperties = ({ removedProperties, onUndo }) => {
   return (
 
 <div className="container mt-5">
@@ -351,7 +272,7 @@ const RemovedProperties = ({ property, removedProperties, onUndo }) => {
     </div>
     <div style={{ position: "relative", width: "100%", height: '160px' }}>
       <img
-        src={property.photos?.length ? `http://localhost:5006/${property.photos[0]}` : pic}
+        src={property.photos?.length ? `http://localhost:5000/${property.photos[0]}` : pic}
         alt="Property"
         className="img-fluid"
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -387,12 +308,12 @@ const RemovedProperties = ({ property, removedProperties, onUndo }) => {
     </div>
   </div>
 
-  <div className="col-md-8 col-8" style={{paddingLeft:"10px", background:"#F5F5F5"}}>
-  <div className="d-flex justify-content-between">
+  <div className="col-md-8 col-8 ps-2">
+    <div className="d-flex justify-content-between">
       <p className="m-0" style={{ color: '#5E5E5E', fontWeight: 'normal' }}>
         {property.propertyMode || 'N/A'}
       </p>
-      {/* <p
+      <p
         className="m-0 ps-3 pe-3"
         style={{
           background: "green",
@@ -403,66 +324,27 @@ const RemovedProperties = ({ property, removedProperties, onUndo }) => {
         onClick={() => onUndo(property.ppcId, property.postedUserPhoneNumber)}
       >
         UNDO
-      </p> */}
-         <p
-          className="m-0 ps-3 pe-3"
-          style={{
-            background: "green",
-            color: "white",
-            cursor: "pointer",
-            borderRadius: '0px 0px 0px 15px'
-          }}
-          onClick={() => openPopup("undo")}
-        >
-          UNDO
-        </p>
-          {showPopup && (
-        <div
-        style={{
-          position: "fixed",
-          background: "white",
-          border: "1px solid #ccc",
-          padding: "10px",
-          borderRadius: "5px",
-          boxShadow: "0 0 10px rgba(0,0,0,0.2)",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          zIndex: 1000,
-          width: "260px",
-          textAlign: "center",
-        }}         >
-            <p className="mb-1" style={{
-            color:"#007C7C", fontSize:"12px"
-          }}>
-              Are you sure you want to <strong>{actionType === "undo" ? "Recovery this property" : "Recovery this property"}</strong>?
-            </p>
-            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-            <button className='p-1' style={{ background:  "#2F747F", width: "80px", fontSize: "13px", border:"none" }}  onClick={handleConfirm}>Yes</button>
-              <button className="ms-3 p-1" style={{ background:  "#FF0000", width: "80px", fontSize: "13px" , border:"none"}}onClick={() => setShowPopup(false)}>No</button>
-            </div>
-        </div>
-      )}
+      </p>
     </div>
     <p className="fw-bold m-0" style={{ color: '#000000' }}>{property.propertyType || 'N/A'}</p>
     <p className='m-0' style={{ color: '#5E5E5E' }}>{property.city || 'N/A'}</p>
     <div className="card-body ps-2 m-0 pt-0 pe-2 d-flex flex-column justify-content-center">
       <div className="row">
-                      <div className="col-6 d-flex align-items-center p-1">
+        <div className="col-6 d-flex align-items-center mt-1 mb-1">
           <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E', fontWeight: 'medium' }}>{property.totalArea || 'N/A'}</span>
         </div>
-                      <div className="col-6 d-flex align-items-center p-1">
+        <div className="col-6 d-flex align-items-center mt-1 mb-1">
           <FaBed className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E' }}>{property.bedrooms || 'N/A'}</span>
         </div>
-                      <div className="col-6 d-flex align-items-center p-1">
+        <div className="col-6 d-flex align-items-center mt-1 mb-1">
           <FaUserAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E' }}>{property.ownership || 'N/A'}</span>
         </div>
-                      <div className="col-6 d-flex align-items-center p-1">
+        <div className="col-6 d-flex align-items-center mt-1 mb-1">
           <FaCalendarAlt className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E' }}>{property.bestTimeToCall || 'N/A'}</span>
         </div>
-        <div className="col-12 d-flex flex-col align-items-center p-1">
-        <h6 className="m-0">
-            <span style={{ fontSize: '15px', color: '#2F747F', fontWeight: 'bold', letterSpacing: "1px" }}>
+        <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1">
+          <h6 className="m-0">
+            <span style={{ fontSize: '17px', color: '#2F747F', fontWeight: 'bold', letterSpacing: "1px" }}>
               <FaRupeeSign className="me-2" color="#2F747F" />{property.price ? property.price.toLocaleString('en-IN') : 'N/A'}
             </span>
             <span style={{ color: '#2F747F', fontSize: '13px', marginLeft: "5px", fontSize: '11px' }}>
@@ -470,8 +352,8 @@ const RemovedProperties = ({ property, removedProperties, onUndo }) => {
             </span>
           </h6>
         </div>
-        <p className="p-1" style={{ color: "#2E7480", margin: "0px" }}>
-        <a href={`tel:${property.interestedUser}`} style={{ textDecoration: 'none', color: '#2E7480' }}>
+        <p style={{ color: "#2E7480", margin: "0px" }}>
+          <a href={`tel:${property.interestedUser}`} style={{ textDecoration: 'none', color: '#2E7480' }}>
             <MdCall className="me-2" color="#2F747F" /> {property.phoneNumber || 'N/A'}
           </a>
         </p>
@@ -479,6 +361,8 @@ const RemovedProperties = ({ property, removedProperties, onUndo }) => {
     </div>
   </div>
 </div>
+
+               
     ))
   ) : (
     <div className="col-12 text-center">

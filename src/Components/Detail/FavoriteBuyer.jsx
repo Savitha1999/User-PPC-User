@@ -28,70 +28,23 @@ const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
   const navigate = useNavigate();
 
-  const [isPressed, setIsPressed] = useState(false);
-  const [hoverEdit, setHoverEdit] = useState(false);
-  const [hoverDelete, setHoverDelete] = useState(false);
-  const [isCallPressed, setIsCallPressed] = useState(false);
-  const [isDeletePressed, setIsDeletePressed] = useState(false);
-
-  
-  const handleCallButtonClick = (ppcId, phoneNumber, property) => {
-    setMessage({
-      title: 'Do you want to call this user?',
-      onConfirm: () => handleCall(ppcId, phoneNumber, property, 'calledUser'),
-      onCancel: () => handleCall(ppcId, phoneNumber, property, 'callFailed'),
-    });
-  };
-  
-
-  const handleCall = async (ppcId, phoneNumber, property, status) => {
-    // Only open dialer if user confirmed
-    if (status === 'calledUser') {
-      window.location.href = `tel:${phoneNumber}`;
-    }
-  
-    const callData = {
-      ppcId: property.ppcId,
-      phoneNumber,
-      propertyPhoneNumber: property.postedUserPhoneNumber || '', // Owner's number
-      status, // 'calledUser' or 'callFailed'
-  
-      propertyMode: property.propertyMode || '',
-      propertyType: property.propertyType || '',
-      postedBy: property.postedBy || '',
-      area: property.area || '',
-      city: property.city || '',
-      district: property.district || '',
-      state: property.state || '',
-      bestTimeToCall: property.bestTimeToCall || '',
-      areaUnit: property.areaUnit || '',
-      totalArea: property.totalArea || '',
-      bedrooms: property.bedrooms || '',
-      facing: property.facing || '',
-      ownership: property.ownership || '',
-    };
-  
-    try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/user-call`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(callData),
-      });
-  
-      if (!res.ok) throw new Error('Failed to log call');
-      const data = await res.json();
-    } catch (error) {
-    }
-  };
-  
-
-
-
   const handlePageNavigation = () => {
     navigate('/mobileviews'); // Redirect to the desired path
   };
+
+  const handleFavoriteCall = async (ppcId, favoriteUser) => {
+    try {
+      await axios.post(`${process.env.REACT_APP_API_URL}/contact`,{
+        ppcId,
+        phoneNumber: favoriteUser,
+      });
+      setMessage({ text: "Favorite contact logged.", type: "success" });
+    } catch (error) {
+      setMessage({ text: "Failed to log favorite contact.", type: "error" });
+    }
+  };
+  
+
   const confirmAction = (message, action) => {
     setPopupMessage(message);
     setPopupAction(() => action);
@@ -218,33 +171,6 @@ const [showPopup, setShowPopup] = useState(false);
         </Modal.Body>
       </Modal>
     </div>
-
-    
-    {message && (
-  <div className="modal-overlay"
-    style={{
-    position: 'fixed',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    backgroundColor: '#fff',
-    width: '100%',
-    maxWidth: '400px',
-    padding: '10px',
-    zIndex: 10,
-    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-    borderRadius: '8px',
-    animation: 'popupOpen 0.3s ease-in-out',
-  }}>
-    <div className="modal-box">
-      <h5 style={{ color: "#2B3C4D", fontWeight: "bold" }}>{message.title}</h5>
-      <div className="modal-buttons">
-        <button className="me-1 ps-3 pe-3 pt-1 pb-1" style={{background:"#05B99E", color:"#fff"}} onClick={message.onConfirm}>Yes</button>
-        <button className="m-0 ps-3 pe-3  pt-1 pb-1" style={{background:"#E86D56", color:"#fff"}} onClick={message.onCancel}>No</button>
-      </div>
-    </div>
-  </div>
-)}
     
       {loading ? (
         <p>Loading...</p>
@@ -308,13 +234,25 @@ const [showPopup, setShowPopup] = useState(false);
                             <h6 className="m-0 text-muted" style={{ fontSize: "11px" }}>
                                Buyer Phone
                             </h6>
-                            <span className="card-text" style={{  fontWeight:"500"}}>
+                            {/* <span className="card-text" style={{  fontWeight:"500"}}>
                             <a href={`tel:${user}`} style={{ textDecoration: "none", color: "#1D1D1D" }}>
                   {showFullNumber[index]
                     ? user
                     : user?.slice(0, 5) + "*****"}
                 </a>
-                            </span>
+                            </span> */}
+
+<span
+  style={{ textDecoration: "none", color: "#1D1D1D", cursor: "pointer" }}
+  onClick={async () => {
+    if (!showFullNumber[index]) return;
+    await handleFavoriteCall( user);
+    window.location.href = `tel:${user}`;
+  }}
+>
+  {showFullNumber[index] ? user : user?.slice(0, 5) + "*****"}
+</span>
+
                           </div>
                         </div>
                         <div className="d-flex align-items-center ms-3">
@@ -352,62 +290,21 @@ const [showPopup, setShowPopup] = useState(false);
               
                          >
                             Call
-                          </button>   
+                          </button>    */}
+                          <button
+  className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+  style={{ background: "#2F747F", width: "80px", fontSize: "13px" }}
+  onClick={async () => {
+    await handleFavoriteCall( user);
+    window.location.href = `tel:${user}`;
+  }}
+>
+  Call
+</button>
+
                           <button className="btn text-white px-3 py-1 flex-grow-1 mx-1"
                             style={{ background:  "#FF0000", width: "80px", fontSize: "13px" }}
-                            onClick={() => handleRemoveFavorite(property.ppcId, user)}> Remove</button> */}
-                      {/* Call Button */}
-      <button
-        className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-        style={{
-          background: isCallPressed
-            ? '#2b5f66'
-            : hoverEdit
-            ? '#4ba0ad'
-            : '#2F747F',
-          color: '#fff',
-          width: '80px',
-          fontSize: '13px',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseEnter={() => setHoverEdit(true)}
-        onMouseLeave={() => {
-          setHoverEdit(false);
-          setIsCallPressed(false);
-        }}
-        onMouseDown={() => setIsCallPressed(true)}
-        onMouseUp={() => setIsCallPressed(false)}
-        onClick={() => handleCallButtonClick(property.ppcId, user, property)}
-      >
-        Call
-      </button>
-
-      {/* Remove Button */}
-      <button
-        className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-        style={{
-          background: isDeletePressed
-            ? '#c90000'
-            : hoverDelete
-            ? 'red'
-            : '#FF4500',
-          color: '#fff',
-          width: '80px',
-          fontSize: '13px',
-          transition: 'all 0.2s ease',
-        }}
-        onMouseEnter={() => setHoverDelete(true)}
-        onMouseLeave={() => {
-          setHoverDelete(false);
-          setIsDeletePressed(false);
-        }}
-        onMouseDown={() => setIsDeletePressed(true)}
-        onMouseUp={() => setIsDeletePressed(false)}
-        onClick={() => handleRemoveFavorite(property.ppcId, user)}
-      >
-        Remove
-      </button>
-                   
+                            onClick={() => handleRemoveFavorite(property.ppcId, user)}> Remove</button>
                     </div>
                     : ''}
                    
@@ -518,32 +415,17 @@ const [showPopup, setShowPopup] = useState(false);
         )}
           {showFullNumber
             ?  <div className="d-flex justify-content-between align-items-center ps-2 pe-2 mt-1">
-           {/* <button
+           <button
                     className="btn text-white px-3 py-1 flex-grow-1 mx-1"
                     style={{ background:  "#2F747F", width: "80px", fontSize: "13px" }}
       
                  >
                     Call
-                  </button>    */}
-                  {/* <button className="btn text-white px-3 py-1 flex-grow-1 mx-1"
+                  </button>   
+                  <button className="btn text-white px-3 py-1 flex-grow-1 mx-1"
                     style={{ background:  "#2F747F", width: "80px", fontSize: "13px" }}
-                   onClick={() => handleUndoRemove(property.ppcId, property.favoriteUser)}> ↩ Undo</button> */}
+                   onClick={() => handleUndoRemove(property.ppcId, property.favoriteUser)}> ↩ Undo</button>
 
-<button
-      className="btn text-white px-3 py-1 flex-grow-1 mx-1"
-      style={{
-        background: isPressed ? "#006400" : "#2F747F", // darker green on press
-        width: "80px",
-        fontSize: "13px",
-        transition: "all 0.2s ease"
-      }}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      onMouseLeave={() => setIsPressed(false)} // resets if mouse leaves button
-      onClick={() => handleUndoRemove(property.ppcId, property.favoriteUser)}
-    >
-      Undo
-    </button>
             </div>
             : ''}
            
