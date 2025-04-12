@@ -1,6 +1,10 @@
 
 
 
+
+
+
+
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import axios from "axios";
@@ -29,13 +33,8 @@ import { GiKitchenScale,  GiResize , GiGears} from "react-icons/gi";
 import { HiUserGroup } from "react-icons/hi";
 import { BiSearchAlt,  BiWorld} from "react-icons/bi";
 import {  MdElevator   } from "react-icons/md";
-import calendar from '../Assets/Calender-01.png'
-import bed from '../Assets/BHK-01.png'
-import totalarea from '../Assets/Total Area-01.png'
-import postedby from '../Assets/Posted By-01.png'
-import indianprice from '../Assets/Indian Rupee-01.png'
 
-const PropertyCards = ({phoneNumber}) => {
+const AllProperty = ({phoneNumber}) => {
   const [properties, setProperties] = useState([]);
   // const [filters, setFilters] = useState({ id: '', price: '', propertyMode: '', city: '' });
   const [filters, setFilters] = useState({ 
@@ -47,6 +46,23 @@ const PropertyCards = ({phoneNumber}) => {
   });
     
   const [imageCounts, setImageCounts] = useState({}); // Store image count for each property
+
+
+  const [totalProperties, setTotalProperties] = useState(0);
+
+  useEffect(() => {
+    const fetchPropertyCount = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/all-properties-count`);
+        const data = await response.json();
+        setTotalProperties(data.totalProperties);
+      } catch (error) {
+        console.error('Error fetching property count:', error);
+      }
+    };
+
+    fetchPropertyCount();
+  }, []);
 
 
   const [advancedFilters, setAdvancedFilters] = useState({
@@ -97,7 +113,7 @@ const PropertyCards = ({phoneNumber}) => {
     useEffect(() => {
       const fetchProperties = async () => {
         try {
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch-active-users`);
+          const response = await axios.get(`${process.env.REACT_APP_API_URL}/fetch-all-datas`);
           const allProperties = response.data.users;
     
           setProperties(allProperties); // Directly setting the fetched data
@@ -305,9 +321,7 @@ const PropertyCards = ({phoneNumber}) => {
   
 
   const handleCardClick = (ppcId, phoneNumber) => {
-    navigate(`/detail/${ppcId}`, { state: { phoneNumber } });
-
-    // navigate("/detail", { state: { phoneNumber } });
+    navigate(`/detail/${ppcId}`, { state: {phoneNumber } });
   };
   // const formattedPrice = new Intl.NumberFormat('en-IN').format(property.price); // Indian-style number format
   return (
@@ -315,8 +329,8 @@ const PropertyCards = ({phoneNumber}) => {
       <Helmet>
         <title>Pondy Property | Properties</title>
       </Helmet>
-      <Row className="g-3 w-100 ">
-        <Col lg={12} className="d-flex align-items-center justify-content-center pt-2 m-0">
+      <Row className="g-3 w-100 mt-2">
+        <Col lg={12} className="d-flex align-items-center justify-content-center">
           <div
             className="d-flex flex-column justify-content-center align-items-center "
             style={{
@@ -344,12 +358,12 @@ const PropertyCards = ({phoneNumber}) => {
                      <div className="row g-0 ">
          <div className="col-md-4 col-4 d-flex flex-column align-items-center">
       
- <div style={{ position: "relative", width: "100%",height: window.innerWidth <= 640 ? "180px" : "170px",  }}>
+ <div style={{ position: "relative", width: "100%", height: "170px" }}>
     {/* Image */}
     <img
  src={
   property.photos && property.photos.length > 0
-  ? `http://localhost:5006/${property.photos[0].replace(/\\/g, "/")}`
+  ? `http://localhost:5000/${property.photos[0].replace(/\\/g, "/")}`
   : pic // Use the imported local image if no photos are available
   }      
       style={{
@@ -400,67 +414,50 @@ const PropertyCards = ({phoneNumber}) => {
   </div>
          </div>
          <div className="col-md-8 col-8 " style={{paddingLeft:"10px", paddingTop:"7px"}}>
-          <div className="d-flex justify-content-start"><p className="m-0" style={{ color:'#5E5E5E' , fontWeight:500 }}>{property.propertyMode
-  ? property.propertyMode.charAt(0).toUpperCase() + property.propertyMode.slice(1)
-  : 'N/A'}
-</p> 
+          <div className="d-flex justify-content-start"><p className="m-0" style={{ color:'#5E5E5E' , fontWeight:500 }}>{property.propertyMode || 'N/A'}</p> 
           </div>
-           <p className="fw-bold m-0 " style={{ color:'#000000' }}>{property.propertyType 
-  ? property.propertyType.charAt(0).toUpperCase() + property.propertyType.slice(1) 
-  : 'N/A'}
-</p>
-           <p className="m-0" style={{ color:'#5E5E5E' , fontWeight:500}}>{property.city
-  ? property.city.charAt(0).toUpperCase() + property.city.slice(1)
-  : 'N/A'} , {property.area
-  ? property.area.charAt(0).toUpperCase() + property.area.slice(1)
-  : 'N/A'}</p>
-           <div className="card-body ps-2 m-0 pt-0 pe-2 pb-0 d-flex flex-column justify-content-center" style={{background:"#FAFAFA"}}>
-             <div className="row">
-               <div className="col-6 d-flex align-items-center mt-1 mb-1 ps-1">
-                 {/* <FaRulerCombined className="me-2" color="#2F747F" /> */}
-                 <img src={totalarea} alt="" width={12} className="me-2"/>
-                 <span style={{ fontSize:'13px', color:'#5E5E5E' , fontWeight:500 }}>{property.totalArea || 'N/A'} {property.areaUnit
-  ? property.areaUnit.charAt(0).toUpperCase() + property.areaUnit.slice(1)
-  : 'N/A'}
+           <p className="fw-bold m-0" style={{ color:'#000000' }}>{property.propertyType || 'N/A'}</p>
+           {/* <p className="text-2xl font-bold text-blue-600">{totalProperties}</p> */}
 
-                  
-                 </span>
-               </div>
-               <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                 {/* <FaBed className="me-2" color="#2F747F"/> */}
-                 <img src={bed} alt="" width={12} className="me-2"/>
-                 <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>{property.bedrooms || 'N/A'}</span>
-               </div>
-               <div className="col-6 d-flex align-items-center mt-1 mb-1 ps-1 pe-1">
-                 {/* <FaUserAlt className="me-2" color="#2F747F"/> */}
-                 <img src={postedby} alt="" width={12} className="me-2"/>
-                 <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>
-                 {property.ownership
-  ? property.ownership.charAt(0).toUpperCase() + property.ownership.slice(1)
-  : 'N/A'}
-                 </span>
-               </div>
-               <div className="col-6 d-flex align-items-center mt-1 mb-1">
-                 <img src={calendar} alt="" width={12} className="me-2"/>
-                  <span style={{ fontSize:'13px', color:'#5E5E5E' ,fontWeight: 500 }}>
-                  {property.bestTimeToCall
-  ? property.bestTimeToCall.charAt(0).toUpperCase() + property.bestTimeToCall.slice(1)
-  : 'N/A'}
-                  </span>
-               </div>
+           <p className="m-0" style={{ color:'#5E5E5E' , fontWeight:500}}>{property.city || 'N/A'} , {property.city || 'N/A'}</p>
+           <div className="card-body ps-2 m-0 pt-0 pe-2 pb-0 d-flex flex-column justify-content-center">
+             <div className="row">
+             <div className="col-6 d-flex align-items-center mt-1 mb-1 ps-1">
+             <FaRulerCombined className="me-2" color="#2F747F" /> <span style={{ fontSize: '13px', color: '#5E5E5E', fontWeight: 'medium' }}>{property.totalArea || 'N/A'}{property.areaUnit || 'N/A'}</span>
+                                </div>
+                              <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                                        <FaBed className="me-2" color="#2F747F" />
+                                        <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
+                                          {property.bedrooms || 'N/A'}
+                                        </span>
+                                      </div>
+                                      <div className="col-6 d-flex align-items-center mt-1 mb-1 ps-1">
+                                      <FaUserAlt className="me-2" color="#2F747F" />
+                                        <span style={{ fontSize: '13px', color: '#5E5E5E' }}>
+                                          {property.postedBy || 'N/A'}
+                                        </span>
+                                      </div>
+                                    <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                                                                                                   <FaCalendarAlt className="me-2" color="#2F747F"/> 
+                                                          <span style={{ fontSize:'13px', color:'#5E5E5E', fontWeight: 500 }}>
+                                                            {property.createdAt ? new Date(property.createdAt).toLocaleDateString('en-IN', {
+                                                              year: 'numeric',
+                                                              month: 'short',
+                                                              day: 'numeric'
+                                                            }) : 'N/A'}
+                                                          </span>     
+                                                          </div> 
                <div className="col-12 d-flex flex-col align-items-center mt-1 mb-1 ps-1">
                 <h6 className="m-0">
-                <span style={{ fontSize:'15px', color:'#2F747F', fontWeight:600, letterSpacing:"1px" }}> 
-                  {/* <FaRupeeSign className="me-2" color="#2F747F"/> */}
-                  <img src={
-                    indianprice
-                  } alt="" width={8}  className="me-2"/>
-                  {property.price ? property.price.toLocaleString('en-IN') : 'N/A'}
+                <span style={{ fontSize:'15px', color:'#2F747F', fontWeight:600, letterSpacing:"1px" }}> <FaRupeeSign className="me-2" color="#2F747F"/>{property.price ? property.price.toLocaleString('en-IN') : 'N/A'}
                 </span> 
                 <span style={{ color:'#2F747F', marginLeft:"5px",fontSize:'11px',}}> 
                 Negotiable                </span> 
                   </h6>
                </div>
+               {/* <div className="col-6 d-flex align-items-center mt-1 mb-1">
+                 <h4 className="m-0" style={{ color:'#2F747F', fontSize:'13px'}}> Negotiable: <span style={{ color:'#555555' }}>{property.negotiation || 'N/A'}</span></h4>
+               </div> */}
               </div>
             </div>
           </div>
@@ -479,22 +476,22 @@ const PropertyCards = ({phoneNumber}) => {
 
       {/* Basic Filters Popup */}
      {isFilterPopupOpen && (
-  <div 
-  style={{
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '90%', // Responsive width
-    maxWidth: '400px', // Prevents stretching on larger screens
-    maxHeight: '60vh',
-    overflowY: 'auto',
-    background: '#fff',
-    padding: '20px',
-    boxShadow: '0px 0px 10px rgba(0,0,0,0.5)',
-    zIndex: 2,
-    borderRadius: '8px',
-  }}
+  <div
+    style={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '400px',
+      maxHeight: '60vh',
+      overflowY: 'scroll',
+      scrollbarWidth: 'none',
+      msOverflowStyle: 'none',
+      background: '#fff',
+      padding: '20px',
+      boxShadow: '0px 0px 10px rgba(0,0,0,0.5)',
+      zIndex: 2,
+    }}
   >
     <style>
       {`
@@ -640,7 +637,7 @@ const PropertyCards = ({phoneNumber}) => {
         <FaTools className="me-1" /> Advanced Filters
       </button>
       <button
-        className="btn rounded-0 mt-1 ms-1 w-30" style={{background:"black", color:"#ffffff"}}
+        className="btn rounded-0 mt-1 w-30" style={{background:"black", color:"#ffffff"}}
         onClick={() => setIsFilterPopupOpen(false)}
       >
         <FaTimes className="me-1" /> Cancel
@@ -659,8 +656,7 @@ const PropertyCards = ({phoneNumber}) => {
       top: '50%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
-      width: '90%', // Responsive width
-      maxWidth: '400px',
+      width: '90%',
       maxHeight: '60vh',
       overflowY: 'scroll',
       scrollbarWidth: 'none',
@@ -2066,7 +2062,7 @@ const PropertyCards = ({phoneNumber}) => {
       </div>
       
         
-    
+
 
         {/* Best Time to Call */}
         <div className="form-group" >
@@ -2141,7 +2137,11 @@ const PropertyCards = ({phoneNumber}) => {
   );
 };
 
-export default PropertyCards;
+export default AllProperty;
+
+
+
+
 
 
 
